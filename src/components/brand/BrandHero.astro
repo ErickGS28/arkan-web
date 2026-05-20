@@ -1,0 +1,100 @@
+---
+import type { Brand } from '../../data/brands';
+interface Props { brand: Brand; }
+const { brand } = Astro.props;
+const heroImg = brand.categories[0]?.images[0] ?? '';
+---
+
+<style>
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero {
+    min-height: 100vh; position: relative;
+    background: #0A0A0A; display: flex; align-items: flex-end; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center 20%;
+  }
+  .hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.45) 40%,
+      rgba(0,0,0,0.82) 80%, rgba(0,0,0,0.97) 100%
+    );
+  }
+  .hero-strip {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; background: #FFFFFF; z-index: 3;
+  }
+  .hero-content {
+    position: relative; z-index: 2; width: 100%;
+    padding: 80px 80px 100px;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; gap: 18px;
+  }
+  .hero-logo {
+    width: 120px; height: 120px; object-fit: contain;
+    animation: slideUp 0.8s 0.15s ease both;
+  }
+  .hero-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(64px, 11vw, 150px);
+    letter-spacing: 8px; color: #F0F0F0; line-height: 0.95;
+    animation: slideUp 0.8s 0.25s ease both;
+  }
+  .hero-tagline {
+    font-family: 'Syne', sans-serif; font-size: 16px;
+    font-style: italic; font-weight: 400;
+    color: rgba(240,240,240,0.7); letter-spacing: 3px;
+    animation: slideUp 0.8s 0.35s ease both;
+  }
+  .hero-ngu {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(13px, 1.8vw, 18px); font-weight: 700;
+    letter-spacing: 10px; color: #FFFFFF; text-transform: uppercase;
+    animation: slideUp 0.8s 0.35s ease both;
+  }
+  .hero-divider {
+    width: 40px; height: 1px; background: #FFFFFF;
+    animation: slideUp 0.8s 0.45s ease both;
+  }
+  .hero-cta { animation: slideUp 0.8s 0.55s ease both; margin-top: 4px; }
+  .btn-outline-white {
+    background: transparent; color: #F0F0F0;
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    padding: 14px 36px; border: 1px solid rgba(255,255,255,0.5);
+    cursor: pointer; transition: border-color 0.2s ease, background 0.2s ease;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-outline-white:hover { border-color: #FFFFFF; background: rgba(255,255,255,0.08); }
+
+  @media (max-width: 768px) {
+    .hero-content { padding: 20px 20px 80px; }
+    .hero-heading { font-size: clamp(48px, 14vw, 80px); letter-spacing: 4px; }
+  }
+</style>
+
+<section class="hero">
+  <div class="hero-bg" style={`background-image: url('${heroImg}')`}></div>
+  <div class="hero-overlay"></div>
+  {brand.id === 'black-bash' && <div class="hero-strip"></div>}
+  <div class="hero-content">
+    <img src={brand.logoSrc} alt={brand.name} class="hero-logo" />
+    <h1 class="hero-heading">{brand.name}</h1>
+    {brand.id === 'black-bash'
+      ? <p class="hero-ngu">{brand.tagline}</p>
+      : <p class="hero-tagline">{brand.tagline}</p>
+    }
+    <div class="hero-divider"></div>
+    <div class="hero-cta">
+      <a href="#lookbook" class="btn-outline-white">
+        {brand.id === 'bakari' ? 'Ver Colección' : 'Ver Lookbook'}
+      </a>
+    </div>
+  </div>
+</section>

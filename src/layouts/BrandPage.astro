@@ -1,0 +1,23 @@
+---
+import type { Brand } from '../data/brands';
+import Layout from './Layout.astro';
+import BrandNav from '../components/brand/BrandNav.astro';
+import BrandHero from '../components/brand/BrandHero.astro';
+import BrandStatement from '../components/brand/BrandStatement.astro';
+import BrandCategories from '../components/brand/BrandCategories.astro';
+import BrandFooter from '../components/brand/BrandFooter.astro';
+
+interface Props { brand: Brand; }
+const { brand } = Astro.props;
+---
+
+<Layout
+  title={`${brand.name} — Arkán Group`}
+  description={`${brand.tagline}. Distribución mayorista en México.`}
+>
+  <BrandNav {brand} />
+  <BrandHero {brand} />
+  <BrandStatement {brand} />
+  <BrandCategories {brand} />
+  <BrandFooter {brand} />
+</Layout>

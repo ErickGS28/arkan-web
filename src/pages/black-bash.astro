@@ -1,0 +1,6 @@
+---
+import { getBrand } from '../data/brands';
+import BrandPage from '../layouts/BrandPage.astro';
+const brand = getBrand('black-bash')!;
+---
+<BrandPage {brand} />

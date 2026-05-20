@@ -1,0 +1,114 @@
+---
+const pasos = [
+  {
+    num: '01',
+    title: 'Elige tu marca',
+    desc: 'Aruba Jeans para el mercado femenino, BKR Bakari para básicos masculinos o Black Bash MX para streetwear. Cada una con identidad propia y cliente definido.',
+  },
+  {
+    num: '02',
+    title: 'Realiza tu pedido',
+    desc: 'Paquetes desde $4,200 con envío incluido a toda la República. Mínimo 12 piezas. Sin trámites complicados: contáctanos por WhatsApp y coordinamos todo.',
+  },
+  {
+    num: '03',
+    title: 'Vende y escala',
+    desc: 'Margen real desde el primer lote. Ganancia estimada de $1,500 a $2,700 por paquete. A medida que conoces el producto, el negocio se mueve solo.',
+  },
+];
+---
+
+<section class="proceso">
+  <div class="proceso-inner">
+    <div class="proceso-header">
+      <p class="proceso-eyebrow">Distribución</p>
+      <h2 class="proceso-title">ASÍ DE FÁCIL<br/>ES EMPEZAR</h2>
+    </div>
+    <div class="proceso-steps">
+      {pasos.map((paso, i) => (
+        <div class="paso">
+          <div class="paso-top">
+            <span class="paso-num">{paso.num}</span>
+            {i < pasos.length - 1 && <div class="paso-arrow">→</div>}
+          </div>
+          <div class="paso-rule"></div>
+          <h3 class="paso-title">{paso.title}</h3>
+          <p class="paso-desc">{paso.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .proceso {
+    background: #FFFFFF;
+    padding: 120px 80px;
+    border-top: 1px solid #E8E8E8;
+  }
+  .proceso-inner { max-width: 1200px; margin: 0 auto; }
+
+  .proceso-header { margin-bottom: 80px; }
+  .proceso-eyebrow {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; letter-spacing: 5px; color: #AAA;
+    text-transform: uppercase; margin-bottom: 16px;
+  }
+  .proceso-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 4vw, 56px);
+    letter-spacing: 3px; color: #0A0A0A; line-height: 1.05;
+  }
+
+  .proceso-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 64px;
+  }
+
+  .paso { display: flex; flex-direction: column; gap: 20px; }
+
+  .paso-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .paso-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px; color: #F0F0F0;
+    line-height: 1; letter-spacing: 2px;
+  }
+  .paso-arrow {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px; color: #D0D0D0;
+    margin-bottom: 8px;
+  }
+
+  .paso-rule {
+    width: 100%; height: 1px;
+    background: #E0E0E0;
+  }
+
+  .paso-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 2px;
+    color: #0A0A0A; line-height: 1;
+  }
+  .paso-desc {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px; line-height: 1.85; color: #666;
+  }
+
+  @media (max-width: 900px) {
+    .proceso { padding: 80px 48px; }
+    .proceso-steps { gap: 40px; }
+    .paso-num { font-size: 56px; }
+  }
+  @media (max-width: 768px) {
+    .proceso { padding: 80px 24px; }
+    .proceso-steps { grid-template-columns: 1fr; gap: 36px; }
+    .paso-arrow { display: none; }
+    .paso-num { font-size: 48px; }
+    .proceso-header { margin-bottom: 48px; }
+  }
+</style>

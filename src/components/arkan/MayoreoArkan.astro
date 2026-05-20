@@ -1,0 +1,86 @@
+---
+import NacionalBadge from '../ui/NacionalBadge.astro';
+---
+
+<style>
+  .mayoreo {
+    background: #0A0A0A; padding: 120px 80px;
+    text-align: center; border-top: 1px solid #1A1A1A;
+    scroll-margin-top: 64px;
+  }
+  .mayoreo-eyebrow {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 8px; color: #FFFFFF;
+    margin-bottom: 24px; text-transform: uppercase;
+  }
+  .mayoreo-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(42px, 5vw, 68px);
+    letter-spacing: 4px; color: #F0F0F0; margin-bottom: 16px;
+  }
+  .mayoreo-body {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; color: #666;
+    max-width: 500px; margin: 0 auto 32px; line-height: 1.8;
+  }
+  .mayoreo-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 2px; margin-bottom: 48px; border: 1px solid #1A1A1A;
+  }
+  .stat-cell {
+    background: #111; padding: 48px 32px; border: 1px solid #1A1A1A;
+  }
+  .stat-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 4vw, 56px);
+    color: #F0F0F0; line-height: 1; letter-spacing: 2px;
+  }
+  .stat-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700; letter-spacing: 2px; color: #888;
+    text-transform: uppercase; margin-top: 10px;
+  }
+  .btn-white {
+    background: #FFFFFF; color: #0A0A0A;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; padding: 14px 32px; border: none;
+    cursor: pointer; transition: background 0.2s ease;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-white:hover { background: #E0E0E0; }
+
+  @media (max-width: 900px) {
+    .mayoreo-stats { grid-template-columns: repeat(2, 1fr); }
+    .stat-cell { padding: 32px 24px; }
+  }
+  @media (max-width: 768px) {
+    .mayoreo { padding: 80px 24px; }
+    .mayoreo-stats { grid-template-columns: 1fr; }
+    .stat-cell { padding: 28px 20px; }
+  }
+</style>
+
+<section class="mayoreo" id="mayoreo">
+  <p class="mayoreo-eyebrow">Venta 100% Mayoreo</p>
+  <h2 class="mayoreo-heading">INVIERTE Y GENERA<br/>INGRESO CONSTANTE</h2>
+  <p class="mayoreo-body">Producto con alta rotación. Moda que el cliente final ya busca. Invierte en inventario probado y construye un canal de venta rentable desde el primer lote.</p>
+  <NacionalBadge variant="dark" />
+  <div class="mayoreo-stats">
+    <div class="stat-cell">
+      <div class="stat-number">$4,200</div>
+      <div class="stat-label">Inversión inicial · aprox.</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-number">12 pzs</div>
+      <div class="stat-label">Mínimo de compra · aprox.</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-number">$2,700+</div>
+      <div class="stat-label">Ganancia por lote · aprox.</div>
+    </div>
+  </div>
+  <a href="https://wa.me/525564991943" class="btn-white">Contáctanos</a>
+</section>
+
+

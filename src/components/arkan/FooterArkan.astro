@@ -1,0 +1,36 @@
+---
+---
+
+<style>
+  .footer {
+    background: #0A0A0A; border-top: 1px solid #1A1A1A;
+    padding: 60px 80px;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 24px; text-align: center;
+  }
+  .footer-brand { display: flex; align-items: center; gap: 12px; }
+  .footer-logo { width: 48px; height: 48px; object-fit: contain; opacity: 0.5; }
+  .footer-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 5px; color: #555;
+  }
+  .footer-brands {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; letter-spacing: 3px; color: #333; text-transform: uppercase;
+  }
+  .footer-tag {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; letter-spacing: 2px; color: #333; text-transform: uppercase;
+  }
+
+  @media (max-width: 768px) { .footer { padding: 48px 24px; } }
+</style>
+
+<footer class="footer">
+  <div class="footer-brand">
+    <img src="/logos/arkan.jpg" alt="Arkán" class="footer-logo" />
+    <span class="footer-name">ARKÁN GROUP</span>
+  </div>
+  <p class="footer-brands">Aruba Jeans · BKR Bakari · Black Bash MX</p>
+  <p class="footer-tag">Mayoreo · México · Envíos a toda la República</p>
+</footer>

@@ -1,0 +1,169 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import NavArkan from '../../components/arkan/NavArkan.astro';
+import FooterArkan from '../../components/arkan/FooterArkan.astro';
+import { posts } from '../../data/posts';
+---
+
+<Layout title="Blog — Arkán Group" description="Artículos sobre denim, moda y distribución mayorista en México.">
+  <NavArkan />
+
+  <main class="blog-main">
+    <header class="blog-header">
+      <p class="blog-eyebrow">Arkán Group</p>
+      <h1 class="blog-title">BLOG</h1>
+      <p class="blog-sub">Denim, moda y cómo construir un negocio real.</p>
+    </header>
+
+    <section class="post-list">
+      {posts.map((post, i) => (
+        <a href={`/blog/${post.slug}`} class="post-card">
+          <div class="post-image">
+            <img src={post.coverImg} alt={post.title} />
+          </div>
+          <div class="post-body">
+            <div class="post-meta">
+              <span class="post-num">0{i + 1}</span>
+              <span class="post-sep">/</span>
+              <span class="post-date">{post.date}</span>
+              <span class="post-sep">·</span>
+              <span class="post-read">{post.readTime} lectura</span>
+            </div>
+            <h2 class="post-title">{post.title}</h2>
+            <p class="post-excerpt">{post.excerpt}</p>
+            <span class="post-link">Leer artículo →</span>
+          </div>
+        </a>
+      ))}
+    </section>
+  </main>
+
+  <FooterArkan />
+</Layout>
+
+<style>
+  .blog-main { padding-top: 64px; background: #FFFFFF; min-height: 100vh; }
+
+  /* Header */
+  .blog-header {
+    background: #0A0A0A;
+    padding: 100px 80px 80px;
+    text-align: center;
+  }
+  .blog-eyebrow {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; letter-spacing: 5px; color: #555;
+    text-transform: uppercase; margin-bottom: 16px;
+  }
+  .blog-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 10vw, 120px);
+    letter-spacing: 8px; color: #F0F0F0; line-height: 1;
+    margin-bottom: 20px;
+  }
+  .blog-sub {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; color: #555; letter-spacing: 1px;
+  }
+
+  /* Lista de artículos */
+  .post-list {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 64px 48px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .post-card {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0;
+    text-decoration: none;
+    border-bottom: 1px solid #E8E8E8;
+    padding: 40px 0;
+  }
+  .post-card:first-child { border-top: 1px solid #E8E8E8; }
+
+  /* Imagen */
+  .post-image {
+    flex: 0 0 280px;
+    height: 190px;
+    overflow: hidden;
+    align-self: center;
+  }
+  .post-image img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    transition: transform 0.5s ease, filter 0.4s ease;
+    filter: grayscale(15%);
+  }
+  .post-card:hover .post-image img {
+    transform: scale(1.04);
+    filter: grayscale(0%);
+  }
+
+  /* Contenido */
+  .post-body {
+    flex: 1;
+    padding: 0 0 0 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .post-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px; color: #E0E0E0; line-height: 1;
+  }
+  .post-sep { color: #D0D0D0; font-size: 12px; }
+  .post-date, .post-read {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; letter-spacing: 2px;
+    color: #AAA; text-transform: uppercase;
+  }
+
+  .post-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(22px, 2.4vw, 32px);
+    letter-spacing: 1.5px; color: #0A0A0A;
+    line-height: 1.05;
+    transition: color 0.2s ease;
+  }
+  .post-card:hover .post-title { color: #333; }
+
+  .post-excerpt {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; line-height: 1.8; color: #777;
+  }
+
+  .post-link {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 2.5px; color: #0A0A0A;
+    text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: gap 0.2s ease;
+    margin-top: 4px;
+  }
+  .post-card:hover .post-link { gap: 12px; }
+
+  @media (max-width: 768px) {
+    .blog-header { padding: 80px 24px 60px; }
+    .post-list { padding: 48px 24px; }
+  }
+  @media (max-width: 600px) {
+    .post-list { padding: 32px 20px; }
+    .post-card { flex-direction: column; gap: 16px; padding: 28px 0; }
+    .post-image { flex: none; width: 100%; height: 200px; }
+    .post-body { padding: 0; }
+    .post-title { font-size: clamp(20px, 6vw, 28px); }
+  }
+</style>

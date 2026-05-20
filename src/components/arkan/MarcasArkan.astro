@@ -1,0 +1,82 @@
+---
+import { brands } from '../../data/brands';
+
+const descs: Record<string, string> = {
+  aruba: 'Denim colombiano de corte femenino. Diseñado para resaltar la figura, construido para durar. Su propuesta visual conecta con la mujer que invierte en cómo se ve y cómo se siente.',
+  bakari: 'Línea básica de stretch premium. Cortes limpios, telas de alto desempeño y una paleta neutra que convierte cada pieza en un básico de guardarropa. Ideal para el cliente cotidiano y la reventa rápida.',
+  'black-bash': 'Streetwear premium con actitud. Denim con carácter, prendas que comunican. Una línea diseñada para destacar en el punto de venta y generar recompra orgánica por lealtad de marca.',
+};
+---
+
+<style>
+  .marcas { background: #FFFFFF; padding: 120px 80px; scroll-margin-top: 64px; }
+  .marcas-eyebrow {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px; letter-spacing: 8px; color: #0A0A0A;
+    text-transform: uppercase; margin-bottom: 64px;
+  }
+
+  .brands-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .brand-card {
+    background: #F5F5F5;
+    display: flex;
+    flex-direction: column;
+    padding: 48px 40px 44px;
+    border-top: 3px solid #0A0A0A;
+    gap: 16px;
+    transition: background 0.25s ease;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .brand-card:hover { background: #EBEBEB; }
+
+  .brand-card-logo { width: 72px; height: 72px; object-fit: contain; }
+  .brand-card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px; letter-spacing: 3px; color: #0A0A0A; line-height: 1;
+    margin-top: 4px;
+  }
+  .brand-card-tag {
+    font-family: 'Syne', sans-serif; font-size: 13px; font-style: italic; color: #888;
+  }
+  .brand-card-desc {
+    font-family: 'Syne', sans-serif; font-size: 13px; line-height: 1.8; color: #666;
+    flex: 1;
+  }
+  .brand-card-link {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600;
+    letter-spacing: 2px; color: #0A0A0A; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: gap 0.2s ease; margin-top: 8px;
+  }
+  .brand-card:hover .brand-card-link { gap: 14px; }
+
+  @media (max-width: 900px) {
+    .brands-grid { grid-template-columns: repeat(2, 1fr); }
+    .marcas { padding: 80px 24px; }
+    .brand-card { padding: 32px 24px 28px; }
+  }
+  @media (max-width: 580px) {
+    .brands-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<section class="marcas" id="marcas">
+  <p class="marcas-eyebrow">Nuestras Marcas</p>
+  <div class="brands-grid">
+    {brands.map((brand) => (
+      <a href={brand.slug} class="brand-card">
+        <img src={brand.logoSrc} alt={brand.name} class="brand-card-logo" />
+        <div class="brand-card-name">{brand.name}</div>
+        <div class="brand-card-tag">{brand.tagline}</div>
+        <p class="brand-card-desc">{descs[brand.id]}</p>
+        <span class="brand-card-link">Ver Colección →</span>
+      </a>
+    ))}
+  </div>
+</section>

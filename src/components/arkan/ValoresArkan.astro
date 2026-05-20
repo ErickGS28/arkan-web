@@ -1,0 +1,112 @@
+---
+const valores = [
+  {
+    num: '01',
+    title: 'Calidad\nVerificable',
+    desc: 'Telas con gramaje real, costuras reforzadas y stretch de alta recuperación. Producto que el cliente final toca y reconoce como diferente.',
+  },
+  {
+    num: '02',
+    title: 'Origen\nReal',
+    desc: 'Denim colombiano y líneas básicas con manufactura probada. No importamos cualquier cosa: curademos marcas con identidad y respaldo de mercado.',
+  },
+  {
+    num: '03',
+    title: 'Modelo\n100% B2B',
+    desc: 'Trabajamos exclusivamente con distribuidores, boutiques y revendedores. Nuestro negocio es que el tuyo funcione.',
+  },
+  {
+    num: '04',
+    title: 'Rotación\nGarantizada',
+    desc: 'Modelos actuales, cortes que se venden, temporadas relevantes. No acumulas inventario: inviertes en producto que ya tiene demanda.',
+  },
+];
+---
+
+<section class="valores">
+  <div class="valores-inner">
+    <div class="valores-header">
+      <p class="valores-eyebrow">Por qué Arkán</p>
+      <h2 class="valores-title">CUATRO RAZONES<br/>PARA DISTRIBUIR CON NOSOTROS</h2>
+    </div>
+    <div class="valores-grid">
+      {valores.map((v) => (
+        <div class="valor-item">
+          <span class="valor-num">{v.num}</span>
+          <div class="valor-rule"></div>
+          <h3 class="valor-name" set:html={v.title.replace('\n', '<br/>')} />
+          <p class="valor-desc">{v.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .valores {
+    background: #0A0A0A;
+    padding: 120px 80px;
+    border-top: 1px solid #1A1A1A;
+  }
+  .valores-inner { max-width: 1200px; margin: 0 auto; }
+
+  .valores-header { margin-bottom: 80px; }
+  .valores-eyebrow {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; letter-spacing: 5px; color: #555;
+    text-transform: uppercase; margin-bottom: 16px;
+  }
+  .valores-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 4vw, 56px);
+    letter-spacing: 3px; color: #F0F0F0; line-height: 1.05;
+  }
+
+  .valores-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: #1A1A1A;
+  }
+
+  .valor-item {
+    background: #0D0D0D;
+    padding: 48px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: background 0.25s ease;
+  }
+  .valor-item:hover { background: #111; }
+
+  .valor-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px; color: #222; line-height: 1;
+    letter-spacing: 2px;
+  }
+  .valor-rule {
+    width: 32px; height: 1px;
+    background: #FFFFFF;
+  }
+  .valor-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 2px;
+    color: #F0F0F0; line-height: 1.1;
+  }
+  .valor-desc {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; line-height: 1.85;
+    color: #555;
+  }
+
+  @media (max-width: 900px) {
+    .valores { padding: 80px 24px; }
+    .valores-header { margin-bottom: 48px; }
+    .valores-grid { grid-template-columns: repeat(2, 1fr); }
+    .valor-item { padding: 36px 28px; }
+  }
+  @media (max-width: 520px) {
+    .valores-grid { grid-template-columns: 1fr; }
+    .valor-item { padding: 28px 20px; gap: 14px; }
+  }
+</style>

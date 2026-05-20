@@ -1,0 +1,72 @@
+---
+import type { Brand } from '../../data/brands';
+interface Props { brand: Brand; }
+const { brand } = Astro.props;
+const { statement } = brand;
+---
+
+<style>
+  .statement {
+    background: #FFFFFF; padding: 120px 80px;
+    display: grid; align-items: center; gap: 80px;
+    scroll-margin-top: 64px;
+  }
+  .statement-left { display: flex; gap: 20px; align-items: flex-start; }
+  .statement-bar {
+    width: 4px; background: #0A0A0A;
+    align-self: stretch; flex-shrink: 0; min-height: 100px;
+  }
+  .statement-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 8vw, 112px);
+    color: #0A0A0A; line-height: 0.9; letter-spacing: 3px;
+  }
+  .statement-right { display: flex; flex-direction: column; gap: 20px; }
+  .statement-tag {
+    font-family: 'Syne', sans-serif; font-size: 10px;
+    letter-spacing: 4px; color: #0A0A0A; text-transform: uppercase;
+  }
+  .statement-right p {
+    font-family: 'Syne', sans-serif; font-size: 15px; line-height: 1.9; color: #555;
+  }
+  .feature-list {
+    list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: 8px;
+  }
+  .feature-list li {
+    font-family: 'Syne', sans-serif; font-size: 13px; color: #666;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .feature-list li::before {
+    content: ''; display: block; width: 20px; height: 1px;
+    background: #0A0A0A; flex-shrink: 0;
+  }
+  .statement-ngu {
+    font-family: 'Bebas Neue', sans-serif; font-size: 28px;
+    letter-spacing: 6px; color: #CCCCCC; margin-top: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .statement { grid-template-columns: 1fr !important; gap: 48px; padding: 80px 24px; }
+  }
+</style>
+
+<section
+  class="statement"
+  id="statement"
+  style={`grid-template-columns: ${statement.gridCols}`}
+>
+  <div class="statement-left">
+    <div class="statement-bar"></div>
+    <h2 class="statement-heading" set:html={statement.heading} />
+  </div>
+  <div class="statement-right">
+    <span class="statement-tag">{statement.tag}</span>
+    {statement.paragraphs.map((p) => <p>{p}</p>)}
+    {statement.features && (
+      <ul class="feature-list">
+        {statement.features.map((f) => <li>{f}</li>)}
+      </ul>
+    )}
+    {statement.ngu && <div class="statement-ngu">{statement.ngu}</div>}
+  </div>
+</section>

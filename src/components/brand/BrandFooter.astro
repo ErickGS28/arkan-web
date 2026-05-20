@@ -1,0 +1,41 @@
+---
+import type { Brand } from '../../data/brands';
+interface Props { brand: Brand; }
+const { brand } = Astro.props;
+---
+
+<style>
+  .footer {
+    background: #050505; border-top: 1px solid #1A1A1A;
+    padding: 60px 80px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-brand { display: flex; align-items: center; gap: 10px; }
+  .footer-logo { width: 40px; height: 40px; object-fit: contain; opacity: 0.5; }
+  .footer-name {
+    font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 4px; color: #555;
+  }
+  .footer-nav { display: flex; gap: 32px; }
+  .footer-nav a {
+    font-family: 'Syne', sans-serif; font-size: 11px; letter-spacing: 2px;
+    color: #333; text-transform: uppercase;
+    transition: color 0.2s ease; text-decoration: none;
+  }
+  .footer-nav a:hover { color: #FFFFFF; }
+
+  @media (max-width: 768px) {
+    .footer { flex-direction: column; gap: 24px; text-align: center; padding: 48px 24px; }
+  }
+</style>
+
+<footer class="footer">
+  <div class="footer-brand">
+    <img src={brand.logoSrc} alt={brand.name} class="footer-logo" />
+    <span class="footer-name">{brand.name}</span>
+  </div>
+  <nav class="footer-nav">
+    {brand.footerLinks.map((link) => (
+      <a href={link.href}>{link.label}</a>
+    ))}
+  </nav>
+</footer>

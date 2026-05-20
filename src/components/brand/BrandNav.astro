@@ -1,0 +1,121 @@
+---
+import type { Brand } from '../../data/brands';
+interface Props { brand: Brand; }
+const { brand } = Astro.props;
+---
+
+<style>
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: #0A0A0A; border-top: 2px solid #FFFFFF;
+    border-bottom: 1px solid #1A1A1A;
+    padding: 0 48px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    animation: fadeIn 0.5s ease both;
+  }
+  .nav-brand { display: flex; align-items: center; gap: 14px; }
+  .nav-logo { width: 38px; height: 38px; object-fit: contain; border-radius: 2px; }
+  .nav-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 5px; color: #F0F0F0;
+  }
+  .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+  .nav-links a {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 500;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: #666; transition: color 0.2s ease;
+  }
+  .nav-links a:hover { color: #FFFFFF; }
+  .nav-back {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600;
+    letter-spacing: 2px; color: #F0F0F0; text-transform: uppercase;
+    text-decoration: none; transition: color 0.2s ease;
+    white-space: nowrap;
+  }
+  .nav-back:hover { color: #FFFFFF; }
+
+  /* Hamburger */
+  .nav-toggle {
+    display: none;
+    flex-direction: column; justify-content: center; gap: 5px;
+    background: none; border: none; cursor: pointer;
+    padding: 8px; width: 40px; height: 40px;
+  }
+  .nav-toggle span {
+    display: block; width: 22px; height: 1.5px;
+    background: #F0F0F0; transition: all 0.25s ease;
+    transform-origin: center;
+  }
+  .nav-toggle.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .nav-toggle.open span:nth-child(2) { opacity: 0; }
+  .nav-toggle.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  /* Drawer */
+  .nav-drawer {
+    display: none;
+    position: fixed; top: 64px; left: 0; right: 0;
+    background: #0A0A0A; border-bottom: 1px solid #1A1A1A;
+    flex-direction: column; z-index: 99;
+    padding: 8px 0 16px;
+  }
+  .nav-drawer.open { display: flex; }
+  .nav-drawer a {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 500; letter-spacing: 3px;
+    text-transform: uppercase; color: #888;
+    padding: 16px 24px; border-bottom: 1px solid #111;
+    transition: color 0.2s ease, background 0.2s ease;
+    text-decoration: none;
+  }
+  .nav-drawer a:last-child { border-bottom: none; }
+  .nav-drawer a:hover { color: #FFFFFF; background: #111; }
+
+  @media (max-width: 768px) {
+    .nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .nav-back { display: none; }
+    .nav-toggle { display: flex; }
+  }
+</style>
+
+<nav class="nav">
+  <div class="nav-brand">
+    <img src={brand.logoSrc} alt={brand.name} class="nav-logo" />
+    <span class="nav-title">{brand.name}</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#statement">Identidad</a></li>
+    <li><a href="#lookbook">Categorías</a></li>
+    <li><a href="#cta">Distribución</a></li>
+  </ul>
+  <a href="/" class="nav-back">← Arkán</a>
+  <button class="nav-toggle" id="brandNavToggle" aria-label="Menú" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="nav-drawer" id="brandNavDrawer">
+  <a href="#statement">Identidad</a>
+  <a href="#lookbook">Categorías</a>
+  <a href="/">← Arkán Group</a>
+</div>
+
+<script>
+  const toggle = document.getElementById('brandNavToggle');
+  const drawer = document.getElementById('brandNavDrawer');
+
+  toggle?.addEventListener('click', () => {
+    const open = drawer?.classList.toggle('open');
+    toggle.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+
+  drawer?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      drawer.classList.remove('open');
+      toggle?.classList.remove('open');
+      toggle?.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>

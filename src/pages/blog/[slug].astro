@@ -1,0 +1,207 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import NavArkan from '../../components/arkan/NavArkan.astro';
+import FooterArkan from '../../components/arkan/FooterArkan.astro';
+import { posts, getPost } from '../../data/posts';
+
+export function getStaticPaths() {
+  return posts.map((p) => ({ params: { slug: p.slug } }));
+}
+
+const { slug } = Astro.params;
+const post = getPost(slug)!;
+---
+
+<Layout title={`${post.title} — Arkán Group`} description={post.excerpt}>
+  <NavArkan />
+
+  <!-- Cover hero -->
+  <div class="cover">
+    <img src={post.coverImg} alt={post.title} class="cover-img" />
+    <div class="cover-overlay"></div>
+    <div class="cover-content">
+      <a href="/blog" class="back-link">← Blog</a>
+      <div class="cover-meta">
+        <span>{post.date}</span>
+        <span class="sep">·</span>
+        <span>{post.readTime} lectura</span>
+      </div>
+      <h1 class="cover-title">{post.title}</h1>
+    </div>
+  </div>
+
+  <!-- Artículo -->
+  <article class="article">
+    <p class="article-excerpt">{post.excerpt}</p>
+    <div class="article-content" set:html={post.content} />
+  </article>
+
+  <!-- Más artículos -->
+  <section class="more">
+    <p class="more-label">Seguir leyendo</p>
+    <div class="more-grid">
+      {posts.filter(p => p.slug !== slug).slice(0, 2).map(p => (
+        <a href={`/blog/${p.slug}`} class="more-card">
+          <img src={p.coverImg} alt={p.title} class="more-img" />
+          <div class="more-body">
+            <p class="more-date">{p.date}</p>
+            <p class="more-title">{p.title}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+    <a href="/blog" class="all-link">Ver todos los artículos →</a>
+  </section>
+
+  <FooterArkan />
+</Layout>
+
+<style>
+  /* Cover */
+  .cover {
+    position: relative;
+    height: 70vh;
+    min-height: 480px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    margin-top: 64px;
+  }
+  .cover-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(15%);
+  }
+  .cover-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0,0,0,0.2) 0%,
+      rgba(0,0,0,0.55) 50%,
+      rgba(0,0,0,0.92) 100%
+    );
+  }
+  .cover-content {
+    position: relative; z-index: 2;
+    padding: 0 80px 60px;
+    display: flex; flex-direction: column; gap: 16px;
+    max-width: 900px;
+  }
+  .back-link {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: #FFFFFF; opacity: 0.6;
+    transition: opacity 0.2s ease;
+  }
+  .back-link:hover { opacity: 1; }
+  .cover-meta {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; letter-spacing: 2px;
+    color: #FFFFFF; opacity: 0.6; text-transform: uppercase;
+  }
+  .sep { opacity: 0.4; }
+  .cover-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 5vw, 72px);
+    letter-spacing: 3px; color: #FFFFFF;
+    line-height: 1.05;
+  }
+
+  /* Artículo */
+  .article {
+    background: #FFFFFF;
+    padding: 80px;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .article-excerpt {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 600;
+    line-height: 1.7; color: #0A0A0A;
+    margin-bottom: 48px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid #E0E0E0;
+  }
+  .article-content :global(p) {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px; line-height: 1.9;
+    color: #444; margin-bottom: 24px;
+  }
+  .article-content :global(h2) {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px; letter-spacing: 2px;
+    color: #0A0A0A; margin: 48px 0 20px;
+    line-height: 1;
+  }
+
+  /* Más artículos */
+  .more {
+    background: #0A0A0A;
+    padding: 80px;
+    text-align: center;
+  }
+  .more-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px; letter-spacing: 8px;
+    color: #555; text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+  .more-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    margin-bottom: 48px;
+    text-align: left;
+  }
+  .more-card {
+    display: flex; gap: 20px; align-items: center;
+    background: #111; padding: 24px;
+    text-decoration: none;
+    transition: background 0.2s ease;
+  }
+  .more-card:hover { background: #161616; }
+  .more-img {
+    width: 80px; height: 80px;
+    object-fit: cover; flex-shrink: 0;
+    filter: grayscale(30%);
+  }
+  .more-body { display: flex; flex-direction: column; gap: 8px; }
+  .more-date {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px; letter-spacing: 2px;
+    color: #555; text-transform: uppercase;
+  }
+  .more-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 600;
+    color: #F0F0F0; line-height: 1.5;
+  }
+  .all-link {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: #FFFFFF; text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+  .all-link:hover { opacity: 0.7; }
+
+  @media (max-width: 768px) {
+    .cover { height: 55vh; min-height: 360px; }
+    .cover-content { padding: 0 24px 40px; }
+    .article { padding: 48px 24px; }
+    .article-excerpt { font-size: 16px; }
+    .article-content :global(h2) { font-size: 26px; }
+    .more { padding: 60px 24px; }
+    .more-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .cover { height: 50svh; }
+    .article { padding: 36px 20px; }
+    .more { padding: 48px 20px; }
+    .more-card { padding: 16px; }
+    .more-img { width: 64px; height: 64px; }
+  }
+</style>

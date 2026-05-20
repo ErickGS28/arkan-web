@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arkan Group — 3 Propuestas de Diseño</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111;
+    color: #fff;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  .header {
+    text-align: center;
+    padding: 48px 32px 32px;
+    border-bottom: 1px solid #333;
+  }
+  .header-eyebrow {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 12px;
+  }
+  .header-title {
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .header-sub {
+    font-size: 13px;
+    color: #666;
+    letter-spacing: 1px;
+  }
+
+  .proposals {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    padding: 0;
+  }
+
+  /* ─── PROPOSAL 1: Editorial Minimalismo ─── */
+  .p1 {
+    background: #FAFAF8;
+    color: #1A1A1A;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+  }
+  .p1:hover { border-color: #C9A96E; }
+  .p1.selected { border-color: #C9A96E; box-shadow: 0 0 0 4px rgba(201,169,110,0.3); }
+
+  .p1-hero {
+    background: #1A1A1A;
+    height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+  .p1-logo-mark {
+    width: 44px;
+    height: 44px;
+    border: 1.5px solid #fff;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    background: #fff;
+  }
+  .p1-logo-text {
+    font-size: 18px;
+    font-weight: 300;
+    letter-spacing: 8px;
+    color: #fff;
+    font-family: Georgia, serif;
+  }
+  .p1-logo-sub {
+    font-size: 9px;
+    letter-spacing: 5px;
+    color: #888;
+    font-family: Georgia, serif;
+  }
+
+  .p1-body { padding: 32px; }
+  .p1-number {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #999;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .p1-title {
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    color: #1A1A1A;
+    font-family: Georgia, serif;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .p1-subtitle {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #C9A96E;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .p1-desc {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .palette-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .swatch {
+    height: 24px;
+    border-radius: 2px;
+    flex: 1;
+    position: relative;
+  }
+  .swatch-label {
+    position: absolute;
+    bottom: -18px;
+    left: 0;
+    font-size: 9px;
+    color: #999;
+    white-space: nowrap;
+  }
+
+  .type-preview {
+    border-top: 1px solid #E8E0D4;
+    padding-top: 16px;
+    margin-top: 28px;
+  }
+  .type-heading {
+    font-family: Georgia, serif;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    color: #1A1A1A;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .type-body {
+    font-size: 11px;
+    color: #777;
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+  }
+
+  .brand-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  .brand-pill {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 1px;
+  }
+
+  /* ─── PROPOSAL 2: Dark Premium ─── */
+  .p2 {
+    background: #0D0D0D;
+    color: #fff;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+    border-left: 1px solid #222;
+    border-right: 1px solid #222;
+  }
+  .p2:hover { border-color: #C9A96E; }
+  .p2.selected { border-color: #C9A96E; box-shadow: 0 0 0 4px rgba(201,169,110,0.25); }
+
+  .p2-hero {
+    background: linear-gradient(160deg, #1A1A1A 0%, #0D0D0D 60%, #0A0A0A 100%);
+    height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .p2-hero::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,169,110,0.12) 0%, transparent 70%);
+  }
+  .p2-logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 10px;
+    color: #fff;
+    font-family: 'Arial Black', Arial, sans-serif;
+    text-transform: uppercase;
+  }
+  .p2-logo-sub {
+    font-size: 9px;
+    letter-spacing: 6px;
+    color: #C9A96E;
+    text-transform: uppercase;
+  }
+  .p2-divider {
+    width: 40px;
+    height: 1px;
+    background: #C9A96E;
+  }
+
+  .p2-body { padding: 32px; }
+  .p2-number { font-size: 11px; letter-spacing: 3px; color: #555; text-transform: uppercase; margin-bottom: 8px; }
+  .p2-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #fff;
+    text-transform: uppercase;
+    font-family: 'Arial Black', Arial, sans-serif;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .p2-subtitle { font-size: 11px; letter-spacing: 2px; color: #C9A96E; text-transform: uppercase; margin-bottom: 20px; }
+  .p2-desc { font-size: 13px; color: #777; line-height: 1.7; margin-bottom: 24px; }
+
+  .p2-type-heading {
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  .p2-type-body { font-size: 11px; color: #555; line-height: 1.6; letter-spacing: 0.5px; }
+
+  /* ─── PROPOSAL 3: Experimental ─── */
+  .p3 {
+    background: #F5F0E8;
+    color: #0A0A0A;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+  }
+  .p3:hover { border-color: #0A0A0A; }
+  .p3.selected { border-color: #0A0A0A; box-shadow: 0 0 0 4px rgba(10,10,10,0.15); }
+
+  .p3-hero {
+    background: #0A0A0A;
+    height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    gap: 4px;
+  }
+  .p3-hero::after {
+    content: 'ARKÁN';
+    position: absolute;
+    top: -10px; right: -8px;
+    font-size: 90px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.03);
+    font-family: Georgia, serif;
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+  .p3-logo-text {
+    font-family: Georgia, serif;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: 6px;
+    color: #fff;
+  }
+  .p3-logo-sub {
+    font-size: 9px;
+    letter-spacing: 5px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+  }
+  .p3-tag {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #C9A96E;
+    text-transform: uppercase;
+    border: 1px solid #C9A96E;
+    padding: 3px 8px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+
+  .p3-body { padding: 32px; }
+  .p3-number { font-size: 11px; letter-spacing: 3px; color: #aaa; text-transform: uppercase; margin-bottom: 8px; }
+  .p3-title {
+    font-family: Georgia, serif;
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    color: #0A0A0A;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .p3-subtitle { font-size: 11px; letter-spacing: 2px; color: #0A0A0A; text-transform: uppercase; margin-bottom: 20px; opacity: 0.5; }
+  .p3-desc { font-size: 13px; color: #444; line-height: 1.7; margin-bottom: 24px; }
+
+  .p3-type-heading {
+    font-family: Georgia, serif;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.5px;
+    color: #0A0A0A;
+    margin-bottom: 6px;
+  }
+  .p3-type-body { font-size: 11px; color: #888; line-height: 1.6; }
+
+  /* ─── BRAND SECTIONS (bottom) ─── */
+  .brand-section {
+    border-top: 1px solid #222;
+    padding: 32px;
+  }
+  .brand-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0.5;
+  }
+  .brand-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .brand-card {
+    padding: 12px 14px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .brand-name {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .brand-mood {
+    font-size: 10px;
+    opacity: 0.6;
+    margin-left: auto;
+    letter-spacing: 0.5px;
+  }
+
+  /* Proposal 1 brands */
+  .p1-aruba { background: #EEF2F8; color: #1B2B4B; }
+  .p1-bakari { background: #EFF1F8; color: #5568A8; }
+  .p1-blackbash { background: #F5EEEE; color: #8B0000; }
+  .p1 .brand-section { background: #F0EEE8; border-top: 1px solid #E0D8CC; }
+  .p1 .brand-label { color: #999; }
+
+  /* Proposal 2 brands */
+  .p2-aruba { background: #0F1520; color: #8BA8C8; }
+  .p2-bakari { background: #111827; color: #7B8EC8; }
+  .p2-blackbash { background: #1A0A0A; color: #C87070; }
+  .p2 .brand-section { background: #0A0A0A; border-top: 1px solid #222; }
+  .p2 .brand-label { color: #444; }
+
+  /* Proposal 3 brands */
+  .p3-aruba { background: #E8EEF6; color: #1B2B4B; border-left: 3px solid #1B2B4B; }
+  .p3-bakari { background: #EAEEF8; color: #5568A8; border-left: 3px solid #5568A8; }
+  .p3-blackbash { background: #F2E8E8; color: #8B0000; border-left: 3px solid #8B0000; }
+  .p3 .brand-section { background: #EDE8DE; border-top: 1px solid #D8D0C4; }
+  .p3 .brand-label { color: #aaa; }
+
+  /* Select button */
+  .select-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+  }
+  .p1 .select-btn { background: #1A1A1A; color: #fff; }
+  .p1 .select-btn:hover { background: #C9A96E; color: #1A1A1A; }
+  .p2 .select-btn { background: #C9A96E; color: #000; }
+  .p2 .select-btn:hover { background: #fff; color: #000; }
+  .p3 .select-btn { background: #0A0A0A; color: #F5F0E8; }
+  .p3 .select-btn:hover { background: #C9A96E; }
+
+  .p1 .swatch-label, .p3 .swatch-label { color: #999; }
+  .p2 .swatch-label { color: #555; }
+
+  .footer {
+    text-align: center;
+    padding: 24px;
+    border-top: 1px solid #1A1A1A;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #444;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 1px;
+    margin-right: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">Presentación de Diseño · Mayo 2026</div>
+  <div class="header-title">Arkán Group — Propuestas Visuales</div>
+  <div class="header-sub">3 direcciones de diseño completamente distintas · Selecciona la que mejor represente la visión del cliente</div>
+</div>
+
+<div class="proposals">
+
+  <!-- PROPOSAL 1 -->
+  <div class="p1" data-choice="p1" onclick="toggleSelect(this)">
+    <div class="p1-hero">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+        <div style="width:40px;height:34px;border:1.5px solid #fff;position:relative;clip-path:polygon(50% 0%,0% 100%,100% 100%);background:transparent;border:none;outline:2px solid #fff;"></div>
+        <div class="p1-logo-text">ARKÁN</div>
+        <div class="p1-logo-sub">GROUP</div>
+      </div>
+    </div>
+
+    <div class="p1-body">
+      <div class="p1-number">Propuesta 01</div>
+      <div class="p1-title">Minimalismo<br>Editorial</div>
+      <div class="p1-subtitle">Luxury European · Fashion Magazine</div>
+      <div class="p1-desc">
+        Espacio en blanco como elemento de lujo. Tipografía serif refinada. Layouts inspirados en revistas editoriales de moda. La elegancia de Arkan habla por sí sola — sin ruido visual.
+      </div>
+
+      <div>
+        <div style="font-size:10px;letter-spacing:2px;color:#999;text-transform:uppercase;margin-bottom:10px">Paleta</div>
+        <div class="palette-row" style="margin-bottom:28px">
+          <div class="swatch" style="background:#1A1A1A"><span class="swatch-label" style="color:#999">#1A1A1A</span></div>
+          <div class="swatch" style="background:#FAFAF8"><span class="swatch-label" style="color:#999">#FAFAF8</span></div>
+          <div class="swatch" style="background:#C9A96E"><span class="swatch-label" style="color:#999">#C9A96E</span></div>
+          <div class="swatch" style="background:#E8E0D4"><span class="swatch-label" style="color:#999">#E8E0D4</span></div>
+          <div class="swatch" style="background:#6B6B6B"><span class="swatch-label" style="color:#999">#6B6B6B</span></div>
+        </div>
+      </div>
+
+      <div class="type-preview">
+        <div style="font-size:9px;letter-spacing:2px;color:#999;text-transform:uppercase;margin-bottom:10px">Tipografía</div>
+        <div class="type-heading">Cormorant Garamond<br>Elegance Redefined</div>
+        <div class="type-body" style="font-family:Georgia,serif;font-style:italic;margin-top:4px;color:#aaa">Subtítulo en itálica — refinamiento clásico</div>
+        <div class="type-body" style="margin-top:8px">DM Sans — cuerpo de texto claro y legible a cualquier tamaño</div>
+      </div>
+
+      <div class="brand-pills" style="margin-top:20px">
+        <span class="tag" style="background:#EEF2F8;color:#1B2B4B">Aruba Jeans</span>
+        <span class="tag" style="background:#EFF1F8;color:#5568A8">Bakari</span>
+        <span class="tag" style="background:#F5EEEE;color:#8B0000">Black Bash</span>
+      </div>
+    </div>
+
+    <div class="brand-section p1">
+      <div class="brand-label">Tratamiento por marca</div>
+      <div class="brand-cards">
+        <div class="brand-card p1-aruba">
+          <div class="brand-dot" style="background:#1B2B4B"></div>
+          <div class="brand-name">Aruba Jeans</div>
+          <div class="brand-mood">Navy · Femenino · Fluid</div>
+        </div>
+        <div class="brand-card p1-bakari">
+          <div class="brand-dot" style="background:#5568A8"></div>
+          <div class="brand-name">Bakari BKR</div>
+          <div class="brand-mood">Steel Blue · Clean · Fit</div>
+        </div>
+        <div class="brand-card p1-blackbash">
+          <div class="brand-dot" style="background:#8B0000"></div>
+          <div class="brand-name">Black Bash MX</div>
+          <div class="brand-mood">Crimson · Edge · Raw</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="select-btn">Elegir esta propuesta</button>
+  </div>
+
+  <!-- PROPOSAL 2 -->
+  <div class="p2" data-choice="p2" onclick="toggleSelect(this)">
+    <div class="p2-hero">
+      <div class="p2-logo-text">ARKÁN</div>
+      <div class="p2-divider"></div>
+      <div class="p2-logo-sub">Group · Est. MX</div>
+    </div>
+
+    <div class="p2-body">
+      <div class="p2-number">Propuesta 02</div>
+      <div class="p2-title">Dark<br>Premium</div>
+      <div class="p2-subtitle">Streetwear Luxury · High-End Modern</div>
+      <div class="p2-desc">
+        Oscuridad como lenguaje de poder. Contrastes fuertes, dorado como acento de lujo. Sensación de marca international premium. El universo visual de Fear of God, Off-White y Rick Owens.
+      </div>
+
+      <div>
+        <div style="font-size:10px;letter-spacing:2px;color:#555;text-transform:uppercase;margin-bottom:10px">Paleta</div>
+        <div class="palette-row" style="margin-bottom:28px">
+          <div class="swatch" style="background:#0D0D0D;border:1px solid #333"><span class="swatch-label">#0D0D0D</span></div>
+          <div class="swatch" style="background:#1A1A1A"><span class="swatch-label">#1A1A1A</span></div>
+          <div class="swatch" style="background:#C9A96E"><span class="swatch-label">#C9A96E</span></div>
+          <div class="swatch" style="background:#3A3A3A"><span class="swatch-label">#3A3A3A</span></div>
+          <div class="swatch" style="background:#F0F0F0"><span class="swatch-label">#F0F0F0</span></div>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid #222;padding-top:16px;margin-top:28px">
+        <div style="font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;margin-bottom:10px">Tipografía</div>
+        <div class="p2-type-heading">Monument Extended<br>Never Give Up</div>
+        <div class="p2-type-body" style="font-weight:700;letter-spacing:6px;text-transform:uppercase;color:#C9A96E;font-size:10px;margin-top:4px">Neue Haas — Uppercase Power</div>
+        <div class="p2-type-body" style="margin-top:8px">Inter · cuerpo de texto con máxima legibilidad sobre oscuro</div>
+      </div>
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:20px">
+        <span class="tag" style="background:#0F1520;color:#8BA8C8;border:1px solid #1B2B4B">Aruba Jeans</span>
+        <span class="tag" style="background:#111827;color:#7B8EC8;border:1px solid #2A3570">Bakari</span>
+        <span class="tag" style="background:#1A0A0A;color:#C87070;border:1px solid #5A0000">Black Bash</span>
+      </div>
+    </div>
+
+    <div class="brand-section p2">
+      <div class="brand-label">Tratamiento por marca</div>
+      <div class="brand-cards">
+        <div class="brand-card p2-aruba">
+          <div class="brand-dot" style="background:#8BA8C8"></div>
+          <div class="brand-name" style="color:#8BA8C8">Aruba Jeans</div>
+          <div class="brand-mood">Midnight · Feminine · Dark</div>
+        </div>
+        <div class="brand-card p2-bakari">
+          <div class="brand-dot" style="background:#7B8EC8"></div>
+          <div class="brand-name" style="color:#7B8EC8">Bakari BKR</div>
+          <div class="brand-mood">Dark Blue · Structure</div>
+        </div>
+        <div class="brand-card p2-blackbash">
+          <div class="brand-dot" style="background:#C87070"></div>
+          <div class="brand-name" style="color:#C87070">Black Bash MX</div>
+          <div class="brand-mood">Blood Red · Brutal · Raw</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="select-btn">Elegir esta propuesta</button>
+  </div>
+
+  <!-- PROPOSAL 3 -->
+  <div class="p3" data-choice="p3" onclick="toggleSelect(this)">
+    <div class="p3-hero">
+      <div class="p3-tag">Fashion Campaign</div>
+      <div class="p3-logo-text">ARKÁN</div>
+      <div class="p3-logo-sub">Group — Mayoreo Premium</div>
+    </div>
+
+    <div class="p3-body">
+      <div class="p3-number">Propuesta 03</div>
+      <div class="p3-title">Diseño Experimental<br>Creativo</div>
+      <div class="p3-subtitle">Fashion Campaign · Creative Agency</div>
+      <div class="p3-desc">
+        Imágenes como protagonistas. Tipografía grande y atrevida como elemento gráfico. Layout asimétrico tipo lookbook de campaña. La sensación de hojear una colección de moda de temporada.
+      </div>
+
+      <div>
+        <div style="font-size:10px;letter-spacing:2px;color:#aaa;text-transform:uppercase;margin-bottom:10px">Paleta</div>
+        <div class="palette-row" style="margin-bottom:28px">
+          <div class="swatch" style="background:#F5F0E8"><span class="swatch-label" style="color:#999">#F5F0E8</span></div>
+          <div class="swatch" style="background:#0A0A0A"><span class="swatch-label" style="color:#999">#0A0A0A</span></div>
+          <div class="swatch" style="background:#C9A96E"><span class="swatch-label" style="color:#999">#C9A96E</span></div>
+          <div class="swatch" style="background:#D4C9B4"><span class="swatch-label" style="color:#999">#D4C9B4</span></div>
+          <div class="swatch" style="background:#8B7355"><span class="swatch-label" style="color:#999">#8B7355</span></div>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid #D8D0C4;padding-top:16px;margin-top:28px">
+        <div style="font-size:9px;letter-spacing:2px;color:#aaa;text-transform:uppercase;margin-bottom:10px">Tipografía</div>
+        <div class="p3-type-heading">Playfair Display<br>The Art of Denim</div>
+        <div class="p3-type-body" style="font-family:Georgia,serif;font-style:italic;color:#8B7355;margin-top:4px;font-size:11px">Editorial · Campaign · Lookbook</div>
+        <div class="p3-type-body" style="margin-top:8px;color:#888">Lato · texto de soporte legible y contemporáneo</div>
+      </div>
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:20px">
+        <span class="tag" style="background:#E8EEF6;color:#1B2B4B;border-left:2px solid #1B2B4B">Aruba Jeans</span>
+        <span class="tag" style="background:#EAEEF8;color:#5568A8;border-left:2px solid #5568A8">Bakari</span>
+        <span class="tag" style="background:#F2E8E8;color:#8B0000;border-left:2px solid #8B0000">Black Bash</span>
+      </div>
+    </div>
+
+    <div class="brand-section p3">
+      <div class="brand-label">Tratamiento por marca</div>
+      <div class="brand-cards">
+        <div class="brand-card p3-aruba">
+          <div class="brand-dot" style="background:#1B2B4B"></div>
+          <div class="brand-name">Aruba Jeans</div>
+          <div class="brand-mood">Ivory · Fluid · Femme</div>
+        </div>
+        <div class="brand-card p3-bakari">
+          <div class="brand-dot" style="background:#5568A8"></div>
+          <div class="brand-name">Bakari BKR</div>
+          <div class="brand-mood">Warm Stone · Body · Clean</div>
+        </div>
+        <div class="brand-card p3-blackbash">
+          <div class="brand-dot" style="background:#8B0000"></div>
+          <div class="brand-name">Black Bash MX</div>
+          <div class="brand-mood">Bold Red · Contrast · Impact</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="select-btn">Elegir esta propuesta</button>
+  </div>
+
+</div>
+
+<div class="footer">
+  Arkán Group · Presentación de Propuestas · Diseño UI/UX — 2026
+</div>
+
+<script>
+function toggleSelect(el) {
+  document.querySelectorAll('.p1,.p2,.p3').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  if (window.__sp_record) {
+    window.__sp_record({
+      type: 'click',
+      choice: el.dataset.choice,
+      text: el.querySelector('.p1-title, .p2-title, .p3-title')?.innerText?.replace(/\n/g,' ') || el.dataset.choice
+    });
+  }
+}
+</script>
+
+</body>
+</html>

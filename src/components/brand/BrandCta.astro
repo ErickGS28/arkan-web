@@ -1,0 +1,79 @@
+---
+import type { Brand } from '../../data/brands';
+import NacionalBadge from '../ui/NacionalBadge.astro';
+interface Props { brand: Brand; }
+const { brand } = Astro.props;
+const { cta } = brand;
+const isBlackBash = brand.id === 'black-bash';
+---
+
+<style>
+  .cta-section {
+    background: #FFFFFF; padding: 120px 80px;
+    text-align: center; position: relative; overflow: hidden;
+    scroll-margin-top: 64px;
+  }
+  .cta-section::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 1px; background: #E0E0E0;
+  }
+  .cta-section.blackbash::after {
+    content: 'NGU'; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(160px, 25vw, 320px); letter-spacing: -10px;
+    color: rgba(0,0,0,0.04); pointer-events: none;
+    line-height: 1; white-space: nowrap;
+  }
+  .cta-eyebrow {
+    position: relative; z-index: 2;
+    font-family: 'Syne', sans-serif; font-size: 10px;
+    letter-spacing: 5px; color: #0A0A0A; text-transform: uppercase; margin-bottom: 24px;
+  }
+  .cta-heading {
+    position: relative; z-index: 2;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 7vw, 96px); letter-spacing: 4px;
+    color: #0A0A0A; line-height: 0.95; margin-bottom: 24px;
+  }
+  .cta-subheading {
+    position: relative; z-index: 2;
+    font-family: 'Bebas Neue', sans-serif; font-size: 22px;
+    letter-spacing: 10px; color: #AAAAAA; margin-bottom: 24px;
+  }
+  .cta-detail {
+    position: relative; z-index: 2;
+    font-family: 'Syne', sans-serif; font-size: 11px;
+    letter-spacing: 3px; color: #999; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .badge-wrap { position: relative; z-index: 2; }
+  .cta-body {
+    position: relative; z-index: 2;
+    font-family: 'Syne', sans-serif; font-size: 15px; color: #666;
+    max-width: 440px; margin: 0 auto 48px; line-height: 1.8;
+  }
+  .btn-black {
+    position: relative; z-index: 2;
+    background: #0A0A0A; color: #FFFFFF;
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    padding: 14px 36px; border: none; cursor: pointer;
+    transition: background 0.2s ease; text-decoration: none; display: inline-block;
+  }
+  .btn-black:hover { background: #222; }
+
+  @media (max-width: 768px) {
+    .cta-section { padding: 80px 24px; }
+    .cta-section.blackbash::after { display: none; }
+  }
+</style>
+
+<section class:list={['cta-section', { blackbash: isBlackBash }]} id="cta">
+  <p class="cta-eyebrow">Venta Mayoreo · Distribución</p>
+  <h2 class="cta-heading" set:html={cta.heading} />
+  {cta.subheading && <p class="cta-subheading">{cta.subheading}</p>}
+  {cta.detail && <p class="cta-detail">{cta.detail}</p>}
+  <div class="badge-wrap"><NacionalBadge variant="light" /></div>
+  <p class="cta-body">{cta.body}</p>
+  <a href={cta.waLink} class="btn-black">Solicitar Información</a>
+</section>

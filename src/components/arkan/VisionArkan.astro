@@ -1,0 +1,42 @@
+---
+---
+
+<style>
+  .vision {
+    background: #FFFFFF; padding: 120px 80px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: center;
+    scroll-margin-top: 64px;
+  }
+  .vision-left { display: flex; gap: 20px; align-items: flex-start; }
+  .vision-accent {
+    width: 4px; background: #0A0A0A;
+    align-self: stretch; flex-shrink: 0; min-height: 120px;
+  }
+  .vision-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 6vw, 88px);
+    color: #0A0A0A; line-height: 0.9; letter-spacing: 3px;
+  }
+  .vision-right p {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 400; line-height: 1.9; color: #555;
+  }
+  .vision-right p + p { margin-top: 20px; }
+
+  @media (max-width: 768px) {
+    .vision { grid-template-columns: 1fr; gap: 48px; padding: 80px 24px; }
+  }
+</style>
+
+<section class="vision" id="vision">
+  <div class="vision-left">
+    <div class="vision-accent"></div>
+    <h2 class="vision-heading">NUESTRA<br/>VISIÓN</h2>
+  </div>
+  <div class="vision-right">
+    <p>Arkán Group es un consorcio mayorista especializado en denim premium de origen colombiano y líneas básicas de alto desempeño. Operamos en el segmento B2B, distribuyendo marcas de moda con identidad propia a revendedores, boutiques y emprendedores de moda en toda la República Mexicana.</p>
+    <p>Nuestra propuesta de valor se fundamenta en calidad de tela, cortes actuales y precios competitivos a escala mayoreo. Somos el puente entre la manufactura de excelencia y el comerciante que exige producto diferenciado.</p>
+    <p>Tres marcas. Una sola filosofía: denim que vende solo.</p>
+  </div>
+</section>

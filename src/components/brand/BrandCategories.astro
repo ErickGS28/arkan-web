@@ -24,7 +24,7 @@ const waUrl = (cat: string) =>
         </header>
 
         <div class="cat-slider-wrap">
-          <div class="cat-slider" id={`cat-sl-${i}`}>
+          <div class="cat-slider" data-slider>
             {cat.images.map((src, j) => (
               <div class="cat-slide">
                 <img
@@ -38,22 +38,12 @@ const waUrl = (cat: string) =>
 
           {cat.images.length > 3 && (
             <div class="cat-nav">
-              <button
-                class="cat-nav-btn"
-                data-target={`cat-sl-${i}`}
-                data-dir="-1"
-                aria-label="Anterior"
-              >
+              <button class="cat-nav-btn cat-nav-prev" data-dir="-1" aria-label="Anterior">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M9 12L4 7l5-5"/>
                 </svg>
               </button>
-              <button
-                class="cat-nav-btn"
-                data-target={`cat-sl-${i}`}
-                data-dir="1"
-                aria-label="Siguiente"
-              >
+              <button class="cat-nav-btn cat-nav-next" data-dir="1" aria-label="Siguiente">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M5 2l5 5-5 5"/>
                 </svg>
@@ -77,18 +67,37 @@ const waUrl = (cat: string) =>
 </section>
 
 <script>
+  const GAP = 6;
+  const VISIBLE = 3;
+
+  function sizeSlides() {
+    document.querySelectorAll<HTMLElement>('[data-slider]').forEach(slider => {
+      const w = Math.floor((slider.offsetWidth - GAP * (VISIBLE - 1)) / VISIBLE);
+      if (w <= 0) return;
+      slider.querySelectorAll<HTMLElement>('.cat-slide').forEach(slide => {
+        slide.style.width = w + 'px';
+        slide.style.minWidth = w + 'px';
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', sizeSlides);
+  window.addEventListener('resize', sizeSlides);
+
+  // Nav buttons
   document.querySelectorAll<HTMLButtonElement>('.cat-nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const slider = document.getElementById(btn.dataset.target!);
+      const wrap = btn.closest('.cat-slider-wrap');
+      const slider = wrap?.querySelector<HTMLElement>('[data-slider]');
       if (!slider) return;
       const slide = slider.querySelector<HTMLElement>('.cat-slide');
-      const slideW = (slide?.offsetWidth ?? 0) + 6;
+      const slideW = (slide?.offsetWidth ?? 0) + GAP;
       slider.scrollBy({ left: Number(btn.dataset.dir) * slideW, behavior: 'smooth' });
     });
   });
 </script>
 
-<style>
+<style is:global>
   .categories { display: flex; flex-direction: column; }
 
   .category       { background: #FFFFFF; }
@@ -137,22 +146,24 @@ const waUrl = (cat: string) =>
   /* Slider */
   .cat-slider-wrap { display: flex; flex-direction: column; gap: 16px; }
 
-  .cat-slider {
+  [data-slider] {
     display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     gap: 6px;
     overflow-x: auto;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
   }
-  .cat-slider::-webkit-scrollbar { display: none; }
+  [data-slider]::-webkit-scrollbar { display: none; }
 
   .cat-slide {
-    flex: 0 0 calc(33.333% - 4px);
+    flex-shrink: 0;
     scroll-snap-align: start;
     aspect-ratio: 3 / 4;
     overflow: hidden;
-    flex-shrink: 0;
   }
   .cat-slide img {
     width: 100%; height: 100%;
@@ -187,8 +198,7 @@ const waUrl = (cat: string) =>
     font-family: 'Syne', sans-serif;
     font-size: 12px; font-weight: 700;
     letter-spacing: 2px; text-transform: uppercase;
-    padding: 16px 36px;
-    text-decoration: none;
+    padding: 16px 36px; text-decoration: none;
     transition: background 0.2s ease, transform 0.2s ease;
   }
   .btn-wa:hover { background: #20BA58; transform: translateY(-2px); }
@@ -200,11 +210,9 @@ const waUrl = (cat: string) =>
     .cat-inner { padding: 56px 24px; gap: 32px; }
     .cat-name { font-size: clamp(32px, 10vw, 52px); }
     .cat-desc { max-width: 100%; font-size: 14px; }
-    .cat-slide { flex: 0 0 72%; }
   }
   @media (max-width: 480px) {
     .cat-inner { padding: 48px 20px; gap: 24px; }
-    .cat-slide { flex: 0 0 85%; }
     .btn-wa { width: 100%; justify-content: center; }
   }
 </style>

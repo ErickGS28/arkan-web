@@ -4,9 +4,9 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 const { brand } = Astro.params;
 
 const BRANDS: Record<string, { label: string; key: string }> = {
-  aruba:       { label: 'Aruba Jeans',   key: 'ARUBA' },
-  bakari:      { label: 'BKR Bakari',    key: 'BAKARI' },
-  'black-bash':{ label: 'Black Bash MX', key: 'BLACK_BASH' },
+  aruba:        { label: 'Aruba Jeans',   key: 'ARUBA' },
+  bakari:       { label: 'BKR Bakari',    key: 'BAKARI' },
+  'black-bash': { label: 'Black Bash MX', key: 'BLACK_BASH' },
 };
 
 const info = BRANDS[brand ?? ''];
@@ -80,7 +80,7 @@ if (!info) return Astro.redirect('/admin');
 </AdminLayout>
 
 <style is:global>
-  .page { padding: 36px 40px; max-width: 1100px; }
+  .page { padding: 40px 48px; max-width: 1100px; }
 
   .page-header {
     display: flex;
@@ -91,78 +91,83 @@ if (!info) return Astro.redirect('/admin');
   }
   .page-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 32px;
+    font-size: 42px;
     letter-spacing: 3px;
-    color: #FFFFFF;
+    color: #0A0A0A;
     margin: 0 0 4px;
   }
   .page-sub {
     font-family: 'Syne', sans-serif;
-    font-size: 12px;
-    color: #666;
-    letter-spacing: 0.5px;
-    margin: 0;
+    font-size: 14px;
+    color: #888;
+    margin-top: 4px;
+    letter-spacing: 0.3px;
   }
   .btn-new {
-    padding: 10px 20px;
-    background: #FFFFFF;
-    color: #0A0A0A;
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 24px;
+    background: #0A0A0A;
+    color: #FFFFFF;
     font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
     text-transform: uppercase;
     border: none;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.15s;
+    transition: background 0.2s;
   }
-  .btn-new:hover { background: #E0E0E0; }
+  .btn-new:hover { background: #333; }
 
+  /* Table */
   .table-wrap {
-    border: 1px solid #1A1A1A;
+    background: #FFFFFF;
+    border: 1px solid #EBEBEB;
     overflow: hidden;
   }
   .cat-table {
     width: 100%;
     border-collapse: collapse;
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
   }
   .cat-table th {
-    padding: 12px 16px;
-    text-align: left;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 2px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: #666;
-    background: #0D0D0D;
-    border-bottom: 1px solid #1A1A1A;
+    color: #777;
+    padding: 16px 18px;
+    text-align: left;
+    border-bottom: 1px solid #EBEBEB;
+    background: #F8F8F8;
   }
   .cat-table td {
-    padding: 14px 16px;
-    color: #CCCCCC;
-    border-bottom: 1px solid #111;
+    padding: 16px 18px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    color: #222;
+    border-bottom: 1px solid #F0F0F0;
     vertical-align: middle;
   }
-  .cat-table tr:last-child td { border-bottom: none; }
-  .cat-table tr:hover td { background: #0D0D0D; }
+  .cat-table tbody tr:last-child td { border-bottom: none; }
+  .cat-table tbody tr:hover td { background: #FAFAFA; }
 
   .cat-num {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    color: #444;
+    font-size: 20px;
+    color: #CCC;
     width: 40px;
   }
-  .cat-name {
-    font-weight: 600;
-    color: #FFFFFF;
-    letter-spacing: 0.3px;
+  .cat-name-cell {
+    font-weight: 700;
+    font-size: 15px;
+    color: #0A0A0A;
   }
   .cat-desc-cell {
-    color: #888;
-    font-size: 12px;
+    color: #999;
+    font-size: 13px;
     max-width: 320px;
   }
   .cat-desc-text {
@@ -174,72 +179,72 @@ if (!info) return Astro.redirect('/admin');
   .img-count {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    font-size: 11px;
-    color: #888;
-    letter-spacing: 0.5px;
+    gap: 4px;
+    font-size: 13px;
+    color: #666;
   }
   .img-count-num {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 16px;
-    color: #CCCCCC;
+    font-size: 18px;
+    color: #333;
   }
 
-  .row-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-  }
+  .row-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
   .btn-images {
-    padding: 6px 12px;
+    padding: 6px 14px;
     background: transparent;
-    border: 1px solid #333;
-    color: #AAAAAA;
+    border: 1px solid #D8D8D8;
+    color: #555;
     font-family: 'Syne', sans-serif;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
     text-transform: uppercase;
     cursor: pointer;
     text-decoration: none;
+    display: inline-flex;
+    align-items: center;
     transition: border-color 0.15s, color 0.15s;
   }
-  .btn-images:hover { border-color: #888; color: #FFF; }
+  .btn-images:hover { border-color: #888; color: #0A0A0A; }
+
   .btn-edit {
-    padding: 6px 12px;
+    padding: 6px 14px;
     background: transparent;
-    border: 1px solid #333;
-    color: #AAAAAA;
+    border: 1px solid #D8D8D8;
+    color: #555;
     font-family: 'Syne', sans-serif;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
     text-transform: uppercase;
     cursor: pointer;
     transition: border-color 0.15s, color 0.15s;
   }
-  .btn-edit:hover { border-color: #888; color: #FFF; }
+  .btn-edit:hover { border-color: #888; color: #0A0A0A; }
+
   .btn-delete {
-    padding: 6px 12px;
+    padding: 6px 14px;
     background: transparent;
-    border: 1px solid #3A1A1A;
-    color: #884444;
+    border: 1px solid #F0D0D0;
+    color: #CC4444;
     font-family: 'Syne', sans-serif;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
     text-transform: uppercase;
     cursor: pointer;
     transition: border-color 0.15s, color 0.15s;
   }
-  .btn-delete:hover { border-color: #AA4444; color: #FF6666; }
+  .btn-delete:hover { border-color: #CC4444; color: #AA2222; }
 
   .loading-row {
     text-align: center;
-    color: #555;
-    padding: 32px !important;
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
+    color: #999;
+    padding: 48px 18px !important;
+    font-size: 14px !important;
+    letter-spacing: 0.5px;
   }
 
   /* Modal */
@@ -247,25 +252,26 @@ if (!info) return Astro.redirect('/admin');
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.5);
     z-index: 200;
     align-items: center;
     justify-content: center;
   }
   .modal-overlay.open { display: flex; }
   .modal {
-    background: #111;
-    border: 1px solid #222;
+    background: #FFFFFF;
+    border: 1px solid #E8E8E8;
     padding: 32px;
     width: 100%;
     max-width: 480px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
   }
   .modal--sm { max-width: 380px; }
   .modal-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
+    font-size: 24px;
     letter-spacing: 3px;
-    color: #FFFFFF;
+    color: #0A0A0A;
     margin: 0 0 24px;
   }
   .form-group { margin-bottom: 16px; }
@@ -273,25 +279,25 @@ if (!info) return Astro.redirect('/admin');
     display: block;
     font-family: 'Syne', sans-serif;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: #888;
+    color: #666;
     margin-bottom: 6px;
   }
   .form-input, .form-textarea {
     width: 100%;
     padding: 10px 12px;
-    background: #0A0A0A;
-    border: 1px solid #2A2A2A;
-    color: #FFFFFF;
+    background: #F8F8F8;
+    border: 1px solid #E0E0E0;
+    color: #0A0A0A;
     font-family: 'Syne', sans-serif;
-    font-size: 13px;
+    font-size: 14px;
     outline: none;
     transition: border-color 0.15s;
     box-sizing: border-box;
   }
-  .form-input:focus, .form-textarea:focus { border-color: #555; }
+  .form-input:focus, .form-textarea:focus { border-color: #999; background: #FFF; }
   .form-textarea { resize: vertical; min-height: 80px; }
   .modal-actions {
     display: flex;
@@ -302,8 +308,8 @@ if (!info) return Astro.redirect('/admin');
   .btn-cancel {
     padding: 10px 20px;
     background: transparent;
-    border: 1px solid #333;
-    color: #888;
+    border: 1px solid #D8D8D8;
+    color: #666;
     font-family: 'Syne', sans-serif;
     font-size: 11px;
     font-weight: 600;
@@ -312,25 +318,10 @@ if (!info) return Astro.redirect('/admin');
     cursor: pointer;
     transition: color 0.15s, border-color 0.15s;
   }
-  .btn-cancel:hover { color: #CCC; border-color: #555; }
+  .btn-cancel:hover { color: #222; border-color: #999; }
   .btn-save {
     padding: 10px 20px;
-    background: #FFFFFF;
-    color: #0A0A0A;
-    border: none;
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .btn-save:hover { background: #E0E0E0; }
-  .btn-save:disabled { background: #555; cursor: not-allowed; }
-  .btn-delete-confirm {
-    padding: 10px 20px;
-    background: #8B1A1A;
+    background: #0A0A0A;
     color: #FFFFFF;
     border: none;
     font-family: 'Syne', sans-serif;
@@ -341,9 +332,24 @@ if (!info) return Astro.redirect('/admin');
     cursor: pointer;
     transition: background 0.15s;
   }
-  .btn-delete-confirm:hover { background: #AA2222; }
+  .btn-save:hover { background: #333; }
+  .btn-save:disabled { background: #CCC; cursor: not-allowed; }
+  .btn-delete-confirm {
+    padding: 10px 20px;
+    background: #CC2222;
+    color: #FFFFFF;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-delete-confirm:hover { background: #AA1A1A; }
   .modal-error {
-    color: #FF6666;
+    color: #CC2222;
     font-family: 'Syne', sans-serif;
     font-size: 12px;
     margin: 12px 0 0;
@@ -351,12 +357,12 @@ if (!info) return Astro.redirect('/admin');
   }
   .delete-msg {
     font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    color: #AAAAAA;
+    font-size: 14px;
+    color: #555;
     line-height: 1.6;
     margin: 0 0 24px;
   }
-  .delete-msg strong { color: #FFFFFF; }
+  .delete-msg strong { color: #0A0A0A; }
 </style>
 
 <script define:vars={{ brandKey: info.key, brandSlug: brand }}>
@@ -364,7 +370,6 @@ if (!info) return Astro.redirect('/admin');
   let allCats = [];
   let deleteTargetId = null;
 
-  // ── Render ────────────────────────────────────────────────────────────────
   function render(cats) {
     const tbody = document.getElementById('catsBody');
     const count = document.getElementById('catCount');
@@ -378,12 +383,11 @@ if (!info) return Astro.redirect('/admin');
     tbody.innerHTML = cats.map((c, i) => `
       <tr>
         <td class="cat-num">0${i + 1}</td>
-        <td><span class="cat-name">${c.name}</span></td>
+        <td><span class="cat-name-cell">${c.name}</span></td>
         <td class="cat-desc-cell"><span class="cat-desc-text">${c.description ?? '—'}</span></td>
         <td>
           <span class="img-count">
-            <span class="img-count-num">${c.images?.length ?? 0}</span>
-            img
+            <span class="img-count-num">${c.images?.length ?? 0}</span>&nbsp;img
           </span>
         </td>
         <td>
@@ -404,7 +408,6 @@ if (!info) return Astro.redirect('/admin');
     });
   }
 
-  // ── Load ──────────────────────────────────────────────────────────────────
   async function load() {
     try {
       const res = await fetch(`${API}/brands/categories?brand=${brandKey}`, { credentials: 'include' });
@@ -417,7 +420,6 @@ if (!info) return Astro.redirect('/admin');
     }
   }
 
-  // ── Create / Edit modal ───────────────────────────────────────────────────
   function openCreate() {
     document.getElementById('modalTitle').textContent = 'Nueva categoría';
     document.getElementById('editId').value = '';
@@ -489,7 +491,6 @@ if (!info) return Astro.redirect('/admin');
     }
   });
 
-  // ── Delete modal ──────────────────────────────────────────────────────────
   function openDelete(id, name) {
     deleteTargetId = id;
     document.getElementById('deleteName').textContent = name;
@@ -520,11 +521,10 @@ if (!info) return Astro.redirect('/admin');
     }
   });
 
-  // ── Close modal on overlay click ──────────────────────────────────────────
-  document.getElementById('catModal').addEventListener('click', (e) => {
+  document.getElementById('catModal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeModal();
   });
-  document.getElementById('deleteModal').addEventListener('click', (e) => {
+  document.getElementById('deleteModal').addEventListener('click', e => {
     if (e.target === e.currentTarget) {
       e.currentTarget.classList.remove('open');
       deleteTargetId = null;

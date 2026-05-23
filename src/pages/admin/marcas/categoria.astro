@@ -42,7 +42,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 </AdminLayout>
 
 <style is:global>
-  .page { padding: 36px 40px; max-width: 1200px; }
+  .page { padding: 40px 48px; max-width: 1200px; }
 
   .btn-back {
     display: inline-block;
@@ -51,12 +51,12 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     font-weight: 600;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: #666;
+    color: #999;
     text-decoration: none;
     margin-bottom: 28px;
     transition: color 0.15s;
   }
-  .btn-back:hover { color: #CCCCCC; }
+  .btn-back:hover { color: #0A0A0A; }
 
   .page-header {
     display: flex;
@@ -68,23 +68,23 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   .page-brand {
     font-family: 'Syne', sans-serif;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: #555;
+    color: #AAAAAA;
     margin: 0 0 4px;
   }
   .page-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 32px;
+    font-size: 42px;
     letter-spacing: 3px;
-    color: #FFFFFF;
+    color: #0A0A0A;
     margin: 0 0 6px;
   }
   .page-desc {
     font-family: 'Syne', sans-serif;
-    font-size: 12px;
-    color: #666;
+    font-size: 13px;
+    color: #888;
     margin: 0;
     max-width: 480px;
   }
@@ -92,36 +92,36 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   .btn-upload {
     display: inline-flex;
     align-items: center;
-    padding: 10px 20px;
-    background: #FFFFFF;
-    color: #0A0A0A;
+    padding: 12px 24px;
+    background: #0A0A0A;
+    color: #FFFFFF;
     font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
     text-transform: uppercase;
     border: none;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.15s;
+    transition: background 0.2s;
   }
-  .btn-upload:hover { background: #E0E0E0; }
+  .btn-upload:hover { background: #333; }
 
   .upload-progress {
     margin-bottom: 24px;
-    background: #111;
-    border: 1px solid #1A1A1A;
+    background: #FFFFFF;
+    border: 1px solid #EBEBEB;
     padding: 16px;
   }
   .upload-bar {
     width: 100%;
     height: 3px;
-    background: #1A1A1A;
+    background: #EBEBEB;
     margin-bottom: 10px;
   }
   .upload-bar-fill {
     height: 100%;
-    background: #FFFFFF;
+    background: #0A0A0A;
     width: 0%;
     transition: width 0.3s ease;
   }
@@ -140,10 +140,9 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   .image-card {
     position: relative;
     aspect-ratio: 3 / 4;
-    background: #111;
-    border: 1px solid #1A1A1A;
+    background: #F0F0F0;
+    border: 1px solid #E8E8E8;
     overflow: hidden;
-    group: true;
   }
   .image-card img {
     width: 100%;
@@ -156,7 +155,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   .image-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.45);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -166,7 +165,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   .image-card:hover .image-overlay { opacity: 1; }
   .btn-del-img {
     padding: 8px 16px;
-    background: #8B1A1A;
+    background: #CC2222;
     color: #FFFFFF;
     font-family: 'Syne', sans-serif;
     font-size: 10px;
@@ -177,15 +176,15 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     cursor: pointer;
     transition: background 0.15s;
   }
-  .btn-del-img:hover { background: #AA2222; }
+  .btn-del-img:hover { background: #AA1A1A; }
 
   .loading-msg {
     font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    color: #555;
+    font-size: 14px;
+    color: #999;
     grid-column: 1/-1;
     text-align: center;
-    padding: 40px 0;
+    padding: 48px 0;
   }
 
   /* Modal */
@@ -193,24 +192,25 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.5);
     z-index: 200;
     align-items: center;
     justify-content: center;
   }
   .modal-overlay.open { display: flex; }
   .modal {
-    background: #111;
-    border: 1px solid #222;
+    background: #FFFFFF;
+    border: 1px solid #E8E8E8;
     padding: 32px;
     width: 100%;
     max-width: 380px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
   }
   .modal-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
+    font-size: 24px;
     letter-spacing: 3px;
-    color: #FFFFFF;
+    color: #0A0A0A;
     margin: 0 0 16px;
   }
   .modal-actions {
@@ -221,8 +221,8 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   .btn-cancel {
     padding: 10px 20px;
     background: transparent;
-    border: 1px solid #333;
-    color: #888;
+    border: 1px solid #D8D8D8;
+    color: #666;
     font-family: 'Syne', sans-serif;
     font-size: 11px;
     font-weight: 600;
@@ -231,10 +231,10 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     cursor: pointer;
     transition: color 0.15s, border-color 0.15s;
   }
-  .btn-cancel:hover { color: #CCC; border-color: #555; }
+  .btn-cancel:hover { color: #222; border-color: #999; }
   .btn-delete-confirm {
     padding: 10px 20px;
-    background: #8B1A1A;
+    background: #CC2222;
     color: #FFFFFF;
     border: none;
     font-family: 'Syne', sans-serif;
@@ -245,11 +245,11 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     cursor: pointer;
     transition: background 0.15s;
   }
-  .btn-delete-confirm:hover { background: #AA2222; }
+  .btn-delete-confirm:hover { background: #AA1A1A; }
   .delete-msg {
     font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    color: #AAAAAA;
+    font-size: 14px;
+    color: #555;
     line-height: 1.6;
     margin: 0 0 24px;
   }
@@ -268,41 +268,35 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   };
 
   let deleteTargetId: number | null = null;
-  let category: any = null;
 
   if (!categoryId) window.location.href = '/admin';
 
-  // Update back link
-  document.getElementById('backLink')!.setAttribute('href', `/admin/marcas/${brandSlug}`);
+  (document.getElementById('backLink') as HTMLAnchorElement).href = `/admin/marcas/${brandSlug}`;
 
-  // ── Load category ─────────────────────────────────────────────────────────
   async function loadCategory() {
     try {
       const res = await fetch(`${API}/brands/categories/${categoryId}`, { credentials: 'include' });
       const json = await res.json();
-      category = json?.data ?? json;
+      const category = json?.data ?? json;
 
-      document.getElementById('pageBrand')!.textContent = BRAND_NAMES[brandSlug] ?? brandSlug;
-      document.getElementById('pageTitle')!.textContent = category.name;
-      document.getElementById('pageDesc')!.textContent = category.description ?? '';
+      (document.getElementById('pageBrand') as HTMLElement).textContent = BRAND_NAMES[brandSlug] ?? brandSlug;
+      (document.getElementById('pageTitle') as HTMLElement).textContent = category.name;
+      (document.getElementById('pageDesc') as HTMLElement).textContent = category.description ?? '';
 
       renderImages(category.images ?? []);
     } catch {
-      document.getElementById('pageTitle')!.textContent = 'Error al cargar';
+      (document.getElementById('pageTitle') as HTMLElement).textContent = 'Error al cargar';
     }
   }
 
-  // ── Render images ─────────────────────────────────────────────────────────
   function renderImages(images: any[]) {
-    const grid = document.getElementById('imagesGrid')!;
-
+    const grid = document.getElementById('imagesGrid') as HTMLElement;
     if (!images.length) {
       grid.innerHTML = '<p class="loading-msg">Sin imágenes. Sube la primera.</p>';
       return;
     }
-
     grid.innerHTML = images
-      .sort((a: any, b: any) => a.order - b.order)
+      .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
       .map((img: any) => `
         <div class="image-card">
           <img src="${img.url}" alt="${img.alt ?? ''}" loading="lazy" />
@@ -313,23 +307,19 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       `)
       .join('');
 
-    grid.querySelectorAll('.btn-del-img').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const el = btn as HTMLElement;
-        openDeleteModal(Number(el.dataset.id));
-      });
+    grid.querySelectorAll<HTMLButtonElement>('.btn-del-img').forEach(btn => {
+      btn.addEventListener('click', () => openDeleteModal(Number(btn.dataset.id)));
     });
   }
 
-  // ── Upload ────────────────────────────────────────────────────────────────
-  document.getElementById('fileInput')!.addEventListener('change', async (e) => {
+  (document.getElementById('fileInput') as HTMLInputElement).addEventListener('change', async e => {
     const input = e.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
 
-    const progress = document.getElementById('uploadProgress')!;
-    const fill = document.getElementById('uploadBarFill')!;
-    const text = document.getElementById('uploadText')!;
+    const progress = document.getElementById('uploadProgress') as HTMLElement;
+    const fill = document.getElementById('uploadBarFill') as HTMLElement;
+    const text = document.getElementById('uploadText') as HTMLElement;
 
     progress.style.display = 'block';
     fill.style.width = '30%';
@@ -345,7 +335,6 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         credentials: 'include',
         body: formData,
       });
-
       fill.style.width = '100%';
 
       if (!res.ok) {
@@ -364,29 +353,24 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     }
   });
 
-  // ── Delete modal ──────────────────────────────────────────────────────────
   function openDeleteModal(imageId: number) {
     deleteTargetId = imageId;
-    document.getElementById('deleteModal')!.classList.add('open');
+    (document.getElementById('deleteModal') as HTMLElement).classList.add('open');
   }
 
-  document.getElementById('btnCancelDel')!.addEventListener('click', () => {
-    document.getElementById('deleteModal')!.classList.remove('open');
+  (document.getElementById('btnCancelDel') as HTMLElement).addEventListener('click', () => {
+    (document.getElementById('deleteModal') as HTMLElement).classList.remove('open');
     deleteTargetId = null;
   });
 
-  document.getElementById('btnConfirmDel')!.addEventListener('click', async () => {
+  (document.getElementById('btnConfirmDel') as HTMLElement).addEventListener('click', async () => {
     if (!deleteTargetId) return;
     const btn = document.getElementById('btnConfirmDel') as HTMLButtonElement;
     btn.disabled = true;
     btn.textContent = 'Eliminando...';
-
     try {
-      await fetch(`${API}/brands/images/${deleteTargetId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-      document.getElementById('deleteModal')!.classList.remove('open');
+      await fetch(`${API}/brands/images/${deleteTargetId}`, { method: 'DELETE', credentials: 'include' });
+      (document.getElementById('deleteModal') as HTMLElement).classList.remove('open');
       deleteTargetId = null;
       await loadCategory();
     } finally {
@@ -395,7 +379,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     }
   });
 
-  document.getElementById('deleteModal')!.addEventListener('click', (e) => {
+  (document.getElementById('deleteModal') as HTMLElement).addEventListener('click', e => {
     if (e.target === e.currentTarget) {
       (e.currentTarget as HTMLElement).classList.remove('open');
       deleteTargetId = null;

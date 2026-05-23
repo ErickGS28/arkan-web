@@ -38,6 +38,18 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       </table>
     </div>
   </div>
+
+  <!-- Delete confirmation modal -->
+  <div class="modal-backdrop" id="deleteModal" style="display:none">
+    <div class="modal">
+      <p class="modal-title">Eliminar post</p>
+      <p class="modal-body">¿Estás seguro de que deseas eliminar <strong id="modalPostTitle"></strong>? Esta acción no se puede deshacer.</p>
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" id="modalCancel">Cancelar</button>
+        <button class="modal-btn-confirm" id="modalConfirm">Eliminar</button>
+      </div>
+    </div>
+  </div>
 </AdminLayout>
 
 <style is:global>
@@ -240,6 +252,76 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     color: #AAAAAA;
   }
   .btn-delete:hover { color: #CC2222; border-color: #FFCCCC; background: #FFF5F5; }
+
+  /* Delete modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+    animation: fadeIn 0.15s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal {
+    background: #FFFFFF;
+    padding: 32px 36px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    animation: slideUp 0.15s ease;
+  }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 2px;
+    color: #0A0A0A;
+    margin-bottom: 12px;
+  }
+  .modal-body {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .modal-body strong { color: #0A0A0A; font-weight: 700; }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .modal-btn-cancel, .modal-btn-confirm {
+    padding: 10px 22px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .modal-btn-cancel {
+    background: transparent;
+    border-color: #DDDDDD;
+    color: #666;
+  }
+  .modal-btn-cancel:hover { border-color: #AAA; color: #222; background: #F5F5F5; }
+  .modal-btn-confirm {
+    background: #CC2222;
+    border-color: #CC2222;
+    color: #FFFFFF;
+  }
+  .modal-btn-confirm:hover { background: #AA1111; border-color: #AA1111; }
+  .modal-btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
 
 <script>
@@ -248,6 +330,47 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   let allPosts: any[] = [];
   let currentFilter = 'all';
 
+  // ── Modal ──────────────────────────────────────────────────────
+  let pendingDeleteId: number | null = null;
+
+  const deleteModal = document.getElementById('deleteModal')!;
+  const modalPostTitle = document.getElementById('modalPostTitle')!;
+  const modalConfirm = document.getElementById('modalConfirm') as HTMLButtonElement;
+  const modalCancel = document.getElementById('modalCancel')!;
+
+  function openDeleteModal(id: number, title: string) {
+    pendingDeleteId = id;
+    modalPostTitle.textContent = `"${title}"`;
+    deleteModal.style.display = 'flex';
+  }
+
+  function closeDeleteModal() {
+    deleteModal.style.display = 'none';
+    pendingDeleteId = null;
+    modalConfirm.disabled = false;
+  }
+
+  modalCancel.addEventListener('click', closeDeleteModal);
+  deleteModal.addEventListener('click', (e) => { if (e.target === deleteModal) closeDeleteModal(); });
+
+  modalConfirm.addEventListener('click', async () => {
+    if (pendingDeleteId === null) return;
+    modalConfirm.disabled = true;
+    const id = pendingDeleteId;
+    try {
+      const res = await fetch(`${API}/blog/${id}`, { method: 'DELETE', credentials: 'include' });
+      if (!res.ok) throw new Error();
+      allPosts = allPosts.filter(p => p.id !== id);
+      applyFilter();
+      closeDeleteModal();
+      (window as any).toast?.success('Post eliminado correctamente.');
+    } catch {
+      closeDeleteModal();
+      (window as any).toast?.error('Error al eliminar el post.');
+    }
+  });
+
+  // ── Table ──────────────────────────────────────────────────────
   function formatDate(iso: string | null): string {
     if (!iso) return '—';
     return new Date(iso).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -284,21 +407,11 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       </tr>
     `).join('');
 
-    // Delete handlers
     tbody.querySelectorAll('.btn-delete').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const id = (btn as HTMLElement).dataset.id;
-        const title = (btn as HTMLElement).dataset.title;
-        if (!confirm(`¿Eliminar "${title}"?`)) return;
-        try {
-          const res = await fetch(`${API}/blog/${id}`, { method: 'DELETE', credentials: 'include' });
-          if (!res.ok) throw new Error();
-          allPosts = allPosts.filter(p => p.id !== Number(id));
-          applyFilter();
-          (window as any).toast?.success('Post eliminado correctamente.');
-        } catch {
-          (window as any).toast?.error('Error al eliminar el post.');
-        }
+      btn.addEventListener('click', () => {
+        const id = Number((btn as HTMLElement).dataset.id);
+        const title = (btn as HTMLElement).dataset.title ?? '';
+        openDeleteModal(id, title);
       });
     });
   }

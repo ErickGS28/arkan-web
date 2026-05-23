@@ -12,8 +12,9 @@ export async function getStaticPaths() {
   try {
     const res = await fetch('http://localhost:4013/blog');
     if (res.ok) {
-      const apiPosts = await res.json();
-      apiSlugs = apiPosts.map((p: { slug: string }) => p.slug);
+      const json = await res.json();
+      const apiPosts: { slug: string }[] = Array.isArray(json) ? json : (json.data ?? []);
+      apiSlugs = apiPosts.map(p => p.slug);
     }
   } catch { /* API not running at build time — ok */ }
 

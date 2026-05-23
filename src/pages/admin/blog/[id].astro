@@ -1,0 +1,482 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+
+export async function getStaticPaths() {
+  try {
+    const res = await fetch('http://localhost:4013/blog/admin', {
+      headers: { 'Cookie': '' }, // unauthenticated — will 401, caught below
+    });
+    if (res.ok) {
+      const posts = await res.json();
+      return posts.map((p: { id: number }) => ({ params: { id: String(p.id) } }));
+    }
+  } catch { /* API not running at build time */ }
+  // Provide a placeholder so the build doesn't fail
+  return [{ params: { id: '0' } }];
+}
+---
+
+<AdminLayout title="Editar Post">
+  <div class="page">
+    <header class="page-header">
+      <div>
+        <a href="/admin/blog" class="back-link">← Blog</a>
+        <h1 class="page-title">Editar Post</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn-draft" id="btnDraft">Guardar borrador</button>
+        <button class="btn-publish" id="btnPublish">Publicar</button>
+      </div>
+    </header>
+
+    <div id="loadingState" class="loading-state">Cargando post...</div>
+
+    <form id="postForm" class="post-form" style="display:none" autocomplete="off">
+      <div class="form-layout">
+        <!-- Main column -->
+        <div class="form-main">
+          <div class="field">
+            <label class="field-label">Título <span class="req">*</span></label>
+            <input class="field-input" id="title" name="title" type="text" placeholder="Escribe el título del artículo" required />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Resumen (excerpt) <span class="req">*</span></label>
+            <textarea class="field-input field-textarea" id="excerpt" name="excerpt" rows="3" placeholder="Descripción corta del artículo"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Contenido <span class="req">*</span></label>
+            <div class="editor-toolbar" id="editorToolbar">
+              <button type="button" data-cmd="bold" title="Negrita"><b>B</b></button>
+              <button type="button" data-cmd="italic" title="Cursiva"><i>I</i></button>
+              <button type="button" data-cmd="h2" title="Subtítulo">H2</button>
+              <button type="button" data-cmd="p" title="Párrafo">¶</button>
+            </div>
+            <div class="rich-editor" id="richEditor" contenteditable="true" data-placeholder="Escribe el contenido..."></div>
+          </div>
+        </div>
+
+        <!-- Side column -->
+        <div class="form-side">
+          <div class="side-card">
+            <p class="side-card-title">Estado</p>
+            <div id="statusDisplay" class="status-display"></div>
+          </div>
+
+          <div class="side-card">
+            <p class="side-card-title">Imagen de portada</p>
+            <div class="cover-upload" id="coverUploadArea">
+              <div class="cover-placeholder" id="coverPlaceholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <p>Seleccionar imagen</p>
+              </div>
+              <img id="coverPreview" class="cover-preview" style="display:none" alt="Cover preview" />
+            </div>
+            <input type="file" id="coverFile" accept="image/*" style="display:none" />
+            <input type="hidden" id="coverImg" name="coverImg" />
+            <p class="upload-status" id="uploadStatus"></p>
+            <button type="button" class="btn-remove-cover" id="btnRemoveCover" style="display:none">Quitar imagen</button>
+          </div>
+
+          <div class="side-card">
+            <p class="side-card-title">Slug</p>
+            <div class="slug-display" id="slugDisplay">—</div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</AdminLayout>
+
+<style>
+  .page { padding: 40px 48px; max-width: 1100px; }
+
+  .loading-state {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    color: #BBB;
+    padding: 40px 0;
+    letter-spacing: 1px;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 32px;
+  }
+
+  .back-link {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    color: #AAA;
+    text-decoration: none;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 6px;
+    transition: color 0.15s;
+  }
+  .back-link:hover { color: #444; }
+
+  .page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 3px;
+    color: #0A0A0A;
+  }
+
+  .header-actions { display: flex; gap: 10px; align-items: center; }
+
+  .btn-draft, .btn-publish {
+    padding: 10px 20px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .btn-draft { background: transparent; border-color: #DDD; color: #666; }
+  .btn-draft:hover { border-color: #AAA; color: #222; }
+  .btn-publish { background: #0A0A0A; color: #F0F0F0; border-color: #0A0A0A; }
+  .btn-publish:hover { background: #222; }
+  .btn-draft:disabled, .btn-publish:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Form layout */
+  .form-layout {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .field { margin-bottom: 24px; }
+
+  .field-label {
+    display: block;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #777;
+    margin-bottom: 8px;
+  }
+  .req { color: #D33; }
+
+  .field-input {
+    width: 100%;
+    padding: 11px 14px;
+    background: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    color: #111;
+    outline: none;
+    transition: border-color 0.15s;
+    resize: vertical;
+  }
+  .field-input:focus { border-color: #0A0A0A; }
+  .field-input::placeholder { color: #CCC; }
+  .field-textarea { min-height: 80px; }
+
+  /* Rich editor */
+  .editor-toolbar {
+    display: flex;
+    gap: 4px;
+    padding: 8px 10px;
+    background: #F8F8F8;
+    border: 1px solid #E0E0E0;
+    border-bottom: none;
+  }
+  .editor-toolbar button {
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid transparent;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    color: #555;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.1s;
+  }
+  .editor-toolbar button:hover { background: #EEE; border-color: #DDD; }
+
+  .rich-editor {
+    min-height: 320px;
+    padding: 16px;
+    background: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #111;
+    outline: none;
+    overflow-y: auto;
+  }
+  .rich-editor:focus { border-color: #0A0A0A; }
+  .rich-editor:empty::before {
+    content: attr(data-placeholder);
+    color: #CCC;
+    pointer-events: none;
+  }
+
+  /* Side column */
+  .side-card {
+    background: #FFFFFF;
+    border: 1px solid #EBEBEB;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .side-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #AAA;
+    margin-bottom: 14px;
+  }
+
+  .status-display {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    color: #555;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 2px;
+    width: fit-content;
+  }
+  .status-badge.published { background: #EDFAF3; color: #1A7A4A; }
+  .status-badge.draft     { background: #F5F5F5; color: #888; }
+  .status-date { font-size: 11px; color: #BBB; }
+
+  /* Cover upload */
+  .cover-upload {
+    border: 2px dashed #E0E0E0;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FAFAFA;
+    position: relative;
+  }
+  .cover-upload:hover { border-color: #AAA; }
+
+  .cover-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #CCC;
+  }
+  .cover-placeholder p {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .cover-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    inset: 0;
+  }
+
+  .upload-status {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    color: #AAA;
+    margin-top: 8px;
+    min-height: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-remove-cover {
+    margin-top: 8px;
+    background: transparent;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    color: #CC3333;
+    letter-spacing: 1px;
+    cursor: pointer;
+    padding: 0;
+    text-transform: uppercase;
+  }
+  .btn-remove-cover:hover { text-decoration: underline; }
+
+  .slug-display {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    color: #AAA;
+    word-break: break-all;
+    line-height: 1.5;
+    min-height: 20px;
+  }
+</style>
+
+<script>
+  const API = 'http://localhost:4013';
+  const postId = window.location.pathname.split('/').at(-1);
+
+  // Editor toolbar
+  document.querySelectorAll('#editorToolbar button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cmd = (btn as HTMLElement).dataset.cmd;
+      document.getElementById('richEditor')!.focus();
+      if (cmd === 'h2') document.execCommand('formatBlock', false, 'h2');
+      else if (cmd === 'p') document.execCommand('formatBlock', false, 'p');
+      else if (cmd === 'bold') document.execCommand('bold');
+      else if (cmd === 'italic') document.execCommand('italic');
+    });
+  });
+
+  // Cover upload
+  const coverUploadArea = document.getElementById('coverUploadArea')!;
+  const coverFile = document.getElementById('coverFile') as HTMLInputElement;
+  const coverPreview = document.getElementById('coverPreview') as HTMLImageElement;
+  const coverPlaceholder = document.getElementById('coverPlaceholder')!;
+  const coverImgInput = document.getElementById('coverImg') as HTMLInputElement;
+  const uploadStatus = document.getElementById('uploadStatus')!;
+  const btnRemoveCover = document.getElementById('btnRemoveCover')!;
+
+  coverUploadArea.addEventListener('click', () => coverFile.click());
+
+  coverFile.addEventListener('change', async () => {
+    const file = coverFile.files?.[0];
+    if (!file) return;
+
+    uploadStatus.textContent = 'Subiendo imagen...';
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch(`${API}/blog/upload-image`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
+      if (!res.ok) throw new Error();
+      const { url } = await res.json();
+      setCoverImage(url);
+      uploadStatus.textContent = 'Imagen subida correctamente.';
+    } catch {
+      uploadStatus.textContent = 'Error al subir la imagen.';
+    }
+  });
+
+  function setCoverImage(url: string) {
+    coverImgInput.value = url;
+    coverPreview.src = url;
+    coverPreview.style.display = 'block';
+    coverPlaceholder.style.display = 'none';
+    btnRemoveCover.style.display = 'block';
+  }
+
+  btnRemoveCover.addEventListener('click', (e) => {
+    e.stopPropagation();
+    coverImgInput.value = '';
+    coverPreview.style.display = 'none';
+    coverPlaceholder.style.display = 'flex';
+    btnRemoveCover.style.display = 'none';
+    uploadStatus.textContent = '';
+    coverFile.value = '';
+  });
+
+  // Load post
+  async function loadPost() {
+    try {
+      const res = await fetch(`${API}/blog/admin`, { credentials: 'include' });
+      if (!res.ok) throw new Error();
+      const posts = await res.json();
+      const post = posts.find((p: any) => String(p.id) === String(postId));
+      if (!post) { window.location.href = '/admin/blog'; return; }
+
+      (document.getElementById('title') as HTMLInputElement).value = post.title;
+      (document.getElementById('excerpt') as HTMLTextAreaElement).value = post.excerpt;
+      document.getElementById('richEditor')!.innerHTML = post.content;
+      document.getElementById('slugDisplay')!.textContent = post.slug;
+
+      // Status
+      const statusDiv = document.getElementById('statusDisplay')!;
+      const isPublished = post.status === 'PUBLISHED';
+      statusDiv.innerHTML = `
+        <span class="status-badge ${isPublished ? 'published' : 'draft'}">
+          ${isPublished ? 'Publicado' : 'Borrador'}
+        </span>
+        ${post.publishedAt ? `<span class="status-date">Publicado el ${new Date(post.publishedAt).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' })}</span>` : ''}
+      `;
+
+      // Cover
+      if (post.coverImg) {
+        coverImgInput.value = post.coverImg;
+        setCoverImage(post.coverImg);
+      }
+
+      document.getElementById('loadingState')!.style.display = 'none';
+      document.getElementById('postForm')!.style.display = 'block';
+    } catch {
+      document.getElementById('loadingState')!.textContent = 'Error al cargar el post.';
+    }
+  }
+
+  // Submit
+  async function submitPost(status: 'DRAFT' | 'PUBLISHED') {
+    const title = (document.getElementById('title') as HTMLInputElement).value.trim();
+    const excerpt = (document.getElementById('excerpt') as HTMLTextAreaElement).value.trim();
+    const content = document.getElementById('richEditor')!.innerHTML.trim();
+    const coverImg = (document.getElementById('coverImg') as HTMLInputElement).value || undefined;
+
+    if (!title || !excerpt || !content) {
+      alert('Por favor completa los campos requeridos: Título, Resumen y Contenido.');
+      return;
+    }
+
+    const buttons = document.querySelectorAll('.btn-draft, .btn-publish') as NodeListOf<HTMLButtonElement>;
+    buttons.forEach(b => b.disabled = true);
+
+    try {
+      const res = await fetch(`${API}/blog/${postId}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, excerpt, content, coverImg, status }),
+      });
+      if (!res.ok) throw new Error();
+      window.location.href = '/admin/blog';
+    } catch {
+      alert('Error al guardar el post.');
+      buttons.forEach(b => b.disabled = false);
+    }
+  }
+
+  document.getElementById('btnDraft')?.addEventListener('click', () => submitPost('DRAFT'));
+  document.getElementById('btnPublish')?.addEventListener('click', () => submitPost('PUBLISHED'));
+
+  document.addEventListener('arkan:auth-ready', loadPost);
+</script>

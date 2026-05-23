@@ -2,61 +2,118 @@
 import Layout from '../../layouts/Layout.astro';
 import NavArkan from '../../components/arkan/NavArkan.astro';
 import FooterArkan from '../../components/arkan/FooterArkan.astro';
-import { posts, getPost } from '../../data/posts';
+import { posts } from '../../data/posts';
 
-export function getStaticPaths() {
-  return posts.map((p) => ({ params: { slug: p.slug } }));
+export async function getStaticPaths() {
+  // Collect slugs from static data + API (if available at build time)
+  const staticSlugs = posts.map(p => p.slug);
+
+  let apiSlugs: string[] = [];
+  try {
+    const res = await fetch('http://localhost:4013/blog');
+    if (res.ok) {
+      const apiPosts = await res.json();
+      apiSlugs = apiPosts.map((p: { slug: string }) => p.slug);
+    }
+  } catch { /* API not running at build time — ok */ }
+
+  const allSlugs = [...new Set([...staticSlugs, ...apiSlugs])];
+  return allSlugs.map(slug => ({ params: { slug } }));
 }
 
 const { slug } = Astro.params;
-const post = getPost(slug)!;
 ---
 
-<Layout title={`${post.title} — Arkán Group`} description={post.excerpt}>
+<Layout title="Blog — Arkán Group" description="">
   <NavArkan />
 
-  <!-- Cover hero -->
-  <div class="cover">
-    <img src={post.coverImg} alt={post.title} class="cover-img" />
-    <div class="cover-overlay"></div>
-    <div class="cover-content">
-      <a href="/blog" class="back-link">← Blog</a>
-      <div class="cover-meta">
-        <span>{post.date}</span>
-        <span class="sep">·</span>
-        <span>{post.readTime} lectura</span>
-      </div>
-      <h1 class="cover-title">{post.title}</h1>
+  <!-- Loading state -->
+  <div id="postLoading" class="post-loading">
+    <div class="loading-inner">
+      <div class="loading-bar"></div>
     </div>
   </div>
 
-  <!-- Artículo -->
-  <article class="article">
-    <p class="article-excerpt">{post.excerpt}</p>
-    <div class="article-content" set:html={post.content} />
-  </article>
-
-  <!-- Más artículos -->
-  <section class="more">
-    <p class="more-label">Seguir leyendo</p>
-    <div class="more-grid">
-      {posts.filter(p => p.slug !== slug).slice(0, 2).map(p => (
-        <a href={`/blog/${p.slug}`} class="more-card">
-          <img src={p.coverImg} alt={p.title} class="more-img" />
-          <div class="more-body">
-            <p class="more-date">{p.date}</p>
-            <p class="more-title">{p.title}</p>
-          </div>
-        </a>
-      ))}
+  <!-- Post shell (populated by JS) -->
+  <div id="postShell" style="display:none">
+    <!-- Cover hero -->
+    <div class="cover" id="postCover">
+      <img id="coverImg" class="cover-img" alt="" />
+      <div class="cover-overlay"></div>
+      <div class="cover-content">
+        <a href="/blog" class="back-link">← Blog</a>
+        <div class="cover-meta" id="coverMeta"></div>
+        <h1 class="cover-title" id="coverTitle"></h1>
+      </div>
     </div>
-    <a href="/blog" class="all-link">Ver todos los artículos →</a>
-  </section>
+
+    <!-- Artículo -->
+    <article class="article">
+      <p class="article-excerpt" id="articleExcerpt"></p>
+      <div class="article-content" id="articleContent"></div>
+    </article>
+
+    <!-- Más artículos -->
+    <section class="more" id="moreSection" style="display:none">
+      <p class="more-label">Seguir leyendo</p>
+      <div class="more-grid" id="moreGrid"></div>
+      <a href="/blog" class="all-link">Ver todos los artículos →</a>
+    </section>
+  </div>
+
+  <!-- Not found state -->
+  <div id="postNotFound" class="not-found" style="display:none">
+    <p>Artículo no encontrado.</p>
+    <a href="/blog">← Volver al blog</a>
+  </div>
 
   <FooterArkan />
 </Layout>
 
 <style>
+  /* Loading */
+  .post-loading {
+    margin-top: 64px;
+    height: 70vh;
+    min-height: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0A0A0A;
+  }
+  .loading-inner { width: 120px; height: 2px; background: #1A1A1A; overflow: hidden; }
+  .loading-bar {
+    height: 100%;
+    background: #444;
+    animation: loadBar 1.2s ease-in-out infinite;
+  }
+  @keyframes loadBar {
+    0% { width: 0; margin-left: 0; }
+    50% { width: 60%; margin-left: 20%; }
+    100% { width: 0; margin-left: 100%; }
+  }
+
+  /* Not found */
+  .not-found {
+    margin-top: 64px;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    color: #777;
+  }
+  .not-found a {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #0A0A0A;
+    font-weight: 600;
+  }
+
   /* Cover */
   .cover {
     position: relative;
@@ -102,7 +159,6 @@ const post = getPost(slug)!;
     font-size: 11px; letter-spacing: 2px;
     color: #FFFFFF; opacity: 0.6; text-transform: uppercase;
   }
-  .sep { opacity: 0.4; }
   .cover-title {
     font-family: 'Bebas Neue', sans-serif;
     font-size: clamp(36px, 5vw, 72px);
@@ -167,6 +223,7 @@ const post = getPost(slug)!;
     width: 80px; height: 80px;
     object-fit: cover; flex-shrink: 0;
     filter: grayscale(30%);
+    background: #1A1A1A;
   }
   .more-body { display: flex; flex-direction: column; gap: 8px; }
   .more-date {
@@ -205,3 +262,68 @@ const post = getPost(slug)!;
     .more-img { width: 64px; height: 64px; }
   }
 </style>
+
+<script define:vars={{ slug }}>
+  const API = 'http://localhost:4013';
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  async function loadPost() {
+    try {
+      const res = await fetch(`${API}/blog/${slug}`);
+      if (!res.ok) throw new Error('not found');
+      const post = await res.json();
+
+      // Update document title
+      document.title = `${post.title} — Arkán Group`;
+
+      // Populate cover
+      const coverImg = document.getElementById('coverImg');
+      if (post.coverImg) {
+        coverImg.src = post.coverImg;
+        coverImg.alt = post.title;
+      } else {
+        document.getElementById('postCover').style.background = '#0A0A0A';
+      }
+
+      const date = post.publishedAt ? formatDate(post.publishedAt) : '';
+      document.getElementById('coverMeta').innerHTML = `
+        ${date ? `<span>${date}</span><span style="opacity:0.4">·</span>` : ''}
+        <span>${post.readTime} lectura</span>
+      `;
+      document.getElementById('coverTitle').textContent = post.title;
+      document.getElementById('articleExcerpt').textContent = post.excerpt;
+      document.getElementById('articleContent').innerHTML = post.content;
+
+      // More posts
+      const moreRes = await fetch(`${API}/blog`);
+      if (moreRes.ok) {
+        const allPosts = await moreRes.json();
+        const others = allPosts.filter(p => p.slug !== slug).slice(0, 2);
+        if (others.length) {
+          document.getElementById('moreGrid').innerHTML = others.map(p => `
+            <a href="/blog/${p.slug}" class="more-card">
+              ${p.coverImg ? `<img src="${p.coverImg}" alt="${p.title}" class="more-img" />` : '<div class="more-img"></div>'}
+              <div class="more-body">
+                <p class="more-date">${formatDate(p.publishedAt)}</p>
+                <p class="more-title">${p.title}</p>
+              </div>
+            </a>
+          `).join('');
+          document.getElementById('moreSection').style.display = 'block';
+        }
+      }
+
+      document.getElementById('postLoading').style.display = 'none';
+      document.getElementById('postShell').style.display = 'block';
+    } catch {
+      document.getElementById('postLoading').style.display = 'none';
+      document.getElementById('postNotFound').style.display = 'flex';
+    }
+  }
+
+  loadPost();
+</script>

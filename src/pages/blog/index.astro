@@ -2,7 +2,6 @@
 import Layout from '../../layouts/Layout.astro';
 import NavArkan from '../../components/arkan/NavArkan.astro';
 import FooterArkan from '../../components/arkan/FooterArkan.astro';
-import { posts } from '../../data/posts';
 ---
 
 <Layout title="Blog — Arkán Group" description="Artículos sobre denim, moda y distribución mayorista en México.">
@@ -15,26 +14,12 @@ import { posts } from '../../data/posts';
       <p class="blog-sub">Denim, moda y cómo construir un negocio real.</p>
     </header>
 
-    <section class="post-list">
-      {posts.map((post, i) => (
-        <a href={`/blog/${post.slug}`} class="post-card">
-          <div class="post-image">
-            <img src={post.coverImg} alt={post.title} />
-          </div>
-          <div class="post-body">
-            <div class="post-meta">
-              <span class="post-num">0{i + 1}</span>
-              <span class="post-sep">/</span>
-              <span class="post-date">{post.date}</span>
-              <span class="post-sep">·</span>
-              <span class="post-read">{post.readTime} lectura</span>
-            </div>
-            <h2 class="post-title">{post.title}</h2>
-            <p class="post-excerpt">{post.excerpt}</p>
-            <span class="post-link">Leer artículo →</span>
-          </div>
-        </a>
-      ))}
+    <section class="post-list" id="postList">
+      <div class="skeleton-wrap">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
     </section>
   </main>
 
@@ -75,6 +60,33 @@ import { posts } from '../../data/posts';
     flex-direction: column;
   }
 
+  /* Skeleton */
+  .skeleton-wrap { display: flex; flex-direction: column; gap: 0; }
+  .skeleton-card {
+    height: 190px;
+    background: linear-gradient(90deg, #F5F5F5 25%, #EEEEEE 50%, #F5F5F5 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-bottom: 1px solid #E8E8E8;
+    margin-bottom: 0;
+    padding: 40px 0;
+    box-sizing: content-box;
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 80px 0;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    color: #AAA;
+    letter-spacing: 1px;
+  }
+
   .post-card {
     display: flex;
     flex-direction: row;
@@ -92,6 +104,7 @@ import { posts } from '../../data/posts';
     height: 190px;
     overflow: hidden;
     align-self: center;
+    background: #F0F0F0;
   }
   .post-image img {
     width: 100%; height: 100%;
@@ -167,3 +180,50 @@ import { posts } from '../../data/posts';
     .post-title { font-size: clamp(20px, 6vw, 28px); }
   }
 </style>
+
+<script>
+  const API = 'http://localhost:4013';
+
+  function formatDate(iso: string | null): string {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  async function loadPosts() {
+    const list = document.getElementById('postList')!;
+    try {
+      const res = await fetch(`${API}/blog`);
+      if (!res.ok) throw new Error();
+      const posts: any[] = await res.json();
+
+      if (!posts.length) {
+        list.innerHTML = '<div class="empty-state">Aún no hay artículos publicados.</div>';
+        return;
+      }
+
+      list.innerHTML = posts.map((post, i) => `
+        <a href="/blog/${post.slug}" class="post-card">
+          <div class="post-image">
+            ${post.coverImg ? `<img src="${post.coverImg}" alt="${post.title}" loading="${i === 0 ? 'eager' : 'lazy'}" />` : ''}
+          </div>
+          <div class="post-body">
+            <div class="post-meta">
+              <span class="post-num">${String(i + 1).padStart(2, '0')}</span>
+              <span class="post-sep">/</span>
+              <span class="post-date">${formatDate(post.publishedAt)}</span>
+              <span class="post-sep">·</span>
+              <span class="post-read">${post.readTime} lectura</span>
+            </div>
+            <h2 class="post-title">${post.title}</h2>
+            <p class="post-excerpt">${post.excerpt}</p>
+            <span class="post-link">Leer artículo →</span>
+          </div>
+        </a>
+      `).join('');
+    } catch {
+      list.innerHTML = '<div class="empty-state">No se pudieron cargar los artículos.</div>';
+    }
+  }
+
+  loadPosts();
+</script>

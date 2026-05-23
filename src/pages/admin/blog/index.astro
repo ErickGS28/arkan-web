@@ -1,0 +1,328 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Blog">
+  <div class="page">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">Blog</h1>
+        <p class="page-sub" id="postCount">Cargando...</p>
+      </div>
+      <a href="/admin/blog/new" class="btn-new">+ Nuevo post</a>
+    </header>
+
+    <!-- Filters -->
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">Todos</button>
+      <button class="filter-btn" data-filter="PUBLISHED">Publicados</button>
+      <button class="filter-btn" data-filter="DRAFT">Borradores</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table class="posts-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Título</th>
+            <th>Estado</th>
+            <th>Tiempo de lectura</th>
+            <th>Fecha</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="postsBody">
+          <tr><td colspan="6" class="loading-row">Cargando posts...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .page {
+    padding: 40px 48px;
+    max-width: 1100px;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 32px;
+  }
+
+  .page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 3px;
+    color: #0A0A0A;
+  }
+
+  .page-sub {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    color: #AAA;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-new {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    background: #0A0A0A;
+    color: #F0F0F0;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .btn-new:hover { background: #222; }
+
+  /* Filters */
+  .filters {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+  }
+  .filter-btn {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid #E0E0E0;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: #AAA; color: #444; }
+  .filter-btn.active { background: #0A0A0A; border-color: #0A0A0A; color: #FFF; }
+
+  /* Table */
+  .table-wrap {
+    background: #FFFFFF;
+    border: 1px solid #EBEBEB;
+    overflow: hidden;
+  }
+
+  .posts-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .posts-table th {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #AAA;
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #F0F0F0;
+    background: #FAFAFA;
+  }
+
+  .posts-table td {
+    padding: 14px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    color: #333;
+    border-bottom: 1px solid #F5F5F5;
+    vertical-align: middle;
+  }
+
+  .posts-table tbody tr:last-child td { border-bottom: none; }
+  .posts-table tbody tr:hover td { background: #FAFAFA; }
+
+  .loading-row {
+    text-align: center;
+    color: #BBB;
+    padding: 40px 16px !important;
+    font-size: 12px !important;
+    letter-spacing: 1px;
+  }
+
+  .post-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: #DDD;
+    width: 40px;
+  }
+
+  .post-title-cell {
+    max-width: 340px;
+  }
+  .post-title-text {
+    font-weight: 600;
+    color: #111;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 320px;
+  }
+  .post-slug {
+    font-size: 11px;
+    color: #BBB;
+    letter-spacing: 0.3px;
+    margin-top: 2px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 320px;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 2px;
+  }
+  .status-badge.published { background: #EDFAF3; color: #1A7A4A; }
+  .status-badge.draft     { background: #F5F5F5; color: #888; }
+
+  .read-time { color: #999; font-size: 12px; }
+  .post-date { color: #BBB; font-size: 11px; letter-spacing: 0.5px; }
+
+  .row-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: flex-end;
+  }
+
+  .btn-edit, .btn-delete {
+    padding: 5px 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-edit {
+    border-color: #DDD;
+    background: transparent;
+    color: #555;
+  }
+  .btn-edit:hover { border-color: #0A0A0A; color: #0A0A0A; }
+  .btn-delete {
+    border-color: transparent;
+    background: transparent;
+    color: #CCC;
+  }
+  .btn-delete:hover { color: #D33; border-color: #FFDDDD; background: #FFF5F5; }
+</style>
+
+<script>
+  const API = 'http://localhost:4013';
+
+  let allPosts: any[] = [];
+  let currentFilter = 'all';
+
+  function formatDate(iso: string | null): string {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function renderPosts(posts: any[]) {
+    const tbody = document.getElementById('postsBody')!;
+    if (!posts.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="loading-row">No hay posts en esta categoría.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = posts.map((post, i) => `
+      <tr>
+        <td class="post-num">${String(i + 1).padStart(2, '0')}</td>
+        <td class="post-title-cell">
+          <span class="post-title-text">${post.title}</span>
+          <span class="post-slug">${post.slug}</span>
+        </td>
+        <td>
+          <span class="status-badge ${post.status === 'PUBLISHED' ? 'published' : 'draft'}">
+            ${post.status === 'PUBLISHED' ? 'Publicado' : 'Borrador'}
+          </span>
+        </td>
+        <td class="read-time">${post.readTime}</td>
+        <td class="post-date">${formatDate(post.publishedAt ?? post.createdAt)}</td>
+        <td>
+          <div class="row-actions">
+            <a href="/admin/blog/${post.id}" class="btn-edit">Editar</a>
+            <button class="btn-delete" data-id="${post.id}" data-title="${post.title.replace(/"/g, '&quot;')}">Eliminar</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+
+    // Delete handlers
+    tbody.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = (btn as HTMLElement).dataset.id;
+        const title = (btn as HTMLElement).dataset.title;
+        if (!confirm(`¿Eliminar "${title}"?`)) return;
+        try {
+          const res = await fetch(`${API}/blog/${id}`, { method: 'DELETE', credentials: 'include' });
+          if (!res.ok) throw new Error();
+          allPosts = allPosts.filter(p => p.id !== Number(id));
+          applyFilter();
+        } catch {
+          alert('Error al eliminar el post.');
+        }
+      });
+    });
+  }
+
+  function applyFilter() {
+    const filtered = currentFilter === 'all'
+      ? allPosts
+      : allPosts.filter(p => p.status === currentFilter);
+    renderPosts(filtered);
+    const count = document.getElementById('postCount');
+    if (count) count.textContent = `${allPosts.length} post${allPosts.length !== 1 ? 's' : ''} en total`;
+  }
+
+  async function loadPosts() {
+    try {
+      const res = await fetch(`${API}/blog/admin`, { credentials: 'include' });
+      if (!res.ok) throw new Error();
+      allPosts = await res.json();
+      applyFilter();
+    } catch {
+      document.getElementById('postsBody')!.innerHTML =
+        '<tr><td colspan="6" class="loading-row">Error al cargar los posts.</td></tr>';
+    }
+  }
+
+  // Filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = (btn as HTMLElement).dataset.filter ?? 'all';
+      applyFilter();
+    });
+  });
+
+  document.addEventListener('arkan:auth-ready', loadPosts);
+</script>

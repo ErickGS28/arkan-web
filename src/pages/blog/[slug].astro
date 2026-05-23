@@ -1,26 +1,9 @@
 ---
+export const prerender = false;
+
 import Layout from '../../layouts/Layout.astro';
 import NavArkan from '../../components/arkan/NavArkan.astro';
 import FooterArkan from '../../components/arkan/FooterArkan.astro';
-import { posts } from '../../data/posts';
-
-export async function getStaticPaths() {
-  // Collect slugs from static data + API (if available at build time)
-  const staticSlugs = posts.map(p => p.slug);
-
-  let apiSlugs: string[] = [];
-  try {
-    const res = await fetch('http://localhost:4013/blog');
-    if (res.ok) {
-      const json = await res.json();
-      const apiPosts: { slug: string }[] = Array.isArray(json) ? json : (json.data ?? []);
-      apiSlugs = apiPosts.map(p => p.slug);
-    }
-  } catch { /* API not running at build time — ok */ }
-
-  const allSlugs = [...new Set([...staticSlugs, ...apiSlugs])];
-  return allSlugs.map(slug => ({ params: { slug } }));
-}
 
 const { slug } = Astro.params;
 ---

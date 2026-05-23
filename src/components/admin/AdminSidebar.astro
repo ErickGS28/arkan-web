@@ -42,26 +42,26 @@ const marcas   = navItems.filter(i => i.group === 'marcas');
   .brand-logo {
     width: 28px; height: 28px;
     object-fit: contain;
-    opacity: 0.7;
+    opacity: 0.9;
     border-radius: 2px;
   }
   .brand-name {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 14px;
+    font-size: 15px;
     letter-spacing: 3px;
-    color: #888;
+    color: #CCCCCC;
   }
 
   /* User section */
   .sidebar-user {
     padding: 20px 20px 16px;
-    border-bottom: 1px solid #111;
+    border-bottom: 1px solid #1E1E1E;
   }
   .user-name {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 17px;
+    font-size: 19px;
     letter-spacing: 2px;
-    color: #DDDDDD;
+    color: #FFFFFF;
     margin-bottom: 8px;
     white-space: nowrap;
     overflow: hidden;
@@ -72,24 +72,24 @@ const marcas   = navItems.filter(i => i.group === 'marcas');
     align-items: center;
     gap: 6px;
     padding: 3px 10px;
-    border: 1px solid #222;
+    border: 1px solid #333;
     font-family: 'Syne', sans-serif;
     font-size: 9px;
     letter-spacing: 2.5px;
     text-transform: uppercase;
-    color: #555;
+    color: #999;
   }
   .role-chip.gerente {
-    border-color: #444;
-    color: #CCCCCC;
+    border-color: #555;
+    color: #EEEEEE;
   }
   .role-dot {
     width: 4px; height: 4px;
     border-radius: 50%;
-    background: #333;
+    background: #555;
     flex-shrink: 0;
   }
-  .role-chip.gerente .role-dot { background: #AAAAAA; }
+  .role-chip.gerente .role-dot { background: #CCCCCC; }
 
   /* Nav */
   .sidebar-nav {
@@ -105,68 +105,73 @@ const marcas   = navItems.filter(i => i.group === 'marcas');
     font-size: 9px;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: #2E2E2E;
+    color: #555;
   }
   .nav-item {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 9px 20px;
+    padding: 10px 20px;
     font-family: 'Syne', sans-serif;
-    font-size: 12px;
-    letter-spacing: 0.5px;
-    color: #555;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    color: #AAAAAA;
     text-decoration: none;
     transition: color 0.15s, background 0.15s;
     border-left: 2px solid transparent;
   }
   .nav-item:hover {
-    color: #CCCCCC;
-    background: #0F0F0F;
+    color: #FFFFFF;
+    background: #161616;
+    border-left-color: #333;
   }
   .nav-item.active {
-    color: #F0F0F0;
-    border-left-color: #F0F0F0;
-    background: #0F0F0F;
+    color: #FFFFFF;
+    border-left-color: #FFFFFF;
+    background: #161616;
   }
   .nav-item svg {
     width: 14px; height: 14px;
     flex-shrink: 0;
-    opacity: 0.6;
+    opacity: 0.7;
   }
+  .nav-item:hover svg { opacity: 1; }
   .nav-item.active svg { opacity: 1; }
   .nav-brand-logo {
     width: 16px; height: 16px;
     object-fit: contain;
     border-radius: 2px;
-    opacity: 0.5;
+    opacity: 0.65;
     flex-shrink: 0;
   }
   .nav-item.active .nav-brand-logo,
-  .nav-item:hover .nav-brand-logo { opacity: 0.85; }
+  .nav-item:hover .nav-brand-logo { opacity: 1; }
 
   /* Logout */
   .sidebar-footer {
     padding: 16px 20px;
-    border-top: 1px solid #111;
+    border-top: 1px solid #1E1E1E;
   }
   .btn-logout {
     width: 100%;
     padding: 9px 14px;
     background: transparent;
-    border: 1px solid #1C1C1C;
-    color: #444;
+    border: 1px solid #333;
+    color: #AAAAAA;
     font-family: 'Syne', sans-serif;
-    font-size: 10px;
-    letter-spacing: 2px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
     text-align: center;
   }
   .btn-logout:hover {
-    border-color: #444;
-    color: #CCCCCC;
+    background: #1A1A1A;
+    border-color: #555;
+    color: #FFFFFF;
   }
 </style>
 

@@ -55,55 +55,56 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 
   .page-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 36px;
+    font-size: 42px;
     letter-spacing: 3px;
     color: #0A0A0A;
   }
 
   .page-sub {
     font-family: 'Syne', sans-serif;
-    font-size: 12px;
-    color: #AAA;
+    font-size: 14px;
+    color: #888;
     margin-top: 4px;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
   }
 
   .btn-new {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 10px 20px;
+    padding: 12px 24px;
     background: #0A0A0A;
-    color: #F0F0F0;
+    color: #FFFFFF;
     font-family: 'Syne', sans-serif;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
-    letter-spacing: 1.5px;
+    letter-spacing: 1px;
     text-transform: uppercase;
     text-decoration: none;
     transition: background 0.2s;
     white-space: nowrap;
   }
-  .btn-new:hover { background: #222; }
+  .btn-new:hover { background: #333; }
 
   /* Filters */
   .filters {
     display: flex;
-    gap: 4px;
+    gap: 6px;
     margin-bottom: 20px;
   }
   .filter-btn {
-    padding: 6px 14px;
+    padding: 8px 18px;
     background: transparent;
-    border: 1px solid #E0E0E0;
+    border: 1px solid #D8D8D8;
     font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: #888;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: #777;
     cursor: pointer;
     transition: all 0.15s;
   }
-  .filter-btn:hover { border-color: #AAA; color: #444; }
+  .filter-btn:hover { border-color: #888; color: #222; }
   .filter-btn.active { background: #0A0A0A; border-color: #0A0A0A; color: #FFF; }
 
   /* Table */
@@ -120,23 +121,23 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 
   .posts-table th {
     font-family: 'Syne', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 2px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: #AAA;
-    padding: 14px 16px;
+    color: #777;
+    padding: 16px 18px;
     text-align: left;
-    border-bottom: 1px solid #F0F0F0;
-    background: #FAFAFA;
+    border-bottom: 1px solid #EBEBEB;
+    background: #F8F8F8;
   }
 
   .posts-table td {
-    padding: 14px 16px;
+    padding: 16px 18px;
     font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    color: #333;
-    border-bottom: 1px solid #F5F5F5;
+    font-size: 14px;
+    color: #222;
+    border-bottom: 1px solid #F0F0F0;
     vertical-align: middle;
   }
 
@@ -145,16 +146,16 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 
   .loading-row {
     text-align: center;
-    color: #BBB;
-    padding: 40px 16px !important;
-    font-size: 12px !important;
-    letter-spacing: 1px;
+    color: #999;
+    padding: 48px 18px !important;
+    font-size: 14px !important;
+    letter-spacing: 0.5px;
   }
 
   .post-num {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    color: #DDD;
+    font-size: 20px;
+    color: #CCC;
     width: 40px;
   }
 
@@ -162,8 +163,9 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     max-width: 340px;
   }
   .post-title-text {
-    font-weight: 600;
-    color: #111;
+    font-weight: 700;
+    font-size: 15px;
+    color: #0A0A0A;
     display: block;
     white-space: nowrap;
     overflow: hidden;
@@ -171,10 +173,10 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     max-width: 320px;
   }
   .post-slug {
-    font-size: 11px;
-    color: #BBB;
-    letter-spacing: 0.3px;
-    margin-top: 2px;
+    font-size: 12px;
+    color: #AAA;
+    letter-spacing: 0.2px;
+    margin-top: 3px;
     display: block;
     white-space: nowrap;
     overflow: hidden;
@@ -186,33 +188,33 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 3px 10px;
+    padding: 4px 12px;
     font-family: 'Syne', sans-serif;
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     border-radius: 2px;
   }
   .status-badge.published { background: #EDFAF3; color: #1A7A4A; }
-  .status-badge.draft     { background: #F5F5F5; color: #888; }
+  .status-badge.draft     { background: #F2F2F2; color: #666; }
 
-  .read-time { color: #999; font-size: 12px; }
-  .post-date { color: #BBB; font-size: 11px; letter-spacing: 0.5px; }
+  .read-time { color: #666; font-size: 14px; }
+  .post-date { color: #999; font-size: 13px; letter-spacing: 0.2px; }
 
   .row-actions {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     justify-content: flex-end;
   }
 
   .btn-edit, .btn-delete {
-    padding: 5px 12px;
+    padding: 6px 14px;
     font-family: 'Syne', sans-serif;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
     cursor: pointer;
     border: 1px solid transparent;
@@ -221,17 +223,17 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     display: inline-block;
   }
   .btn-edit {
-    border-color: #DDD;
+    border-color: #CCCCCC;
     background: transparent;
-    color: #555;
+    color: #444;
   }
-  .btn-edit:hover { border-color: #0A0A0A; color: #0A0A0A; }
+  .btn-edit:hover { border-color: #0A0A0A; color: #0A0A0A; background: #F5F5F5; }
   .btn-delete {
     border-color: transparent;
     background: transparent;
-    color: #CCC;
+    color: #AAAAAA;
   }
-  .btn-delete:hover { color: #D33; border-color: #FFDDDD; background: #FFF5F5; }
+  .btn-delete:hover { color: #CC2222; border-color: #FFCCCC; background: #FFF5F5; }
 </style>
 
 <script>

@@ -19,6 +19,7 @@ export interface Brand {
     gridCols: string;
   };
   categories: Category[];
+  instagramUrl: string;
   footerLinks: { href: string; label: string }[];
 }
 
@@ -55,6 +56,7 @@ const aruba: Brand = {
       images: ['/img/aruba/05.png', '/img/aruba/06.png'],
     },
   ],
+  instagramUrl: 'https://www.instagram.com/arubajns/',
   footerLinks: [
     { href: '/', label: 'Arkán Group' },
     { href: '/bakari', label: 'Bakari' },
@@ -100,6 +102,7 @@ const bakari: Brand = {
       images: ['/img/bakari/05.png', '/img/bakari/06.png'],
     },
   ],
+  instagramUrl: 'https://www.instagram.com/bakarijeans/',
   footerLinks: [
     { href: '/', label: 'Arkán Group' },
     { href: '/aruba', label: 'Aruba' },
@@ -141,6 +144,7 @@ const blackBash: Brand = {
       images: ['/img/black-bash/05.png', '/img/black-bash/06.png'],
     },
   ],
+  instagramUrl: 'https://www.instagram.com/blackbashmx/',
   footerLinks: [
     { href: '/', label: 'Arkán Group' },
     { href: '/aruba', label: 'Aruba' },

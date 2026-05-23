@@ -1,0 +1,120 @@
+---
+import AdminSidebar from '../components/admin/AdminSidebar.astro';
+
+interface Props {
+  title?: string;
+}
+const { title = 'Admin' } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title} — Arkán Admin</title>
+  <link rel="icon" type="image/jpeg" href="/logos/arkan.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Syne', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background: #F6F6F6;
+    }
+
+    .admin-shell {
+      display: flex;
+      min-height: 100vh;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .admin-shell.ready { opacity: 1; }
+
+    /* Loading state */
+    .admin-loading {
+      position: fixed;
+      inset: 0;
+      background: #080808;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #2A2A2A;
+      transition: opacity 0.3s ease;
+    }
+    .admin-loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Main content area */
+    .admin-main {
+      margin-left: 220px;
+      flex: 1;
+      min-height: 100vh;
+      background: #F6F6F6;
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-loading" id="adminLoading">Verificando sesión...</div>
+
+  <div class="admin-shell" id="adminShell">
+    <AdminSidebar currentPath={currentPath} />
+    <main class="admin-main">
+      <slot />
+    </main>
+  </div>
+
+  <script>
+    const API = 'http://localhost:4013';
+
+    async function initAdmin() {
+      try {
+        const res = await fetch(`${API}/auth/validate`, { credentials: 'include' });
+        if (!res.ok) { window.location.href = '/login'; return; }
+
+        const json = await res.json();
+        const user = json?.data?.user ?? json?.user;
+
+        // Populate sidebar user info
+        const nameEl = document.getElementById('sidebarUserName');
+        const roleChip = document.getElementById('sidebarRoleChip');
+        const roleLabel = document.getElementById('sidebarRoleLabel');
+
+        if (nameEl) nameEl.textContent = user.name ?? '';
+        if (roleLabel) roleLabel.textContent = user.role ?? '';
+        if (roleChip && user.role === 'GERENTE') roleChip.classList.add('gerente');
+
+        // Logout
+        document.getElementById('sidebarLogout')?.addEventListener('click', async () => {
+          await fetch(`${API}/auth/logout`, { method: 'POST', credentials: 'include' }).catch(() => {});
+          window.location.href = '/login';
+        });
+
+        // Reveal layout
+        document.getElementById('adminLoading')?.classList.add('hidden');
+        document.getElementById('adminShell')?.classList.add('ready');
+
+        // Notify page scripts
+        document.dispatchEvent(new CustomEvent('arkan:auth-ready', { detail: user }));
+      } catch {
+        window.location.href = '/login';
+      }
+    }
+
+    initAdmin();
+  </script>
+</body>
+</html>

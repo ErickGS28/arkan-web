@@ -1,210 +1,155 @@
 ---
-// src/pages/admin.astro
+import AdminLayout from '../layouts/AdminLayout.astro';
 ---
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin — Arkán Group</title>
-  <link rel="icon" type="image/jpeg" href="/logos/arkan.jpg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700&display=swap" rel="stylesheet" />
+
+<AdminLayout title="Dashboard">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: #0A0A0A;
-      color: #F0F0F0;
-      font-family: 'Syne', sans-serif;
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
+    .page-header {
+      padding: 28px 40px 24px;
+      border-bottom: 1px solid #E8E8E8;
+      background: #FFFFFF;
     }
-    .loading {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      letter-spacing: 3px;
-      color: #333;
-      text-transform: uppercase;
-    }
-    .topbar {
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 40px;
-      border-bottom: 1px solid #1A1A1A;
-    }
-    .topbar.visible { display: flex; }
-    .topbar-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .topbar-logo {
-      width: 28px;
-      height: 28px;
-      object-fit: contain;
-      opacity: 0.6;
-    }
-    .topbar-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 16px;
+    .page-header-label {
+      font-size: 9px;
       letter-spacing: 4px;
-      color: #888;
-    }
-    .btn-logout {
-      background: transparent;
-      border: 1px solid #222;
-      color: #666;
-      font-family: 'Syne', sans-serif;
-      font-size: 10px;
-      letter-spacing: 2px;
       text-transform: uppercase;
-      padding: 8px 18px;
-      cursor: pointer;
-      transition: border-color 0.2s, color 0.2s;
+      color: #BBBBBB;
+      margin-bottom: 4px;
     }
-    .btn-logout:hover { border-color: #555; color: #F0F0F0; }
-    .main {
-      display: none;
-      padding: 64px 40px;
-      max-width: 860px;
+    .page-header-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      letter-spacing: 3px;
+      color: #111111;
     }
-    .main.visible { display: block; }
+
+    .page-body {
+      padding: 40px;
+    }
+
+    /* Greeting */
     .greeting-label {
       font-size: 10px;
       letter-spacing: 4px;
       text-transform: uppercase;
-      color: #444;
-      margin-bottom: 10px;
+      color: #BBBBBB;
+      margin-bottom: 8px;
     }
     .greeting-name {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(48px, 7vw, 80px);
+      font-size: clamp(44px, 6vw, 68px);
       letter-spacing: 2px;
       line-height: 1;
-      color: #FFFFFF;
-      margin-bottom: 20px;
+      color: #111111;
+      margin-bottom: 16px;
     }
+
+    /* Role chip */
     .role-chip {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 6px 16px;
-      border: 1px solid #2A2A2A;
-      font-size: 10px;
+      gap: 7px;
+      padding: 5px 14px;
+      border: 1px solid #DDDDDD;
+      font-size: 9px;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: #555;
+      color: #999;
     }
-    .role-chip.gerente { border-color: #444; color: #CCCCCC; }
-    .dot {
-      width: 5px;
-      height: 5px;
+    .role-chip.gerente {
+      border-color: #111111;
+      color: #111111;
+    }
+    .role-dot {
+      width: 5px; height: 5px;
       border-radius: 50%;
-      background: #333;
+      background: #DDDDDD;
+      flex-shrink: 0;
     }
-    .role-chip.gerente .dot { background: #CCCCCC; }
+    .role-chip.gerente .role-dot { background: #111111; }
+
     .divider {
       width: 32px;
       height: 1px;
-      background: #1A1A1A;
-      margin: 40px 0;
+      background: #E8E8E8;
+      margin: 36px 0;
     }
+
+    /* Info cards */
     .info-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 1px;
-      background: #161616;
-      border: 1px solid #161616;
-      max-width: 500px;
+      background: #E8E8E8;
+      border: 1px solid #E8E8E8;
+      max-width: 520px;
     }
-    .info-cell {
-      background: #0D0D0D;
+    .info-card {
+      background: #FFFFFF;
       padding: 20px 24px;
     }
-    .info-label {
+    .info-card-label {
       font-size: 9px;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: #3A3A3A;
+      color: #BBBBBB;
       margin-bottom: 8px;
     }
-    .info-value {
+    .info-card-value {
       font-size: 13px;
-      color: #AAAAAA;
+      color: #444444;
       word-break: break-all;
     }
   </style>
-</head>
-<body>
-  <div class="loading" id="loading">Verificando sesión...</div>
 
-  <nav class="topbar" id="topbar">
-    <div class="topbar-brand">
-      <img src="/logos/arkan.jpg" alt="Arkán" class="topbar-logo" />
-      <span class="topbar-name">ARKÁN ADMIN</span>
-    </div>
-    <button class="btn-logout" id="logoutBtn">Cerrar sesión</button>
-  </nav>
+  <div class="page-header">
+    <p class="page-header-label">Panel Administrativo</p>
+    <h1 class="page-header-title">Dashboard</h1>
+  </div>
 
-  <main class="main" id="mainContent">
+  <div class="page-body">
     <p class="greeting-label">Bienvenido de vuelta</p>
-    <h1 class="greeting-name" id="userName"></h1>
-    <span class="role-chip" id="roleChip">
-      <span class="dot"></span>
-      <span id="roleLabel"></span>
+    <h2 class="greeting-name" id="dashGreetingName"></h2>
+    <span class="role-chip" id="dashRoleChip">
+      <span class="role-dot"></span>
+      <span id="dashRoleLabel"></span>
     </span>
+
     <div class="divider"></div>
+
     <div class="info-grid">
-      <div class="info-cell">
-        <p class="info-label">Email</p>
-        <p class="info-value" id="userEmail"></p>
+      <div class="info-card">
+        <p class="info-card-label">Email</p>
+        <p class="info-card-value" id="dashEmail"></p>
       </div>
-      <div class="info-cell">
-        <p class="info-label">Rol</p>
-        <p class="info-value" id="userRole"></p>
+      <div class="info-card">
+        <p class="info-card-label">Nombre</p>
+        <p class="info-card-value" id="dashName"></p>
+      </div>
+      <div class="info-card">
+        <p class="info-card-label">Rol</p>
+        <p class="info-card-value" id="dashRole"></p>
       </div>
     </div>
-  </main>
+  </div>
 
   <script>
-    const API = 'http://localhost:4013';
+    document.addEventListener('arkan:auth-ready', (e: Event) => {
+      const user = (e as CustomEvent).detail;
 
-    async function init() {
-      try {
-        const res = await fetch(`${API}/auth/validate`, { credentials: 'include' });
-        if (!res.ok) { window.location.href = '/login'; return; }
+      const name = document.getElementById('dashGreetingName');
+      const email = document.getElementById('dashEmail');
+      const nameCard = document.getElementById('dashName');
+      const role = document.getElementById('dashRole');
+      const roleLabel = document.getElementById('dashRoleLabel');
+      const roleChip = document.getElementById('dashRoleChip');
 
-        const json = await res.json();
-        const user = json?.data?.user ?? json?.user;
-
-        document.getElementById('userName')!.textContent = (user.name ?? '').toUpperCase();
-        document.getElementById('userEmail')!.textContent = user.email ?? '';
-        document.getElementById('userRole')!.textContent = user.role ?? '';
-        document.getElementById('roleLabel')!.textContent = user.role ?? '';
-
-        if (user.role === 'GERENTE') {
-          document.getElementById('roleChip')!.classList.add('gerente');
-        }
-
-        document.getElementById('loading')!.style.display = 'none';
-        document.getElementById('topbar')!.classList.add('visible');
-        document.getElementById('mainContent')!.classList.add('visible');
-      } catch {
-        window.location.href = '/login';
-      }
-    }
-
-    document.getElementById('logoutBtn')!.addEventListener('click', async () => {
-      await fetch(`${API}/auth/logout`, { method: 'POST', credentials: 'include' }).catch(() => {});
-      window.location.href = '/login';
+      if (name) name.textContent = (user.name ?? '').toUpperCase();
+      if (email) email.textContent = user.email ?? '';
+      if (nameCard) nameCard.textContent = `${user.name ?? ''} ${user.lastName ?? ''}`.trim();
+      if (role) role.textContent = user.role ?? '';
+      if (roleLabel) roleLabel.textContent = user.role ?? '';
+      if (roleChip && user.role === 'GERENTE') roleChip.classList.add('gerente');
     });
-
-    init();
   </script>
-</body>
-</html>
+</AdminLayout>

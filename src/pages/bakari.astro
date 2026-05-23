@@ -1,6 +1,33 @@
 ---
 import { getBrand } from '../data/brands';
 import BrandPage from '../layouts/BrandPage.astro';
+
 const brand = getBrand('bakari')!;
+const API = import.meta.env.API_URL ?? 'http://localhost:4013';
+
+let categories = brand.categories;
+try {
+  const controller = new AbortController();
+  const t = setTimeout(() => controller.abort(), 3000);
+  const res = await fetch(`${API}/brands/categories?brand=BAKARI`, { signal: controller.signal });
+  clearTimeout(t);
+  if (res.ok) {
+    const json = await res.json();
+    const apiCats: any[] = Array.isArray(json) ? json : (json?.data ?? []);
+    if (apiCats.length > 0) {
+      categories = apiCats
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+        .map(cat => ({
+          name: cat.name as string,
+          description: (cat.description as string) ?? '',
+          images: ((cat.images ?? []) as any[])
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+            .map((img: any) => img.url as string),
+        }));
+    }
+  }
+} catch {}
+
+const dynamicBrand = { ...brand, categories };
 ---
-<BrandPage {brand} />
+<BrandPage brand={dynamicBrand} />

@@ -1,19 +1,5 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
-
-export async function getStaticPaths() {
-  try {
-    const res = await fetch('http://localhost:4013/blog/admin', {
-      headers: { 'Cookie': '' }, // unauthenticated — will 401, caught below
-    });
-    if (res.ok) {
-      const posts = await res.json();
-      return posts.map((p: { id: number }) => ({ params: { id: String(p.id) } }));
-    }
-  } catch { /* API not running at build time */ }
-  // Provide a placeholder so the build doesn't fail
-  return [{ params: { id: '0' } }];
-}
 ---
 
 <AdminLayout title="Editar Post">
@@ -24,6 +10,7 @@ export async function getStaticPaths() {
         <h1 class="page-title">Editar Post</h1>
       </div>
       <div class="header-actions">
+        <a id="btnPreview" class="btn-preview" target="_blank" rel="noopener" style="display:none">Ver publicado</a>
         <button class="btn-draft" id="btnDraft">Guardar borrador</button>
         <button class="btn-publish" id="btnPublish">Publicar</button>
       </div>
@@ -98,10 +85,10 @@ export async function getStaticPaths() {
 
   .loading-state {
     font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    color: #BBB;
+    font-size: 14px;
+    color: #AAA;
     padding: 40px 0;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
   }
 
   .page-header {
@@ -131,6 +118,21 @@ export async function getStaticPaths() {
   }
 
   .header-actions { display: flex; gap: 10px; align-items: center; }
+
+  .btn-preview {
+    padding: 11px 24px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid #E0E0E0;
+    color: #777;
+    background: transparent;
+    transition: all 0.15s;
+  }
+  .btn-preview:hover { border-color: #AAA; color: #333; background: #F8F8F8; }
 
   .btn-draft, .btn-publish {
     padding: 11px 24px;
@@ -248,7 +250,7 @@ export async function getStaticPaths() {
 
   .status-display {
     font-family: 'Syne', sans-serif;
-    font-size: 12px;
+    font-size: 13px;
     color: #555;
     display: flex;
     flex-direction: column;
@@ -258,18 +260,18 @@ export async function getStaticPaths() {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 3px 10px;
+    padding: 4px 12px;
     font-family: 'Syne', sans-serif;
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     border-radius: 2px;
     width: fit-content;
   }
   .status-badge.published { background: #EDFAF3; color: #1A7A4A; }
-  .status-badge.draft     { background: #F5F5F5; color: #888; }
-  .status-date { font-size: 11px; color: #BBB; }
+  .status-badge.draft     { background: #F2F2F2; color: #666; }
+  .status-date { font-size: 12px; color: #AAA; }
 
   /* Cover upload */
   .cover-upload {
@@ -342,7 +344,9 @@ export async function getStaticPaths() {
 
 <script>
   const API = 'http://localhost:4013';
-  const postId = window.location.pathname.split('/').at(-1);
+  const postId = new URLSearchParams(window.location.search).get('id');
+
+  if (!postId) window.location.href = '/admin/blog';
 
   // Editor toolbar
   document.querySelectorAll('#editorToolbar button').forEach(btn => {
@@ -379,9 +383,7 @@ export async function getStaticPaths() {
     const file = coverFile.files?.[0];
     if (!file) return;
 
-    // Show local preview instantly
-    const localUrl = URL.createObjectURL(file);
-    setCoverImage(localUrl);
+    setCoverImage(URL.createObjectURL(file));
     uploadStatus.textContent = 'Subiendo imagen...';
 
     const formData = new FormData();
@@ -431,6 +433,13 @@ export async function getStaticPaths() {
       document.getElementById('richEditor')!.innerHTML = post.content;
       document.getElementById('slugDisplay')!.textContent = post.slug;
 
+      // Preview link
+      const btnPreview = document.getElementById('btnPreview') as HTMLAnchorElement;
+      if (btnPreview) {
+        btnPreview.href = `/blog/${post.slug}`;
+        btnPreview.style.display = 'inline-flex';
+      }
+
       // Status
       const statusDiv = document.getElementById('statusDisplay')!;
       const isPublished = post.status === 'PUBLISHED';
@@ -438,14 +447,12 @@ export async function getStaticPaths() {
         <span class="status-badge ${isPublished ? 'published' : 'draft'}">
           ${isPublished ? 'Publicado' : 'Borrador'}
         </span>
-        ${post.publishedAt ? `<span class="status-date">Publicado el ${new Date(post.publishedAt).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' })}</span>` : ''}
+        ${post.publishedAt
+          ? `<span class="status-date">Publicado el ${new Date(post.publishedAt).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' })}</span>`
+          : ''}
       `;
 
-      // Cover
-      if (post.coverImg) {
-        coverImgInput.value = post.coverImg;
-        setCoverImage(post.coverImg);
-      }
+      if (post.coverImg) setCoverImage(post.coverImg);
 
       document.getElementById('loadingState')!.style.display = 'none';
       document.getElementById('postForm')!.style.display = 'block';

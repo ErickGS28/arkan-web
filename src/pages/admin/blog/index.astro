@@ -40,7 +40,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   </div>
 </AdminLayout>
 
-<style>
+<style is:global>
   .page {
     padding: 40px 48px;
     max-width: 1100px;
@@ -209,7 +209,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     justify-content: flex-end;
   }
 
-  .btn-edit, .btn-delete {
+  .btn-view, .btn-edit, .btn-delete {
     padding: 6px 14px;
     font-family: 'Syne', sans-serif;
     font-size: 12px;
@@ -222,6 +222,12 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     text-decoration: none;
     display: inline-block;
   }
+  .btn-view {
+    border-color: #E0E0E0;
+    background: transparent;
+    color: #888;
+  }
+  .btn-view:hover { border-color: #AAA; color: #333; background: #F8F8F8; }
   .btn-edit {
     border-color: #CCCCCC;
     background: transparent;
@@ -270,7 +276,8 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         <td class="post-date">${formatDate(post.publishedAt ?? post.createdAt)}</td>
         <td>
           <div class="row-actions">
-            <a href="/admin/blog/${post.id}" class="btn-edit">Editar</a>
+            <a href="/blog/${post.slug}" target="_blank" rel="noopener" class="btn-view">Ver</a>
+            <a href="/admin/blog/edit?id=${post.id}" class="btn-edit">Editar</a>
             <button class="btn-delete" data-id="${post.id}" data-title="${post.title.replace(/"/g, '&quot;')}">Eliminar</button>
           </div>
         </td>

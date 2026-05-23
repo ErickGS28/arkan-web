@@ -8,9 +8,9 @@ const navItems = [
   { href: '/admin', label: 'Dashboard', group: 'general' },
   { href: '/admin/blog', label: 'Blog', group: 'contenido' },
   { href: '/admin/encuestas', label: 'Encuestas', group: 'contenido' },
-  { href: '/admin/aruba', label: 'Aruba Jeans', group: 'marcas', logo: '/logos/aruba.jpg' },
-  { href: '/admin/bakari', label: 'BKR Bakari', group: 'marcas', logo: '/logos/bakari.jpg' },
-  { href: '/admin/black-bash', label: 'Black Bash MX', group: 'marcas', logo: '/logos/black-bash.jpg' },
+  { href: '/admin/marcas/aruba', label: 'Aruba Jeans', group: 'marcas', logo: '/logos/aruba.jpg' },
+  { href: '/admin/marcas/bakari', label: 'BKR Bakari', group: 'marcas', logo: '/logos/bakari.jpg' },
+  { href: '/admin/marcas/black-bash', label: 'Black Bash MX', group: 'marcas', logo: '/logos/black-bash.jpg' },
 ];
 
 const general  = navItems.filter(i => i.group === 'general');
@@ -246,7 +246,7 @@ const marcas   = navItems.filter(i => i.group === 'marcas');
       {marcas.map(item => (
         <a
           href={item.href}
-          class:list={['nav-item', { active: currentPath === item.href }]}
+          class:list={['nav-item', { active: currentPath === item.href || currentPath.startsWith(item.href) }]}
         >
           <img src={item.logo} alt={item.label} class="nav-brand-logo" />
           {item.label}

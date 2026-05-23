@@ -1,0 +1,535 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+
+const { brand } = Astro.params;
+
+const BRANDS: Record<string, { label: string; key: string }> = {
+  aruba:       { label: 'Aruba Jeans',   key: 'ARUBA' },
+  bakari:      { label: 'BKR Bakari',    key: 'BAKARI' },
+  'black-bash':{ label: 'Black Bash MX', key: 'BLACK_BASH' },
+};
+
+const info = BRANDS[brand ?? ''];
+if (!info) return Astro.redirect('/admin');
+---
+
+<AdminLayout title={`${info.label} — Categorías`}>
+  <div class="page">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">{info.label}</h1>
+        <p class="page-sub" id="catCount">Cargando...</p>
+      </div>
+      <button class="btn-new" id="btnNewCat">+ Nueva categoría</button>
+    </header>
+
+    <div class="table-wrap">
+      <table class="cat-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Imágenes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="catsBody">
+          <tr><td colspan="5" class="loading-row">Cargando categorías...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Create / Edit modal -->
+  <div class="modal-overlay" id="catModal">
+    <div class="modal">
+      <h2 class="modal-title" id="modalTitle">Nueva categoría</h2>
+      <input type="hidden" id="editId" value="" />
+      <div class="form-group">
+        <label class="form-label">Nombre *</label>
+        <input class="form-input" id="fieldName" placeholder="Ej. Skinny Fit" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descripción</label>
+        <textarea class="form-textarea" id="fieldDesc" rows="3" placeholder="Descripción breve de la categoría"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Orden</label>
+        <input class="form-input" id="fieldOrder" type="number" value="0" min="0" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="btnCancelCat">Cancelar</button>
+        <button class="btn-save" id="btnSaveCat">Guardar</button>
+      </div>
+      <p class="modal-error" id="catError"></p>
+    </div>
+  </div>
+
+  <!-- Delete confirm modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal modal--sm">
+      <h2 class="modal-title">Eliminar categoría</h2>
+      <p class="delete-msg">¿Eliminar "<strong id="deleteName"></strong>"? También se borrarán todas sus imágenes. Esta acción no se puede deshacer.</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="btnCancelDel">Cancelar</button>
+        <button class="btn-delete-confirm" id="btnConfirmDel">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style is:global>
+  .page { padding: 36px 40px; max-width: 1100px; }
+
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    gap: 16px;
+  }
+  .page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 3px;
+    color: #FFFFFF;
+    margin: 0 0 4px;
+  }
+  .page-sub {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    color: #666;
+    letter-spacing: 0.5px;
+    margin: 0;
+  }
+  .btn-new {
+    padding: 10px 20px;
+    background: #FFFFFF;
+    color: #0A0A0A;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .btn-new:hover { background: #E0E0E0; }
+
+  .table-wrap {
+    border: 1px solid #1A1A1A;
+    overflow: hidden;
+  }
+  .cat-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+  }
+  .cat-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #666;
+    background: #0D0D0D;
+    border-bottom: 1px solid #1A1A1A;
+  }
+  .cat-table td {
+    padding: 14px 16px;
+    color: #CCCCCC;
+    border-bottom: 1px solid #111;
+    vertical-align: middle;
+  }
+  .cat-table tr:last-child td { border-bottom: none; }
+  .cat-table tr:hover td { background: #0D0D0D; }
+
+  .cat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: #444;
+    width: 40px;
+  }
+  .cat-name {
+    font-weight: 600;
+    color: #FFFFFF;
+    letter-spacing: 0.3px;
+  }
+  .cat-desc-cell {
+    color: #888;
+    font-size: 12px;
+    max-width: 320px;
+  }
+  .cat-desc-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .img-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.5px;
+  }
+  .img-count-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    color: #CCCCCC;
+  }
+
+  .row-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+  .btn-images {
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid #333;
+    color: #AAAAAA;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-images:hover { border-color: #888; color: #FFF; }
+  .btn-edit {
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid #333;
+    color: #AAAAAA;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-edit:hover { border-color: #888; color: #FFF; }
+  .btn-delete {
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid #3A1A1A;
+    color: #884444;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-delete:hover { border-color: #AA4444; color: #FF6666; }
+
+  .loading-row {
+    text-align: center;
+    color: #555;
+    padding: 32px !important;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #111;
+    border: 1px solid #222;
+    padding: 32px;
+    width: 100%;
+    max-width: 480px;
+  }
+  .modal--sm { max-width: 380px; }
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    color: #FFFFFF;
+    margin: 0 0 24px;
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 6px;
+  }
+  .form-input, .form-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: #0A0A0A;
+    border: 1px solid #2A2A2A;
+    color: #FFFFFF;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+    box-sizing: border-box;
+  }
+  .form-input:focus, .form-textarea:focus { border-color: #555; }
+  .form-textarea { resize: vertical; min-height: 80px; }
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+  .btn-cancel {
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid #333;
+    color: #888;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .btn-cancel:hover { color: #CCC; border-color: #555; }
+  .btn-save {
+    padding: 10px 20px;
+    background: #FFFFFF;
+    color: #0A0A0A;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-save:hover { background: #E0E0E0; }
+  .btn-save:disabled { background: #555; cursor: not-allowed; }
+  .btn-delete-confirm {
+    padding: 10px 20px;
+    background: #8B1A1A;
+    color: #FFFFFF;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-delete-confirm:hover { background: #AA2222; }
+  .modal-error {
+    color: #FF6666;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    margin: 12px 0 0;
+    min-height: 16px;
+  }
+  .delete-msg {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    color: #AAAAAA;
+    line-height: 1.6;
+    margin: 0 0 24px;
+  }
+  .delete-msg strong { color: #FFFFFF; }
+</style>
+
+<script define:vars={{ brandKey: info.key, brandSlug: brand }}>
+  const API = 'http://localhost:4013';
+  let allCats = [];
+  let deleteTargetId = null;
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  function render(cats) {
+    const tbody = document.getElementById('catsBody');
+    const count = document.getElementById('catCount');
+    if (count) count.textContent = `${cats.length} categoría${cats.length !== 1 ? 's' : ''}`;
+
+    if (!cats.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="loading-row">Sin categorías. Crea la primera.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = cats.map((c, i) => `
+      <tr>
+        <td class="cat-num">0${i + 1}</td>
+        <td><span class="cat-name">${c.name}</span></td>
+        <td class="cat-desc-cell"><span class="cat-desc-text">${c.description ?? '—'}</span></td>
+        <td>
+          <span class="img-count">
+            <span class="img-count-num">${c.images?.length ?? 0}</span>
+            img
+          </span>
+        </td>
+        <td>
+          <div class="row-actions">
+            <a href="/admin/marcas/categoria?id=${c.id}&brand=${brandSlug}" class="btn-images">Imágenes</a>
+            <button class="btn-edit" data-id="${c.id}">Editar</button>
+            <button class="btn-delete" data-id="${c.id}" data-name="${c.name.replace(/"/g, '&quot;')}">Eliminar</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+
+    tbody.querySelectorAll('.btn-edit').forEach(btn => {
+      btn.addEventListener('click', () => openEdit(Number(btn.dataset.id)));
+    });
+    tbody.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', () => openDelete(Number(btn.dataset.id), btn.dataset.name));
+    });
+  }
+
+  // ── Load ──────────────────────────────────────────────────────────────────
+  async function load() {
+    try {
+      const res = await fetch(`${API}/brands/categories?brand=${brandKey}`, { credentials: 'include' });
+      const json = await res.json();
+      allCats = Array.isArray(json) ? json : (json.data ?? []);
+      render(allCats);
+    } catch {
+      document.getElementById('catsBody').innerHTML =
+        '<tr><td colspan="5" class="loading-row">Error al cargar categorías.</td></tr>';
+    }
+  }
+
+  // ── Create / Edit modal ───────────────────────────────────────────────────
+  function openCreate() {
+    document.getElementById('modalTitle').textContent = 'Nueva categoría';
+    document.getElementById('editId').value = '';
+    document.getElementById('fieldName').value = '';
+    document.getElementById('fieldDesc').value = '';
+    document.getElementById('fieldOrder').value = allCats.length.toString();
+    document.getElementById('catError').textContent = '';
+    document.getElementById('catModal').classList.add('open');
+    document.getElementById('fieldName').focus();
+  }
+
+  function openEdit(id) {
+    const cat = allCats.find(c => c.id === id);
+    if (!cat) return;
+    document.getElementById('modalTitle').textContent = 'Editar categoría';
+    document.getElementById('editId').value = id;
+    document.getElementById('fieldName').value = cat.name;
+    document.getElementById('fieldDesc').value = cat.description ?? '';
+    document.getElementById('fieldOrder').value = cat.order ?? 0;
+    document.getElementById('catError').textContent = '';
+    document.getElementById('catModal').classList.add('open');
+    document.getElementById('fieldName').focus();
+  }
+
+  function closeModal() {
+    document.getElementById('catModal').classList.remove('open');
+  }
+
+  document.getElementById('btnNewCat').addEventListener('click', openCreate);
+  document.getElementById('btnCancelCat').addEventListener('click', closeModal);
+
+  document.getElementById('btnSaveCat').addEventListener('click', async () => {
+    const btn = document.getElementById('btnSaveCat');
+    const id = document.getElementById('editId').value;
+    const name = document.getElementById('fieldName').value.trim();
+    const description = document.getElementById('fieldDesc').value.trim();
+    const order = Number(document.getElementById('fieldOrder').value);
+    const errEl = document.getElementById('catError');
+
+    if (!name) { errEl.textContent = 'El nombre es obligatorio.'; return; }
+    errEl.textContent = '';
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+
+    try {
+      const isEdit = Boolean(id);
+      const url = isEdit ? `${API}/brands/categories/${id}` : `${API}/brands/categories`;
+      const method = isEdit ? 'PATCH' : 'POST';
+      const body = isEdit
+        ? { name, description: description || undefined, order }
+        : { brand: brandKey, name, description: description || undefined, order };
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) { errEl.textContent = 'Error al guardar. Intenta de nuevo.'; return; }
+
+      closeModal();
+      await load();
+    } catch {
+      errEl.textContent = 'Error de conexión.';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Guardar';
+    }
+  });
+
+  // ── Delete modal ──────────────────────────────────────────────────────────
+  function openDelete(id, name) {
+    deleteTargetId = id;
+    document.getElementById('deleteName').textContent = name;
+    document.getElementById('deleteModal').classList.add('open');
+  }
+
+  document.getElementById('btnCancelDel').addEventListener('click', () => {
+    document.getElementById('deleteModal').classList.remove('open');
+    deleteTargetId = null;
+  });
+
+  document.getElementById('btnConfirmDel').addEventListener('click', async () => {
+    if (!deleteTargetId) return;
+    const btn = document.getElementById('btnConfirmDel');
+    btn.disabled = true;
+    btn.textContent = 'Eliminando...';
+    try {
+      await fetch(`${API}/brands/categories/${deleteTargetId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      document.getElementById('deleteModal').classList.remove('open');
+      deleteTargetId = null;
+      await load();
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Eliminar';
+    }
+  });
+
+  // ── Close modal on overlay click ──────────────────────────────────────────
+  document.getElementById('catModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+  document.getElementById('deleteModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+      e.currentTarget.classList.remove('open');
+      deleteTargetId = null;
+    }
+  });
+
+  document.addEventListener('arkan:auth-ready', load);
+</script>

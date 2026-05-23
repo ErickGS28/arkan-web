@@ -1,0 +1,406 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Categoría — Imágenes">
+  <div class="page">
+    <a class="btn-back" id="backLink" href="/admin">← Volver</a>
+
+    <header class="page-header">
+      <div>
+        <p class="page-brand" id="pageBrand">—</p>
+        <h1 class="page-title" id="pageTitle">Cargando...</h1>
+        <p class="page-desc" id="pageDesc"></p>
+      </div>
+      <label class="btn-upload" for="fileInput">
+        + Subir imagen
+        <input type="file" id="fileInput" accept="image/*" style="display:none" />
+      </label>
+    </header>
+
+    <div id="uploadProgress" class="upload-progress" style="display:none">
+      <div class="upload-bar"><div class="upload-bar-fill" id="uploadBarFill"></div></div>
+      <p class="upload-text" id="uploadText">Subiendo...</p>
+    </div>
+
+    <div class="images-grid" id="imagesGrid">
+      <p class="loading-msg">Cargando imágenes...</p>
+    </div>
+  </div>
+
+  <!-- Delete image confirm modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <h2 class="modal-title">Eliminar imagen</h2>
+      <p class="delete-msg">¿Eliminar esta imagen? Se borrará de Cloudflare R2 y no podrá recuperarse.</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="btnCancelDel">Cancelar</button>
+        <button class="btn-delete-confirm" id="btnConfirmDel">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style is:global>
+  .page { padding: 36px 40px; max-width: 1200px; }
+
+  .btn-back {
+    display: inline-block;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #666;
+    text-decoration: none;
+    margin-bottom: 28px;
+    transition: color 0.15s;
+  }
+  .btn-back:hover { color: #CCCCCC; }
+
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    gap: 16px;
+  }
+  .page-brand {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #555;
+    margin: 0 0 4px;
+  }
+  .page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 3px;
+    color: #FFFFFF;
+    margin: 0 0 6px;
+  }
+  .page-desc {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+    max-width: 480px;
+  }
+
+  .btn-upload {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    background: #FFFFFF;
+    color: #0A0A0A;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .btn-upload:hover { background: #E0E0E0; }
+
+  .upload-progress {
+    margin-bottom: 24px;
+    background: #111;
+    border: 1px solid #1A1A1A;
+    padding: 16px;
+  }
+  .upload-bar {
+    width: 100%;
+    height: 3px;
+    background: #1A1A1A;
+    margin-bottom: 10px;
+  }
+  .upload-bar-fill {
+    height: 100%;
+    background: #FFFFFF;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  .upload-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    color: #888;
+    margin: 0;
+  }
+
+  .images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .image-card {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    background: #111;
+    border: 1px solid #1A1A1A;
+    overflow: hidden;
+    group: true;
+  }
+  .image-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  .image-card:hover img { transform: scale(1.04); }
+  .image-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .image-card:hover .image-overlay { opacity: 1; }
+  .btn-del-img {
+    padding: 8px 16px;
+    background: #8B1A1A;
+    color: #FFFFFF;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-del-img:hover { background: #AA2222; }
+
+  .loading-msg {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    color: #555;
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 40px 0;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #111;
+    border: 1px solid #222;
+    padding: 32px;
+    width: 100%;
+    max-width: 380px;
+  }
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    color: #FFFFFF;
+    margin: 0 0 16px;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+  .btn-cancel {
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid #333;
+    color: #888;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .btn-cancel:hover { color: #CCC; border-color: #555; }
+  .btn-delete-confirm {
+    padding: 10px 20px;
+    background: #8B1A1A;
+    color: #FFFFFF;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-delete-confirm:hover { background: #AA2222; }
+  .delete-msg {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    color: #AAAAAA;
+    line-height: 1.6;
+    margin: 0 0 24px;
+  }
+</style>
+
+<script>
+  const API = 'http://localhost:4013';
+  const params = new URLSearchParams(window.location.search);
+  const categoryId = params.get('id');
+  const brandSlug = params.get('brand') ?? 'aruba';
+
+  const BRAND_NAMES: Record<string, string> = {
+    aruba: 'Aruba Jeans',
+    bakari: 'BKR Bakari',
+    'black-bash': 'Black Bash MX',
+  };
+
+  let deleteTargetId: number | null = null;
+  let category: any = null;
+
+  if (!categoryId) window.location.href = '/admin';
+
+  // Update back link
+  document.getElementById('backLink')!.setAttribute('href', `/admin/marcas/${brandSlug}`);
+
+  // ── Load category ─────────────────────────────────────────────────────────
+  async function loadCategory() {
+    try {
+      const res = await fetch(`${API}/brands/categories/${categoryId}`, { credentials: 'include' });
+      const json = await res.json();
+      category = json?.data ?? json;
+
+      document.getElementById('pageBrand')!.textContent = BRAND_NAMES[brandSlug] ?? brandSlug;
+      document.getElementById('pageTitle')!.textContent = category.name;
+      document.getElementById('pageDesc')!.textContent = category.description ?? '';
+
+      renderImages(category.images ?? []);
+    } catch {
+      document.getElementById('pageTitle')!.textContent = 'Error al cargar';
+    }
+  }
+
+  // ── Render images ─────────────────────────────────────────────────────────
+  function renderImages(images: any[]) {
+    const grid = document.getElementById('imagesGrid')!;
+
+    if (!images.length) {
+      grid.innerHTML = '<p class="loading-msg">Sin imágenes. Sube la primera.</p>';
+      return;
+    }
+
+    grid.innerHTML = images
+      .sort((a: any, b: any) => a.order - b.order)
+      .map((img: any) => `
+        <div class="image-card">
+          <img src="${img.url}" alt="${img.alt ?? ''}" loading="lazy" />
+          <div class="image-overlay">
+            <button class="btn-del-img" data-id="${img.id}">Eliminar</button>
+          </div>
+        </div>
+      `)
+      .join('');
+
+    grid.querySelectorAll('.btn-del-img').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const el = btn as HTMLElement;
+        openDeleteModal(Number(el.dataset.id));
+      });
+    });
+  }
+
+  // ── Upload ────────────────────────────────────────────────────────────────
+  document.getElementById('fileInput')!.addEventListener('change', async (e) => {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const progress = document.getElementById('uploadProgress')!;
+    const fill = document.getElementById('uploadBarFill')!;
+    const text = document.getElementById('uploadText')!;
+
+    progress.style.display = 'block';
+    fill.style.width = '30%';
+    text.textContent = 'Subiendo...';
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      fill.style.width = '60%';
+      const res = await fetch(`${API}/brands/categories/${categoryId}/images`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
+
+      fill.style.width = '100%';
+
+      if (!res.ok) {
+        text.textContent = 'Error al subir la imagen.';
+        setTimeout(() => { progress.style.display = 'none'; fill.style.width = '0%'; }, 2500);
+        return;
+      }
+
+      text.textContent = 'Imagen subida correctamente.';
+      input.value = '';
+      await loadCategory();
+      setTimeout(() => { progress.style.display = 'none'; fill.style.width = '0%'; }, 1500);
+    } catch {
+      text.textContent = 'Error de conexión.';
+      setTimeout(() => { progress.style.display = 'none'; fill.style.width = '0%'; }, 2500);
+    }
+  });
+
+  // ── Delete modal ──────────────────────────────────────────────────────────
+  function openDeleteModal(imageId: number) {
+    deleteTargetId = imageId;
+    document.getElementById('deleteModal')!.classList.add('open');
+  }
+
+  document.getElementById('btnCancelDel')!.addEventListener('click', () => {
+    document.getElementById('deleteModal')!.classList.remove('open');
+    deleteTargetId = null;
+  });
+
+  document.getElementById('btnConfirmDel')!.addEventListener('click', async () => {
+    if (!deleteTargetId) return;
+    const btn = document.getElementById('btnConfirmDel') as HTMLButtonElement;
+    btn.disabled = true;
+    btn.textContent = 'Eliminando...';
+
+    try {
+      await fetch(`${API}/brands/images/${deleteTargetId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      document.getElementById('deleteModal')!.classList.remove('open');
+      deleteTargetId = null;
+      await loadCategory();
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Eliminar';
+    }
+  });
+
+  document.getElementById('deleteModal')!.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+      (e.currentTarget as HTMLElement).classList.remove('open');
+      deleteTargetId = null;
+    }
+  });
+
+  document.addEventListener('arkan:auth-ready', loadCategory);
+</script>

@@ -1,0 +1,245 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Encuestas">
+  <div class="page">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">Encuestas</h1>
+        <p class="page-sub" id="surveyCount">Cargando...</p>
+      </div>
+      <a href="/admin/encuestas/new" class="btn-new">+ Nueva encuesta</a>
+    </header>
+
+    <div class="table-wrap">
+      <table class="surveys-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Título</th>
+            <th>Estado</th>
+            <th>Enlace público</th>
+            <th>Fecha</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="surveysBody">
+          <tr><td colspan="6" class="loading-row">Cargando encuestas...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="deleteModal" style="display:none">
+    <div class="modal">
+      <p class="modal-title">Eliminar encuesta</p>
+      <p class="modal-body">¿Eliminar <strong id="modalTitle"></strong>? Esta acción no se puede deshacer.</p>
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" id="modalCancel">Cancelar</button>
+        <button class="modal-btn-confirm" id="modalConfirm">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style is:global>
+  .page { padding: 40px 48px; max-width: 1100px; }
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; }
+  .page-title { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 3px; color: #0A0A0A; }
+  .page-sub { font-family: 'Syne', sans-serif; font-size: 14px; color: #888; margin-top: 4px; }
+  .btn-new {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 12px 24px; background: #0A0A0A; color: #FFF;
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase; text-decoration: none;
+    transition: background 0.2s; white-space: nowrap;
+  }
+  .btn-new:hover { background: #333; }
+
+  .table-wrap { background: #FFF; border: 1px solid #EBEBEB; overflow: hidden; }
+  .surveys-table { width: 100%; border-collapse: collapse; }
+  .surveys-table th {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; color: #777;
+    padding: 16px 18px; text-align: left; border-bottom: 1px solid #EBEBEB; background: #F8F8F8;
+  }
+  .surveys-table td {
+    padding: 16px 18px; font-family: 'Syne', sans-serif; font-size: 14px;
+    color: #222; border-bottom: 1px solid #F0F0F0; vertical-align: middle;
+  }
+  .surveys-table tbody tr:last-child td { border-bottom: none; }
+  .surveys-table tbody tr:hover td { background: #FAFAFA; }
+  .loading-row { text-align: center; color: #999; padding: 48px 18px !important; font-size: 14px !important; }
+
+  .survey-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: #CCC; width: 40px; }
+  .survey-title { font-weight: 700; font-size: 15px; color: #0A0A0A; }
+  .survey-slug { font-size: 12px; color: #AAA; margin-top: 3px; }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 12px; font-family: 'Syne', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; border-radius: 2px;
+  }
+  .status-badge.active   { background: #EDFAF3; color: #1A7A4A; }
+  .status-badge.draft    { background: #F2F2F2; color: #666; }
+  .status-badge.closed   { background: #FFF0F0; color: #AA2222; }
+
+  .public-link {
+    font-family: 'Syne', sans-serif; font-size: 12px; color: #4A7FBD;
+    text-decoration: none; letter-spacing: 0.2px;
+  }
+  .public-link:hover { text-decoration: underline; }
+  .survey-date { color: #999; font-size: 13px; }
+
+  .row-actions { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .btn-results, .btn-edit, .btn-delete {
+    padding: 6px 14px; font-family: 'Syne', sans-serif; font-size: 12px;
+    font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+    cursor: pointer; border: 1px solid transparent; transition: all 0.15s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-results { border-color: #D0E8D0; background: transparent; color: #2A7A4A; }
+  .btn-results:hover { background: #EDFAF3; border-color: #2A7A4A; }
+  .btn-edit { border-color: #CCC; background: transparent; color: #444; }
+  .btn-edit:hover { border-color: #0A0A0A; color: #0A0A0A; background: #F5F5F5; }
+  .btn-delete { border-color: transparent; background: transparent; color: #AAA; }
+  .btn-delete:hover { color: #CC2222; border-color: #FFCCCC; background: #FFF5F5; }
+
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center; z-index: 1000;
+    backdrop-filter: blur(2px); animation: fadeIn 0.15s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal { background: #FFF; padding: 32px 36px; max-width: 420px; width: 90%; box-shadow: 0 8px 40px rgba(0,0,0,0.15); }
+  .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; color: #0A0A0A; margin-bottom: 12px; }
+  .modal-body { font-family: 'Syne', sans-serif; font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 28px; }
+  .modal-body strong { color: #0A0A0A; font-weight: 700; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .modal-btn-cancel, .modal-btn-confirm {
+    padding: 10px 22px; font-family: 'Syne', sans-serif; font-size: 12px;
+    font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+    border: 1px solid transparent; transition: all 0.15s;
+  }
+  .modal-btn-cancel { background: transparent; border-color: #DDD; color: #666; }
+  .modal-btn-cancel:hover { border-color: #AAA; color: #222; background: #F5F5F5; }
+  .modal-btn-confirm { background: #CC2222; border-color: #CC2222; color: #FFF; }
+  .modal-btn-confirm:hover { background: #AA1111; border-color: #AA1111; }
+  .modal-btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
+
+<script>
+  const API = 'http://localhost:4013';
+
+  let allSurveys: any[] = [];
+  let pendingDeleteId: number | null = null;
+
+  const deleteModal = document.getElementById('deleteModal')!;
+  const modalTitle  = document.getElementById('modalTitle')!;
+  const modalConfirm = document.getElementById('modalConfirm') as HTMLButtonElement;
+  const modalCancel  = document.getElementById('modalCancel')!;
+
+  function openDeleteModal(id: number, title: string) {
+    pendingDeleteId = id;
+    modalTitle.textContent = `"${title}"`;
+    deleteModal.style.display = 'flex';
+  }
+  function closeDeleteModal() {
+    deleteModal.style.display = 'none';
+    pendingDeleteId = null;
+    modalConfirm.disabled = false;
+  }
+  modalCancel.addEventListener('click', closeDeleteModal);
+  deleteModal.addEventListener('click', (e) => { if (e.target === deleteModal) closeDeleteModal(); });
+
+  modalConfirm.addEventListener('click', async () => {
+    if (pendingDeleteId === null) return;
+    modalConfirm.disabled = true;
+    const id = pendingDeleteId;
+    try {
+      const res = await fetch(`${API}/surveys/${id}`, { method: 'DELETE', credentials: 'include' });
+      if (!res.ok) throw new Error();
+      allSurveys = allSurveys.filter(s => s.id !== id);
+      renderSurveys(allSurveys);
+      closeDeleteModal();
+      (window as any).toast?.success('Encuesta eliminada.');
+    } catch {
+      closeDeleteModal();
+      (window as any).toast?.error('Error al eliminar la encuesta.');
+    }
+  });
+
+  function formatDate(iso: string | null) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function statusBadge(status: string) {
+    const map: Record<string, [string, string]> = {
+      ACTIVE: ['active', 'Activa'],
+      DRAFT:  ['draft',  'Borrador'],
+      CLOSED: ['closed', 'Cerrada'],
+    };
+    const [cls, label] = map[status] ?? ['draft', status];
+    return `<span class="status-badge ${cls}">${label}</span>`;
+  }
+
+  function renderSurveys(surveys: any[]) {
+    const tbody = document.getElementById('surveysBody')!;
+    if (!surveys.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="loading-row">No hay encuestas todavía.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = surveys.map((s, i) => `
+      <tr>
+        <td class="survey-num">${String(i + 1).padStart(2, '0')}</td>
+        <td>
+          <div class="survey-title">${s.title}</div>
+          <div class="survey-slug">${s.slug}</div>
+        </td>
+        <td>${statusBadge(s.status)}</td>
+        <td>
+          ${s.status === 'ACTIVE'
+            ? `<a href="/encuesta/${s.slug}" target="_blank" class="public-link">/encuesta/${s.slug}</a>`
+            : `<span style="color:#CCC;font-size:12px;font-family:'Syne',sans-serif">/encuesta/${s.slug}</span>`}
+        </td>
+        <td class="survey-date">${formatDate(s.createdAt)}</td>
+        <td>
+          <div class="row-actions">
+            <a href="/admin/encuestas/results?id=${s.id}" class="btn-results">Resultados</a>
+            <a href="/admin/encuestas/edit?id=${s.id}" class="btn-edit">Editar</a>
+            <button class="btn-delete" data-id="${s.id}" data-title="${s.title.replace(/"/g, '&quot;')}">Eliminar</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+
+    tbody.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', () => {
+        openDeleteModal(
+          Number((btn as HTMLElement).dataset.id),
+          (btn as HTMLElement).dataset.title ?? '',
+        );
+      });
+    });
+  }
+
+  async function loadSurveys() {
+    try {
+      const res = await fetch(`${API}/surveys`, { credentials: 'include' });
+      if (!res.ok) throw new Error();
+      const json = await res.json();
+      allSurveys = Array.isArray(json) ? json : (json.data ?? []);
+      const count = document.getElementById('surveyCount');
+      if (count) count.textContent = `${allSurveys.length} encuesta${allSurveys.length !== 1 ? 's' : ''} en total`;
+      renderSurveys(allSurveys);
+    } catch {
+      document.getElementById('surveysBody')!.innerHTML =
+        '<tr><td colspan="6" class="loading-row">Error al cargar las encuestas.</td></tr>';
+    }
+  }
+
+  document.addEventListener('arkan:auth-ready', loadSurveys);
+</script>

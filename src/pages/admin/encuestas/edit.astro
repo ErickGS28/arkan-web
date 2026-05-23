@@ -1,0 +1,243 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Editar Encuesta">
+  <div class="page">
+    <header class="page-header">
+      <div>
+        <a href="/admin/encuestas" class="back-link">← Encuestas</a>
+        <h1 class="page-title">Editar Encuesta</h1>
+      </div>
+      <div class="header-actions">
+        <select class="status-select" id="statusSelect">
+          <option value="DRAFT">Borrador</option>
+          <option value="ACTIVE">Activa</option>
+          <option value="CLOSED">Cerrada</option>
+        </select>
+        <button class="btn-save" id="btnSave">Guardar cambios</button>
+      </div>
+    </header>
+
+    <div id="loadingState" style="padding:60px 0;text-align:center;font-family:'Syne',sans-serif;color:#AAA;">Cargando...</div>
+
+    <div id="formWrapper" style="display:none">
+      <div class="card">
+        <div class="field">
+          <label class="field-label">Título <span class="req">*</span></label>
+          <input class="field-input" id="surveyTitle" type="text" />
+        </div>
+        <div class="field">
+          <label class="field-label">Descripción</label>
+          <textarea class="field-input field-textarea" id="surveyDesc" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="questions-header">
+        <p class="questions-label">Preguntas</p>
+        <button type="button" class="btn-add-q" id="btnAddQuestion">+ Agregar pregunta</button>
+      </div>
+      <div id="questionsList"></div>
+      <div class="empty-questions" id="emptyQuestions" style="display:none">
+        <p>Sin preguntas. Haz clic en "Agregar pregunta".</p>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style is:global>
+  .page { padding: 40px 48px; max-width: 860px; }
+  .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; }
+  .back-link { font-family: 'Syne', sans-serif; font-size: 11px; color: #AAA; text-decoration: none; letter-spacing: 1px; display: block; margin-bottom: 6px; }
+  .back-link:hover { color: #444; }
+  .page-title { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 3px; color: #0A0A0A; }
+  .header-actions { display: flex; gap: 10px; align-items: center; }
+  .status-select {
+    padding: 10px 14px; border: 1px solid #CCC; background: #FFF;
+    font-family: 'Syne', sans-serif; font-size: 13px; color: #444; cursor: pointer;
+  }
+  .btn-save {
+    padding: 11px 24px; background: #0A0A0A; color: #FFF; border: 1px solid #0A0A0A;
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.8px; text-transform: uppercase; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-save:hover { background: #333; }
+  .btn-save:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .card { background: #FFF; border: 1px solid #EBEBEB; padding: 28px; margin-bottom: 24px; }
+  .field { margin-bottom: 20px; } .field:last-child { margin-bottom: 0; }
+  .field-label { display: block; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #555; margin-bottom: 8px; }
+  .req { color: #D33; }
+  .field-input { width: 100%; padding: 11px 14px; background: #FFF; border: 1px solid #DCDCDC; font-family: 'Syne', sans-serif; font-size: 14px; color: #111; outline: none; transition: border-color 0.15s; }
+  .field-input:focus { border-color: #888; }
+  .field-textarea { resize: vertical; min-height: 80px; }
+
+  .questions-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .questions-label { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: #0A0A0A; }
+  .btn-add-q { padding: 9px 18px; background: transparent; border: 1px solid #CCC; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #555; cursor: pointer; transition: all 0.15s; }
+  .btn-add-q:hover { border-color: #0A0A0A; color: #0A0A0A; background: #F5F5F5; }
+  .empty-questions { text-align: center; padding: 40px; background: #FAFAFA; border: 1px dashed #DDD; }
+  .empty-questions p { font-family: 'Syne', sans-serif; font-size: 13px; color: #AAA; }
+
+  .q-card { background: #FFF; border: 1px solid #EBEBEB; padding: 24px; margin-bottom: 12px; }
+  .q-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .q-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: #DDD; line-height: 1; min-width: 32px; }
+  .q-text-input { flex: 1; padding: 10px 14px; border: 1px solid #DCDCDC; background: #FFF; font-family: 'Syne', sans-serif; font-size: 14px; color: #111; outline: none; }
+  .q-text-input:focus { border-color: #888; }
+  .q-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .q-type-select { padding: 8px 12px; border: 1px solid #DDD; background: #FFF; font-family: 'Syne', sans-serif; font-size: 12px; color: #444; cursor: pointer; }
+  .q-required-label { display: flex; align-items: center; gap: 6px; font-family: 'Syne', sans-serif; font-size: 12px; color: #666; cursor: pointer; }
+  .btn-remove-q { margin-left: auto; background: transparent; border: none; color: #AAA; cursor: pointer; font-size: 18px; line-height: 1; padding: 4px; }
+  .btn-remove-q:hover { color: #CC2222; }
+  .options-section { margin-top: 8px; }
+  .options-label { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #999; margin-bottom: 10px; }
+  .option-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .option-input { flex: 1; padding: 8px 12px; border: 1px solid #DCDCDC; background: #FAFAFA; font-family: 'Syne', sans-serif; font-size: 13px; color: #111; outline: none; }
+  .option-input:focus { border-color: #888; background: #FFF; }
+  .btn-remove-option { background: transparent; border: none; color: #CCC; cursor: pointer; font-size: 16px; }
+  .btn-remove-option:hover { color: #CC2222; }
+  .btn-add-option { margin-top: 4px; background: transparent; border: none; font-family: 'Syne', sans-serif; font-size: 12px; color: #888; cursor: pointer; padding: 6px 0; text-decoration: underline; }
+  .btn-add-option:hover { color: #333; }
+</style>
+
+<script>
+  const API = 'http://localhost:4013';
+  const id = new URLSearchParams(window.location.search).get('id');
+  let qCounter = 0;
+
+  function renderOptionRow(text = '') {
+    const row = document.createElement('div');
+    row.className = 'option-row';
+    row.innerHTML = `<input class="option-input" type="text" placeholder="Opción..." value="${text.replace(/"/g, '&quot;')}" /><button type="button" class="btn-remove-option" title="Quitar">×</button>`;
+    row.querySelector('.btn-remove-option')!.addEventListener('click', () => row.remove());
+    return row;
+  }
+
+  function syncOptions(card: HTMLElement) {
+    const type = (card.querySelector('.q-type-select') as HTMLSelectElement).value;
+    (card.querySelector('.options-section') as HTMLElement).style.display = type === 'TEXT' ? 'none' : 'block';
+  }
+
+  function addQuestionCard(data?: any) {
+    qCounter++;
+    const list = document.getElementById('questionsList')!;
+    const card = document.createElement('div');
+    card.className = 'q-card';
+
+    card.innerHTML = `
+      <div class="q-card-header">
+        <span class="q-num">${String(list.children.length + 1).padStart(2, '0')}</span>
+        <input class="q-text-input" type="text" placeholder="Texto de la pregunta..." value="${(data?.text ?? '').replace(/"/g, '&quot;')}" />
+        <button type="button" class="btn-remove-q">×</button>
+      </div>
+      <div class="q-controls">
+        <select class="q-type-select">
+          <option value="SINGLE" ${data?.type === 'SINGLE' || !data ? 'selected' : ''}>Opción única</option>
+          <option value="MULTIPLE" ${data?.type === 'MULTIPLE' ? 'selected' : ''}>Opción múltiple</option>
+          <option value="TEXT" ${data?.type === 'TEXT' ? 'selected' : ''}>Respuesta abierta</option>
+        </select>
+        <label class="q-required-label">
+          <input type="checkbox" class="q-required" ${data?.required !== false ? 'checked' : ''} />
+          Obligatoria
+        </label>
+      </div>
+      <div class="options-section">
+        <p class="options-label">Opciones</p>
+        <div class="options-list"></div>
+        <button type="button" class="btn-add-option">+ Agregar opción</button>
+      </div>
+    `;
+
+    const optList = card.querySelector('.options-list')!;
+    const existingOptions = data?.options ?? [];
+    if (existingOptions.length) {
+      existingOptions.sort((a: any, b: any) => a.order - b.order).forEach((o: any) => optList.appendChild(renderOptionRow(o.text)));
+    } else if (!data || data.type !== 'TEXT') {
+      optList.appendChild(renderOptionRow(''));
+      optList.appendChild(renderOptionRow(''));
+    }
+
+    card.querySelector('.btn-remove-q')!.addEventListener('click', () => { card.remove(); updateEmpty(); });
+    card.querySelector('.q-type-select')!.addEventListener('change', () => syncOptions(card));
+    card.querySelector('.btn-add-option')!.addEventListener('click', () => optList.appendChild(renderOptionRow()));
+
+    list.appendChild(card);
+    syncOptions(card);
+    updateEmpty();
+  }
+
+  function updateEmpty() {
+    const list = document.getElementById('questionsList')!;
+    (document.getElementById('emptyQuestions') as HTMLElement).style.display = list.children.length === 0 ? 'block' : 'none';
+  }
+
+  async function loadSurvey() {
+    if (!id) { window.location.href = '/admin/encuestas'; return; }
+    try {
+      const res = await fetch(`${API}/surveys/${id}`, { credentials: 'include' });
+      if (!res.ok) throw new Error();
+      const json = await res.json();
+      const survey = json?.data ?? json;
+
+      (document.getElementById('surveyTitle') as HTMLInputElement).value = survey.title;
+      (document.getElementById('surveyDesc') as HTMLTextAreaElement).value = survey.description ?? '';
+      (document.getElementById('statusSelect') as HTMLSelectElement).value = survey.status;
+
+      const sorted = [...(survey.questions ?? [])].sort((a: any, b: any) => a.order - b.order);
+      sorted.forEach((q: any) => addQuestionCard(q));
+
+      document.getElementById('loadingState')!.style.display = 'none';
+      document.getElementById('formWrapper')!.style.display = 'block';
+    } catch {
+      (window as any).toast?.error('No se pudo cargar la encuesta.');
+    }
+  }
+
+  function buildPayload() {
+    const title = (document.getElementById('surveyTitle') as HTMLInputElement).value.trim();
+    const description = (document.getElementById('surveyDesc') as HTMLTextAreaElement).value.trim();
+    const status = (document.getElementById('statusSelect') as HTMLSelectElement).value;
+    if (!title) { (window as any).toast?.error('El título es obligatorio.'); return null; }
+
+    const questions: any[] = [];
+    document.querySelectorAll('.q-card').forEach((card, i) => {
+      const text = (card.querySelector('.q-text-input') as HTMLInputElement).value.trim();
+      if (!text) return;
+      const type = (card.querySelector('.q-type-select') as HTMLSelectElement).value;
+      const required = (card.querySelector('.q-required') as HTMLInputElement).checked;
+      const options: any[] = [];
+      if (type !== 'TEXT') {
+        card.querySelectorAll('.option-input').forEach((inp, oi) => {
+          const t = (inp as HTMLInputElement).value.trim();
+          if (t) options.push({ text: t, order: oi });
+        });
+      }
+      questions.push({ text, type, order: i, required, options });
+    });
+
+    return { title, description: description || undefined, status, questions };
+  }
+
+  document.getElementById('btnSave')!.addEventListener('click', async () => {
+    const payload = buildPayload();
+    if (!payload) return;
+    const btn = document.getElementById('btnSave') as HTMLButtonElement;
+    btn.disabled = true;
+    try {
+      const res = await fetch(`${API}/surveys/${id}`, {
+        method: 'PATCH', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error();
+      (window as any).toast?.success('Encuesta actualizada.');
+      setTimeout(() => { window.location.href = '/admin/encuestas'; }, 800);
+    } catch {
+      (window as any).toast?.error('Error al guardar.');
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('btnAddQuestion')!.addEventListener('click', () => addQuestionCard());
+  document.addEventListener('arkan:auth-ready', loadSurvey);
+</script>

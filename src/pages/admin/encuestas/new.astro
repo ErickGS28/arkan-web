@@ -1,0 +1,264 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Nueva Encuesta">
+  <div class="page">
+    <header class="page-header">
+      <div>
+        <a href="/admin/encuestas" class="back-link">← Encuestas</a>
+        <h1 class="page-title">Nueva Encuesta</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn-draft" id="btnDraft">Guardar borrador</button>
+        <button class="btn-publish" id="btnPublish">Activar</button>
+      </div>
+    </header>
+
+    <div class="form-layout">
+      <!-- Meta -->
+      <div class="form-main">
+        <div class="card">
+          <div class="field">
+            <label class="field-label">Título <span class="req">*</span></label>
+            <input class="field-input" id="surveyTitle" type="text" placeholder="Ej. ¿Qué modelo prefieres?" />
+          </div>
+          <div class="field">
+            <label class="field-label">Descripción</label>
+            <textarea class="field-input field-textarea" id="surveyDesc" rows="3" placeholder="Instrucciones o contexto para el cliente (opcional)"></textarea>
+          </div>
+        </div>
+
+        <!-- Questions builder -->
+        <div class="questions-header">
+          <p class="questions-label">Preguntas</p>
+          <button type="button" class="btn-add-q" id="btnAddQuestion">+ Agregar pregunta</button>
+        </div>
+        <div id="questionsList"></div>
+        <div class="empty-questions" id="emptyQuestions">
+          <p>Aún no hay preguntas. Haz clic en "Agregar pregunta" para empezar.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style is:global>
+  .page { padding: 40px 48px; max-width: 860px; }
+  .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; }
+  .back-link { font-family: 'Syne', sans-serif; font-size: 11px; color: #AAA; text-decoration: none; letter-spacing: 1px; display: block; margin-bottom: 6px; }
+  .back-link:hover { color: #444; }
+  .page-title { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 3px; color: #0A0A0A; }
+  .header-actions { display: flex; gap: 10px; align-items: center; }
+
+  .btn-draft, .btn-publish {
+    padding: 11px 24px; font-family: 'Syne', sans-serif; font-size: 13px;
+    font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;
+    cursor: pointer; border: 1px solid transparent; transition: all 0.15s;
+  }
+  .btn-draft { background: transparent; border-color: #CCC; color: #555; }
+  .btn-draft:hover { border-color: #888; color: #111; background: #F5F5F5; }
+  .btn-publish { background: #0A0A0A; color: #FFF; border-color: #0A0A0A; }
+  .btn-publish:hover { background: #333; }
+  .btn-draft:disabled, .btn-publish:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .card { background: #FFF; border: 1px solid #EBEBEB; padding: 28px; margin-bottom: 24px; }
+  .field { margin-bottom: 20px; }
+  .field:last-child { margin-bottom: 0; }
+  .field-label { display: block; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #555; margin-bottom: 8px; }
+  .req { color: #D33; }
+  .field-input {
+    width: 100%; padding: 11px 14px; background: #FFF; border: 1px solid #DCDCDC;
+    font-family: 'Syne', sans-serif; font-size: 14px; color: #111; outline: none;
+    transition: border-color 0.15s;
+  }
+  .field-input:focus { border-color: #888; }
+  .field-textarea { resize: vertical; min-height: 80px; }
+
+  /* Questions */
+  .questions-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .questions-label { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: #0A0A0A; }
+  .btn-add-q {
+    padding: 9px 18px; background: transparent; border: 1px solid #CCC;
+    font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.5px; text-transform: uppercase; color: #555; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-add-q:hover { border-color: #0A0A0A; color: #0A0A0A; background: #F5F5F5; }
+
+  .empty-questions { text-align: center; padding: 40px; background: #FAFAFA; border: 1px dashed #DDD; }
+  .empty-questions p { font-family: 'Syne', sans-serif; font-size: 13px; color: #AAA; }
+
+  /* Question card */
+  .q-card { background: #FFF; border: 1px solid #EBEBEB; padding: 24px; margin-bottom: 12px; position: relative; }
+  .q-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .q-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: #DDD; line-height: 1; min-width: 32px; }
+  .q-text-input {
+    flex: 1; padding: 10px 14px; border: 1px solid #DCDCDC; background: #FFF;
+    font-family: 'Syne', sans-serif; font-size: 14px; color: #111; outline: none;
+  }
+  .q-text-input:focus { border-color: #888; }
+  .q-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .q-type-select {
+    padding: 8px 12px; border: 1px solid #DDD; background: #FFF;
+    font-family: 'Syne', sans-serif; font-size: 12px; color: #444; cursor: pointer;
+  }
+  .q-required-label { display: flex; align-items: center; gap: 6px; font-family: 'Syne', sans-serif; font-size: 12px; color: #666; cursor: pointer; }
+  .q-required-label input { cursor: pointer; }
+  .btn-remove-q { margin-left: auto; background: transparent; border: none; color: #AAA; cursor: pointer; font-size: 18px; line-height: 1; padding: 4px; }
+  .btn-remove-q:hover { color: #CC2222; }
+
+  /* Options */
+  .options-section { margin-top: 8px; }
+  .options-label { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #999; margin-bottom: 10px; }
+  .option-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .option-input {
+    flex: 1; padding: 8px 12px; border: 1px solid #DCDCDC; background: #FAFAFA;
+    font-family: 'Syne', sans-serif; font-size: 13px; color: #111; outline: none;
+  }
+  .option-input:focus { border-color: #888; background: #FFF; }
+  .btn-remove-option { background: transparent; border: none; color: #CCC; cursor: pointer; font-size: 16px; }
+  .btn-remove-option:hover { color: #CC2222; }
+  .btn-add-option {
+    margin-top: 4px; background: transparent; border: none;
+    font-family: 'Syne', sans-serif; font-size: 12px; color: #888; cursor: pointer;
+    padding: 6px 0; text-decoration: underline;
+  }
+  .btn-add-option:hover { color: #333; }
+  .text-hint { font-family: 'Syne', sans-serif; font-size: 12px; color: #AAA; font-style: italic; }
+</style>
+
+<script>
+  const API = 'http://localhost:4013';
+  let questionCount = 0;
+
+  function updateEmptyState() {
+    const list = document.getElementById('questionsList')!;
+    const empty = document.getElementById('emptyQuestions')!;
+    empty.style.display = list.children.length === 0 ? 'block' : 'none';
+  }
+
+  function renderOptionRow(qId: number, placeholder = '') {
+    const row = document.createElement('div');
+    row.className = 'option-row';
+    row.innerHTML = `
+      <input class="option-input" type="text" placeholder="${placeholder || 'Opción...'}" />
+      <button type="button" class="btn-remove-option" title="Quitar opción">×</button>
+    `;
+    row.querySelector('.btn-remove-option')!.addEventListener('click', () => row.remove());
+    return row;
+  }
+
+  function syncOptionsVisibility(card: HTMLElement) {
+    const type = (card.querySelector('.q-type-select') as HTMLSelectElement).value;
+    const optionsSection = card.querySelector('.options-section') as HTMLElement;
+    optionsSection.style.display = type === 'TEXT' ? 'none' : 'block';
+  }
+
+  function addQuestion() {
+    questionCount++;
+    const list = document.getElementById('questionsList')!;
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.dataset.qid = String(questionCount);
+
+    card.innerHTML = `
+      <div class="q-card-header">
+        <span class="q-num">${String(questionCount).padStart(2, '0')}</span>
+        <input class="q-text-input" type="text" placeholder="Escribe la pregunta..." />
+        <button type="button" class="btn-remove-q" title="Eliminar pregunta">×</button>
+      </div>
+      <div class="q-controls">
+        <select class="q-type-select">
+          <option value="SINGLE">Opción única</option>
+          <option value="MULTIPLE">Opción múltiple</option>
+          <option value="TEXT">Respuesta abierta</option>
+        </select>
+        <label class="q-required-label">
+          <input type="checkbox" class="q-required" checked />
+          Obligatoria
+        </label>
+      </div>
+      <div class="options-section">
+        <p class="options-label">Opciones</p>
+        <div class="options-list"></div>
+        <button type="button" class="btn-add-option">+ Agregar opción</button>
+      </div>
+    `;
+
+    // Pre-add 2 options
+    const optList = card.querySelector('.options-list')!;
+    optList.appendChild(renderOptionRow(questionCount, 'Opción 1'));
+    optList.appendChild(renderOptionRow(questionCount, 'Opción 2'));
+
+    card.querySelector('.btn-remove-q')!.addEventListener('click', () => {
+      card.remove();
+      updateEmptyState();
+    });
+
+    card.querySelector('.q-type-select')!.addEventListener('change', () => syncOptionsVisibility(card));
+
+    card.querySelector('.btn-add-option')!.addEventListener('click', () => {
+      optList.appendChild(renderOptionRow(questionCount));
+    });
+
+    list.appendChild(card);
+    updateEmptyState();
+  }
+
+  document.getElementById('btnAddQuestion')!.addEventListener('click', addQuestion);
+
+  function buildPayload(status: 'DRAFT' | 'ACTIVE') {
+    const title = (document.getElementById('surveyTitle') as HTMLInputElement).value.trim();
+    const description = (document.getElementById('surveyDesc') as HTMLTextAreaElement).value.trim();
+    if (!title) { (window as any).toast?.error('El título es obligatorio.'); return null; }
+
+    const cards = document.querySelectorAll('.q-card');
+    const questions: any[] = [];
+
+    for (let i = 0; i < cards.length; i++) {
+      const card = cards[i] as HTMLElement;
+      const text = (card.querySelector('.q-text-input') as HTMLInputElement).value.trim();
+      if (!text) { (window as any).toast?.error(`La pregunta ${i + 1} no tiene texto.`); return null; }
+      const type = (card.querySelector('.q-type-select') as HTMLSelectElement).value;
+      const required = (card.querySelector('.q-required') as HTMLInputElement).checked;
+
+      const options: any[] = [];
+      if (type !== 'TEXT') {
+        card.querySelectorAll('.option-input').forEach((inp, oi) => {
+          const t = (inp as HTMLInputElement).value.trim();
+          if (t) options.push({ text: t, order: oi });
+        });
+        if (options.length < 2) { (window as any).toast?.error(`La pregunta "${text}" necesita al menos 2 opciones.`); return null; }
+      }
+
+      questions.push({ text, type, order: i, required, options });
+    }
+
+    return { title, description: description || undefined, status, questions };
+  }
+
+  async function save(status: 'DRAFT' | 'ACTIVE') {
+    const payload = buildPayload(status);
+    if (!payload) return;
+
+    const btns = document.querySelectorAll('.btn-draft, .btn-publish') as NodeListOf<HTMLButtonElement>;
+    btns.forEach(b => b.disabled = true);
+
+    try {
+      const res = await fetch(`${API}/surveys`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error();
+      (window as any).toast?.success(status === 'ACTIVE' ? 'Encuesta activada.' : 'Borrador guardado.');
+      setTimeout(() => { window.location.href = '/admin/encuestas'; }, 800);
+    } catch {
+      (window as any).toast?.error('Error al guardar la encuesta.');
+      btns.forEach(b => b.disabled = false);
+    }
+  }
+
+  document.getElementById('btnDraft')!.addEventListener('click', () => save('DRAFT'));
+  document.getElementById('btnPublish')!.addEventListener('click', () => save('ACTIVE'));
+</script>

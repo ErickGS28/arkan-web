@@ -333,13 +333,24 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   const uploadStatus = document.getElementById('uploadStatus')!;
   const btnRemoveCover = document.getElementById('btnRemoveCover')!;
 
+  function showCoverPreview(src: string) {
+    coverPreview.src = src;
+    coverPreview.style.display = 'block';
+    coverPlaceholder.style.display = 'none';
+    btnRemoveCover.style.display = 'block';
+  }
+
   coverUploadArea.addEventListener('click', () => coverFile.click());
 
   coverFile.addEventListener('change', async () => {
     const file = coverFile.files?.[0];
     if (!file) return;
 
+    // Show local preview instantly
+    const localUrl = URL.createObjectURL(file);
+    showCoverPreview(localUrl);
     uploadStatus.textContent = 'Subiendo imagen...';
+
     const formData = new FormData();
     formData.append('file', file);
 
@@ -350,15 +361,16 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         body: formData,
       });
       if (!res.ok) throw new Error();
-      const { url } = await res.json();
+      const json = await res.json();
+      const url = json?.data?.url ?? json?.url;
       coverImgInput.value = url;
-      coverPreview.src = url;
-      coverPreview.style.display = 'block';
-      coverPlaceholder.style.display = 'none';
-      btnRemoveCover.style.display = 'block';
-      uploadStatus.textContent = 'Imagen subida correctamente.';
+      coverPreview.src = url; // replace local blob with real URL
+      uploadStatus.textContent = '';
+      (window as any).toast?.success('Imagen subida correctamente.');
     } catch {
-      uploadStatus.textContent = 'Error al subir la imagen.';
+      coverImgInput.value = '';
+      uploadStatus.textContent = 'Error al subir. La imagen no se guardará.';
+      (window as any).toast?.error('Error al subir la imagen.');
     }
   });
 
@@ -380,7 +392,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     const coverImg = (document.getElementById('coverImg') as HTMLInputElement).value || undefined;
 
     if (!title || !excerpt || !content) {
-      alert('Por favor completa los campos requeridos: Título, Resumen y Contenido.');
+      (window as any).toast?.error('Completa título, resumen y contenido.');
       return;
     }
 
@@ -395,9 +407,10 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         body: JSON.stringify({ title, excerpt, content, coverImg, status }),
       });
       if (!res.ok) throw new Error();
-      window.location.href = '/admin/blog';
+      (window as any).toast?.success(status === 'PUBLISHED' ? 'Post publicado.' : 'Borrador guardado.');
+      setTimeout(() => { window.location.href = '/admin/blog'; }, 800);
     } catch {
-      alert('Error al guardar el post.');
+      (window as any).toast?.error('Error al guardar el post.');
       buttons.forEach(b => b.disabled = false);
     }
   }

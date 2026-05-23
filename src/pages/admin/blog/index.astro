@@ -288,8 +288,9 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
           if (!res.ok) throw new Error();
           allPosts = allPosts.filter(p => p.id !== Number(id));
           applyFilter();
+          (window as any).toast?.success('Post eliminado correctamente.');
         } catch {
-          alert('Error al eliminar el post.');
+          (window as any).toast?.error('Error al eliminar el post.');
         }
       });
     });
@@ -308,7 +309,8 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     try {
       const res = await fetch(`${API}/blog/admin`, { credentials: 'include' });
       if (!res.ok) throw new Error();
-      allPosts = await res.json();
+      const json = await res.json();
+      allPosts = Array.isArray(json) ? json : (json.data ?? []);
       applyFilter();
     } catch {
       document.getElementById('postsBody')!.innerHTML =

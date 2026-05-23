@@ -194,7 +194,8 @@ import FooterArkan from '../../components/arkan/FooterArkan.astro';
     try {
       const res = await fetch(`${API}/blog`);
       if (!res.ok) throw new Error();
-      const posts: any[] = await res.json();
+      const json = await res.json();
+      const posts: any[] = Array.isArray(json) ? json : (json.data ?? []);
 
       if (!posts.length) {
         list.innerHTML = '<div class="empty-state">Aún no hay artículos publicados.</div>';

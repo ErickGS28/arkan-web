@@ -275,7 +275,8 @@ const { slug } = Astro.params;
     try {
       const res = await fetch(`${API}/blog/${slug}`);
       if (!res.ok) throw new Error('not found');
-      const post = await res.json();
+      const json = await res.json();
+      const post = json?.data ?? json;
 
       // Update document title
       document.title = `${post.title} — Arkán Group`;
@@ -301,7 +302,8 @@ const { slug } = Astro.params;
       // More posts
       const moreRes = await fetch(`${API}/blog`);
       if (moreRes.ok) {
-        const allPosts = await moreRes.json();
+        const moreJson = await moreRes.json();
+        const allPosts = Array.isArray(moreJson) ? moreJson : (moreJson.data ?? []);
         const others = allPosts.filter(p => p.slug !== slug).slice(0, 2);
         if (others.length) {
           document.getElementById('moreGrid').innerHTML = others.map(p => `

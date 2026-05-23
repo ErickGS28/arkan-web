@@ -77,9 +77,69 @@ const currentPath = Astro.url.pathname;
     </main>
   </div>
 
+  <!-- Toast styles -->
+  <style>
+    #toast-container {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 18px;
+      background: #111111;
+      color: #EEEEEE;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      min-width: 260px;
+      max-width: 380px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      border-left: 3px solid #555;
+      animation: toastIn 0.2s ease forwards;
+      pointer-events: auto;
+    }
+    .toast.success { border-left-color: #22C55E; }
+    .toast.error   { border-left-color: #EF4444; }
+    .toast.info    { border-left-color: #3B82F6; }
+    .toast.out     { animation: toastOut 0.2s ease forwards; }
+    .toast-icon    { font-size: 15px; flex-shrink: 0; }
+    @keyframes toastIn  { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(8px); } }
+  </style>
+  <div id="toast-container"></div>
+
   <script>
     const API = 'http://localhost:4013';
 
+    // ── Global toast ──────────────────────────────────────────────
+    function _showToast(msg: string, type: 'success' | 'error' | 'info' = 'info', duration = 3500) {
+      const container = document.getElementById('toast-container')!;
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      const icons = { success: '✓', error: '✕', info: 'i' };
+      el.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${msg}</span>`;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.classList.add('out');
+        el.addEventListener('animationend', () => el.remove());
+      }, duration);
+    }
+    (window as any).toast = {
+      success: (m: string) => _showToast(m, 'success'),
+      error:   (m: string) => _showToast(m, 'error'),
+      info:    (m: string) => _showToast(m, 'info'),
+    };
+
+    // ── Admin init ────────────────────────────────────────────────
     async function initAdmin() {
       try {
         const res = await fetch(`${API}/auth/validate`, { credentials: 'include' });
@@ -88,7 +148,6 @@ const currentPath = Astro.url.pathname;
         const json = await res.json();
         const user = json?.data?.user ?? json?.user;
 
-        // Populate sidebar user info
         const nameEl = document.getElementById('sidebarUserName');
         const roleChip = document.getElementById('sidebarRoleChip');
         const roleLabel = document.getElementById('sidebarRoleLabel');
@@ -97,17 +156,14 @@ const currentPath = Astro.url.pathname;
         if (roleLabel) roleLabel.textContent = user.role ?? '';
         if (roleChip && user.role === 'GERENTE') roleChip.classList.add('gerente');
 
-        // Logout
         document.getElementById('sidebarLogout')?.addEventListener('click', async () => {
           await fetch(`${API}/auth/logout`, { method: 'POST', credentials: 'include' }).catch(() => {});
           window.location.href = '/login';
         });
 
-        // Reveal layout
         document.getElementById('adminLoading')?.classList.add('hidden');
         document.getElementById('adminShell')?.classList.add('ready');
 
-        // Notify page scripts
         document.dispatchEvent(new CustomEvent('arkan:auth-ready', { detail: user }));
       } catch {
         window.location.href = '/login';

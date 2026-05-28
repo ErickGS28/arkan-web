@@ -3,6 +3,8 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 ---
 
 <AdminLayout title="Editar Post">
+  <link slot="head" rel="stylesheet" href="https://cdn.quilljs.com/1.3.7/quill.snow.css" />
+
   <div class="page">
     <header class="page-header">
       <div>
@@ -10,13 +12,22 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         <h1 class="page-title">Editar Post</h1>
       </div>
       <div class="header-actions">
-        <a id="btnPreview" class="btn-preview" target="_blank" rel="noopener" style="display:none">Ver publicado</a>
-        <button class="btn-draft" id="btnDraft">Guardar borrador</button>
+        <a id="btnPreview" class="btn-preview" target="_blank" rel="noopener" style="display:none">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" width="13" height="13">
+            <path d="M6.5 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V9.5"/>
+            <path d="M10 2h4v4M14 2L8 8"/>
+          </svg>
+          Ver publicado
+        </a>
+        <button class="btn-draft" id="btnDraft">Borrador</button>
         <button class="btn-publish" id="btnPublish">Publicar</button>
       </div>
     </header>
 
-    <div id="loadingState" class="loading-state">Cargando post...</div>
+    <div id="loadingState" class="loading-state">
+      <div class="loading-spinner"></div>
+      Cargando post…
+    </div>
 
     <form id="postForm" class="post-form" style="display:none" autocomplete="off">
       <div class="form-layout">
@@ -24,23 +35,19 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
         <div class="form-main">
           <div class="field">
             <label class="field-label">Título <span class="req">*</span></label>
-            <input class="field-input" id="title" name="title" type="text" placeholder="Escribe el título del artículo" required />
+            <input class="field-input field-title" id="title" name="title" type="text" placeholder="Escribe el título del artículo" required />
           </div>
 
           <div class="field">
-            <label class="field-label">Resumen (excerpt) <span class="req">*</span></label>
-            <textarea class="field-input field-textarea" id="excerpt" name="excerpt" rows="3" placeholder="Descripción corta del artículo"></textarea>
+            <label class="field-label">Resumen <span class="req">*</span></label>
+            <textarea class="field-input field-textarea" id="excerpt" name="excerpt" rows="3" placeholder="Descripción breve que aparece en el listado"></textarea>
           </div>
 
           <div class="field">
             <label class="field-label">Contenido <span class="req">*</span></label>
-            <div class="editor-toolbar" id="editorToolbar">
-              <button type="button" data-cmd="bold" title="Negrita"><b>B</b></button>
-              <button type="button" data-cmd="italic" title="Cursiva"><i>I</i></button>
-              <button type="button" data-cmd="h2" title="Subtítulo">H2</button>
-              <button type="button" data-cmd="p" title="Párrafo">¶</button>
+            <div class="editor-wrap">
+              <div id="quill-editor"></div>
             </div>
-            <div class="rich-editor" id="richEditor" contenteditable="true" data-placeholder="Escribe el contenido..."></div>
           </div>
         </div>
 
@@ -55,18 +62,22 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
             <p class="side-card-title">Imagen de portada</p>
             <div class="cover-upload" id="coverUploadArea">
               <div class="cover-placeholder" id="coverPlaceholder">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" width="32" height="32">
                   <rect x="3" y="3" width="18" height="18" rx="2"/>
                   <circle cx="8.5" cy="8.5" r="1.5"/>
                   <polyline points="21 15 16 10 5 21"/>
                 </svg>
-                <p>Seleccionar imagen</p>
+                <p>Haz clic para seleccionar</p>
+                <span>JPG, PNG · 16:9 recomendado</span>
               </div>
-              <img id="coverPreview" class="cover-preview" style="display:none" alt="Cover preview" />
+              <img id="coverPreview" class="cover-preview" style="display:none" alt="Preview" />
+              <div class="cover-uploading" id="coverUploading" style="display:none">
+                <div class="upload-spinner"></div>
+                <span>Subiendo…</span>
+              </div>
             </div>
             <input type="file" id="coverFile" accept="image/*" style="display:none" />
             <input type="hidden" id="coverImg" name="coverImg" />
-            <p class="upload-status" id="uploadStatus"></p>
             <button type="button" class="btn-remove-cover" id="btnRemoveCover" style="display:none">Quitar imagen</button>
           </div>
 
@@ -81,170 +92,150 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 </AdminLayout>
 
 <style>
-  .page { padding: 40px 48px; max-width: 1100px; }
+  .page { padding: 48px 56px; max-width: 1100px; }
 
   .loading-state {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     font-family: 'Syne', sans-serif;
     font-size: 14px;
-    color: #AAA;
-    padding: 40px 0;
-    letter-spacing: 0.5px;
+    color: #AAAAAA;
+    padding: 48px 0;
   }
+  .loading-spinner {
+    width: 18px; height: 18px;
+    border: 2px solid #E8E8E8;
+    border-top-color: #555;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   .page-header {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    margin-bottom: 32px;
+    margin-bottom: 36px;
+    gap: 16px;
   }
 
   .back-link {
     font-family: 'Syne', sans-serif;
     font-size: 11px;
-    color: #AAA;
+    color: #BBBBBB;
     text-decoration: none;
     letter-spacing: 1px;
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     transition: color 0.15s;
   }
-  .back-link:hover { color: #444; }
+  .back-link:hover { color: #555; }
 
   .page-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 42px;
+    font-size: 44px;
     letter-spacing: 3px;
     color: #0A0A0A;
+    line-height: 1;
   }
 
-  .header-actions { display: flex; gap: 10px; align-items: center; }
+  .header-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
 
   .btn-preview {
-    padding: 11px 24px;
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    text-decoration: none;
-    border: 1px solid #E0E0E0;
-    color: #777;
-    background: transparent;
-    transition: all 0.15s;
-  }
-  .btn-preview:hover { border-color: #AAA; color: #333; background: #F8F8F8; }
-
-  .btn-draft, .btn-publish {
-    padding: 11px 24px;
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: all 0.15s;
-  }
-  .btn-draft { background: transparent; border-color: #CCCCCC; color: #555; }
-  .btn-draft:hover { border-color: #888; color: #111; background: #F5F5F5; }
-  .btn-publish { background: #0A0A0A; color: #FFFFFF; border-color: #0A0A0A; }
-  .btn-publish:hover { background: #333; }
-  .btn-draft:disabled, .btn-publish:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  /* Form layout */
-  .form-layout {
-    display: grid;
-    grid-template-columns: 1fr 280px;
-    gap: 28px;
-    align-items: start;
-  }
-
-  .field { margin-bottom: 24px; }
-
-  .field-label {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 18px;
     font-family: 'Syne', sans-serif;
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: #555;
-    margin-bottom: 8px;
-  }
-  .req { color: #D33; }
-
-  .field-input {
-    width: 100%;
-    padding: 12px 16px;
-    background: #FFFFFF;
-    border: 1px solid #DCDCDC;
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    color: #0A0A0A;
-    outline: none;
-    transition: border-color 0.15s;
-    resize: vertical;
-  }
-  .field-input:focus { border-color: #0A0A0A; }
-  .field-input::placeholder { color: #BBBBBB; }
-  .field-textarea { min-height: 88px; }
-
-  /* Rich editor */
-  .editor-toolbar {
-    display: flex;
-    gap: 4px;
-    padding: 8px 10px;
-    background: #F8F8F8;
-    border: 1px solid #E0E0E0;
-    border-bottom: none;
-  }
-  .editor-toolbar button {
-    padding: 4px 10px;
+    text-decoration: none;
+    border: 1px solid #E0E0DE;
+    color: #888;
     background: transparent;
-    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .btn-preview:hover { border-color: #AAAAAA; color: #333; background: #F5F5F3; }
+
+  .btn-draft, .btn-publish {
+    padding: 12px 24px;
     font-family: 'Syne', sans-serif;
     font-size: 12px;
-    color: #555;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
     cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.1s;
+    border: 1px solid transparent;
+    transition: all 0.15s;
   }
-  .editor-toolbar button:hover { background: #EEE; border-color: #DDD; }
+  .btn-draft { background: #FFFFFF; border-color: #D8D8D8; color: #555; }
+  .btn-draft:hover { border-color: #888; color: #111; }
+  .btn-publish { background: #0A0A0A; color: #FFFFFF; border-color: #0A0A0A; }
+  .btn-publish:hover { background: #2A2A2A; }
+  .btn-draft:disabled, .btn-publish:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  .rich-editor {
-    min-height: 320px;
-    padding: 18px;
-    background: #FFFFFF;
-    border: 1px solid #DCDCDC;
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    line-height: 1.8;
-    color: #0A0A0A;
-    outline: none;
-    overflow-y: auto;
-  }
-  .rich-editor:focus { border-color: #0A0A0A; }
-  .rich-editor:empty::before {
-    content: attr(data-placeholder);
-    color: #BBBBBB;
-    pointer-events: none;
+  .form-layout {
+    display: grid;
+    grid-template-columns: 1fr 290px;
+    gap: 32px;
+    align-items: start;
   }
 
-  /* Side column */
-  .side-card {
-    background: #FFFFFF;
-    border: 1px solid #E8E8E8;
-    padding: 20px;
-    margin-bottom: 16px;
-  }
+  .field { margin-bottom: 28px; }
 
-  .side-card-title {
+  .field-label {
+    display: block;
     font-family: 'Syne', sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
     color: #888;
+    margin-bottom: 10px;
+  }
+  .req { color: #EF4444; }
+
+  .field-input {
+    width: 100%;
+    padding: 13px 16px;
+    background: #FFFFFF;
+    border: 1px solid #E4E4E2;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    color: #0A0A0A;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    resize: vertical;
+  }
+  .field-input:focus { border-color: #0A0A0A; box-shadow: 0 0 0 3px rgba(10,10,10,0.06); }
+  .field-input::placeholder { color: #CCCCCC; }
+  .field-title { font-size: 18px; font-weight: 600; }
+  .field-textarea { min-height: 90px; line-height: 1.7; }
+
+  /* Quill editor */
+  .editor-wrap { border: 1px solid #E4E4E2; background: #FFFFFF; }
+  .editor-wrap:focus-within { border-color: #0A0A0A; box-shadow: 0 0 0 3px rgba(10,10,10,0.06); }
+  #quill-editor { min-height: 360px; }
+
+  /* Side column */
+  .side-card {
+    background: #FFFFFF;
+    border: 1px solid #E4E4E2;
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+
+  .side-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #AAAAAA;
     margin-bottom: 14px;
   }
 
@@ -254,13 +245,13 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     color: #555;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
   }
   .status-badge {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 4px 12px;
+    gap: 6px;
+    padding: 5px 12px;
     font-family: 'Syne', sans-serif;
     font-size: 10px;
     font-weight: 700;
@@ -269,13 +260,16 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     border-radius: 2px;
     width: fit-content;
   }
-  .status-badge.published { background: #EDFAF3; color: #1A7A4A; }
-  .status-badge.draft     { background: #F2F2F2; color: #666; }
-  .status-date { font-size: 12px; color: #AAA; }
+  .status-badge .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .status-badge.published { background: #EDFAF3; color: #16A34A; }
+  .status-badge.published .dot { background: #22C55E; }
+  .status-badge.draft { background: #F5F5F3; color: #888; }
+  .status-badge.draft .dot { background: #CCCCCC; }
+  .status-date { font-size: 11px; color: #BBBBBB; letter-spacing: 0.3px; }
 
   /* Cover upload */
   .cover-upload {
-    border: 2px dashed #E0E0E0;
+    border: 2px dashed #E4E4E2;
     cursor: pointer;
     transition: border-color 0.2s;
     overflow: hidden;
@@ -283,10 +277,11 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #FAFAFA;
+    background: #FAFAF8;
     position: relative;
+    border-radius: 2px;
   }
-  .cover-upload:hover { border-color: #AAA; }
+  .cover-upload:hover { border-color: #AAAAAA; }
 
   .cover-placeholder {
     display: flex;
@@ -294,86 +289,176 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     align-items: center;
     gap: 8px;
     color: #CCC;
+    text-align: center;
+    padding: 12px;
   }
   .cover-placeholder p {
     font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    letter-spacing: 1px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #AAA;
+  }
+  .cover-placeholder span {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    color: #CCC;
   }
 
   .cover-preview {
-    width: 100%;
-    height: 100%;
+    width: 100%; height: 100%;
     object-fit: cover;
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
   }
 
-  .upload-status {
+  .cover-uploading {
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.85);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 10px;
     font-family: 'Syne', sans-serif;
     font-size: 11px;
-    color: #AAA;
-    margin-top: 8px;
-    min-height: 16px;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+    color: #888;
+  }
+  .upload-spinner {
+    width: 24px; height: 24px;
+    border: 2px solid #E8E8E8;
+    border-top-color: #0A0A0A;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
   }
 
   .btn-remove-cover {
-    margin-top: 8px;
+    margin-top: 10px;
+    width: 100%;
+    padding: 7px;
     background: transparent;
-    border: none;
+    border: 1px solid #FECACA;
     font-family: 'Syne', sans-serif;
     font-size: 10px;
-    color: #CC3333;
-    letter-spacing: 1px;
+    font-weight: 700;
+    color: #EF4444;
+    letter-spacing: 1.5px;
     cursor: pointer;
-    padding: 0;
     text-transform: uppercase;
+    transition: all 0.15s;
   }
-  .btn-remove-cover:hover { text-decoration: underline; }
+  .btn-remove-cover:hover { background: #FEF2F2; }
 
   .slug-display {
     font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    color: #777;
+    font-size: 12px;
+    color: #AAAAAA;
     word-break: break-all;
-    line-height: 1.5;
-    min-height: 20px;
+    line-height: 1.6;
+    padding: 10px 12px;
+    background: #FAFAF8;
+    border: 1px solid #F0F0EE;
+    min-height: 40px;
   }
 </style>
 
-<script>
-  const API = 'http://localhost:4013';
-  const postId = new URLSearchParams(window.location.search).get('id');
+<style is:global>
+  .ql-toolbar.ql-snow {
+    border: none !important;
+    border-bottom: 1px solid #E4E4E2 !important;
+    background: #FAFAF8;
+    padding: 10px 12px !important;
+    font-family: 'Syne', sans-serif;
+  }
+  .ql-container.ql-snow {
+    border: none !important;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    color: #0A0A0A;
+  }
+  .ql-editor {
+    min-height: 360px;
+    padding: 20px 22px !important;
+    line-height: 1.85 !important;
+  }
+  .ql-editor.ql-blank::before {
+    color: #CCCCCC !important;
+    font-style: normal !important;
+    font-family: 'Syne', sans-serif;
+  }
+  .ql-snow .ql-stroke { stroke: #555 !important; }
+  .ql-snow .ql-fill  { fill: #555 !important; }
+  .ql-snow.ql-toolbar button:hover .ql-stroke,
+  .ql-snow.ql-toolbar button.ql-active .ql-stroke { stroke: #0A0A0A !important; }
+  .ql-snow.ql-toolbar button:hover .ql-fill,
+  .ql-snow.ql-toolbar button.ql-active .ql-fill  { fill: #0A0A0A !important; }
+  .ql-snow.ql-toolbar button { border-radius: 2px !important; }
+  .ql-snow.ql-toolbar button:hover { background: #F0F0EE !important; }
+  .ql-snow.ql-toolbar button.ql-active { background: #E8E8E6 !important; }
+  .ql-snow .ql-picker-label { color: #555 !important; }
+  .ql-editor h1, .ql-editor h2, .ql-editor h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    color: #0A0A0A;
+  }
+  .ql-editor blockquote {
+    border-left: 3px solid #E0E0E0 !important;
+    color: #777 !important;
+    font-style: italic;
+  }
+  .ql-editor a { color: #0A0A0A; text-decoration: underline; }
+</style>
 
+<script>
+  const API = 'https://api.arkangroup.mx';
+  const postId = new URLSearchParams(window.location.search).get('id');
   if (!postId) window.location.href = '/admin/blog';
 
-  // Editor toolbar
-  document.querySelectorAll('#editorToolbar button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const cmd = (btn as HTMLElement).dataset.cmd;
-      document.getElementById('richEditor')!.focus();
-      if (cmd === 'h2') document.execCommand('formatBlock', false, 'h2');
-      else if (cmd === 'p') document.execCommand('formatBlock', false, 'p');
-      else if (cmd === 'bold') document.execCommand('bold');
-      else if (cmd === 'italic') document.execCommand('italic');
+  let quillInstance: any = null;
+
+  function loadScript(src: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if ((window as any).Quill) { resolve(); return; }
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = () => resolve();
+      s.onerror = reject;
+      document.head.appendChild(s);
     });
-  });
+  }
+
+  async function initEditor() {
+    await loadScript('https://cdn.quilljs.com/1.3.7/quill.min.js');
+    const Quill = (window as any).Quill;
+
+    quillInstance = new Quill('#quill-editor', {
+      theme: 'snow',
+      placeholder: 'Escribe el contenido del artículo…',
+      modules: {
+        toolbar: [
+          [{ header: [2, 3, false] }],
+          ['bold', 'italic', 'underline'],
+          ['blockquote', 'code-block'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          ['link'],
+          ['clean'],
+        ],
+      },
+    });
+  }
 
   // Cover upload
-  const coverUploadArea = document.getElementById('coverUploadArea')!;
-  const coverFile = document.getElementById('coverFile') as HTMLInputElement;
-  const coverPreview = document.getElementById('coverPreview') as HTMLImageElement;
+  const coverUploadArea  = document.getElementById('coverUploadArea')!;
+  const coverFile        = document.getElementById('coverFile') as HTMLInputElement;
+  const coverPreview     = document.getElementById('coverPreview') as HTMLImageElement;
   const coverPlaceholder = document.getElementById('coverPlaceholder')!;
-  const coverImgInput = document.getElementById('coverImg') as HTMLInputElement;
-  const uploadStatus = document.getElementById('uploadStatus')!;
-  const btnRemoveCover = document.getElementById('btnRemoveCover')!;
+  const coverImgInput    = document.getElementById('coverImg') as HTMLInputElement;
+  const coverUploading   = document.getElementById('coverUploading')!;
+  const btnRemoveCover   = document.getElementById('btnRemoveCover')!;
 
   function setCoverImage(url: string) {
     coverImgInput.value = url;
     coverPreview.src = url;
     coverPreview.style.display = 'block';
     coverPlaceholder.style.display = 'none';
+    coverUploading.style.display = 'none';
     btnRemoveCover.style.display = 'block';
   }
 
@@ -384,7 +469,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     if (!file) return;
 
     setCoverImage(URL.createObjectURL(file));
-    uploadStatus.textContent = 'Subiendo imagen...';
+    coverUploading.style.display = 'flex';
 
     const formData = new FormData();
     formData.append('file', file);
@@ -399,11 +484,10 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       const json = await res.json();
       const url = json?.data?.url ?? json?.url;
       setCoverImage(url);
-      uploadStatus.textContent = '';
       (window as any).toast?.success('Imagen subida correctamente.');
     } catch {
       coverImgInput.value = '';
-      uploadStatus.textContent = 'Error al subir. La imagen no se guardará.';
+      coverUploading.style.display = 'none';
       (window as any).toast?.error('Error al subir la imagen.');
     }
   });
@@ -414,12 +498,13 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     coverPreview.style.display = 'none';
     coverPlaceholder.style.display = 'flex';
     btnRemoveCover.style.display = 'none';
-    uploadStatus.textContent = '';
     coverFile.value = '';
   });
 
   // Load post
   async function loadPost() {
+    await initEditor();
+
     try {
       const res = await fetch(`${API}/blog/admin`, { credentials: 'include' });
       if (!res.ok) throw new Error();
@@ -430,7 +515,12 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 
       (document.getElementById('title') as HTMLInputElement).value = post.title;
       (document.getElementById('excerpt') as HTMLTextAreaElement).value = post.excerpt;
-      document.getElementById('richEditor')!.innerHTML = post.content;
+
+      // Set Quill content
+      if (quillInstance && post.content) {
+        quillInstance.root.innerHTML = post.content;
+      }
+
       document.getElementById('slugDisplay')!.textContent = post.slug;
 
       // Preview link
@@ -445,6 +535,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       const isPublished = post.status === 'PUBLISHED';
       statusDiv.innerHTML = `
         <span class="status-badge ${isPublished ? 'published' : 'draft'}">
+          <span class="dot"></span>
           ${isPublished ? 'Publicado' : 'Borrador'}
         </span>
         ${post.publishedAt
@@ -457,18 +548,19 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       document.getElementById('loadingState')!.style.display = 'none';
       document.getElementById('postForm')!.style.display = 'block';
     } catch {
-      document.getElementById('loadingState')!.textContent = 'Error al cargar el post.';
+      const ls = document.getElementById('loadingState')!;
+      ls.innerHTML = '<span style="color:#EF4444">Error al cargar el post.</span>';
     }
   }
 
   // Submit
   async function submitPost(status: 'DRAFT' | 'PUBLISHED') {
-    const title = (document.getElementById('title') as HTMLInputElement).value.trim();
-    const excerpt = (document.getElementById('excerpt') as HTMLTextAreaElement).value.trim();
-    const content = document.getElementById('richEditor')!.innerHTML.trim();
+    const title    = (document.getElementById('title') as HTMLInputElement).value.trim();
+    const excerpt  = (document.getElementById('excerpt') as HTMLTextAreaElement).value.trim();
+    const content  = quillInstance ? quillInstance.root.innerHTML.trim() : '';
     const coverImg = (document.getElementById('coverImg') as HTMLInputElement).value || undefined;
 
-    if (!title || !excerpt || !content) {
+    if (!title || !excerpt || !content || content === '<p><br></p>') {
       (window as any).toast?.error('Completa título, resumen y contenido.');
       return;
     }

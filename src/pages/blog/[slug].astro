@@ -31,8 +31,10 @@ const { slug } = Astro.params;
 
     <!-- Artículo -->
     <article class="article">
-      <p class="article-excerpt" id="articleExcerpt"></p>
-      <div class="article-content" id="articleContent"></div>
+      <div class="article-inner">
+        <p class="article-excerpt" id="articleExcerpt"></p>
+        <div class="article-content" id="articleContent"></div>
+      </div>
     </article>
 
     <!-- Más artículos -->
@@ -148,38 +150,108 @@ const { slug } = Astro.params;
     line-height: 1.05;
   }
 
-  /* Artículo */
+  /* Artículo — wrapper full-width para que el fondo blanco cubra toda la pantalla */
   .article {
     background: #FFFFFF;
-    color: #111111;
-    padding: 80px;
-    max-width: 760px;
+    width: 100%;
+    padding: 72px 40px 96px;
+  }
+  .article-inner {
+    max-width: 720px;
     margin: 0 auto;
   }
   .article-excerpt {
     font-family: 'Syne', sans-serif;
-    font-size: 18px; font-weight: 600;
-    line-height: 1.7; color: #0A0A0A;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.7;
+    color: #0A0A0A;
     margin-bottom: 48px;
     padding-bottom: 40px;
     border-bottom: 1px solid #E0E0E0;
   }
-  .article-content :global(p) {
-    font-family: 'Syne', sans-serif;
-    font-size: 16px; line-height: 1.9;
-    color: #1A1A1A; margin-bottom: 24px;
+
+  /* Contenido del artículo — sin :global() porque is:global ya es global */
+  .article-content {
+    color: #1A1A1A;
   }
-  .article-content :global(h2) {
+  .article-content p {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    line-height: 2;
+    color: #1A1A1A;
+    margin-bottom: 28px;
+    font-weight: 400;
+  }
+  .article-content h2 {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 32px; letter-spacing: 2px;
-    color: #0A0A0A; margin: 48px 0 20px;
+    font-size: 34px;
+    letter-spacing: 2px;
+    color: #0A0A0A;
+    margin: 56px 0 20px;
     line-height: 1;
+  }
+  .article-content h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #0A0A0A;
+    margin: 40px 0 16px;
+    line-height: 1.3;
+  }
+  .article-content strong {
+    font-weight: 700;
+    color: #0A0A0A;
+  }
+  .article-content em { font-style: italic; }
+  .article-content a {
+    color: #0A0A0A;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+  .article-content a:hover { opacity: 0.65; }
+  .article-content ul,
+  .article-content ol {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    line-height: 2;
+    color: #1A1A1A;
+    padding-left: 28px;
+    margin-bottom: 28px;
+  }
+  .article-content li { margin-bottom: 8px; }
+  .article-content blockquote {
+    border-left: 3px solid #0A0A0A;
+    padding: 4px 0 4px 24px;
+    margin: 40px 0;
+    font-style: italic;
+    color: #555;
+  }
+  .article-content blockquote p { color: #555; margin-bottom: 0; }
+  .article-content code {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    background: #F2F2F2;
+    padding: 2px 6px;
+    color: #0A0A0A;
+  }
+  .article-content pre {
+    background: #0A0A0A;
+    padding: 24px;
+    margin-bottom: 28px;
+    overflow-x: auto;
+  }
+  .article-content pre code {
+    background: transparent;
+    color: #F0F0F0;
+    padding: 0;
   }
 
   /* Más artículos */
   .more {
     background: #0A0A0A;
-    padding: 80px;
+    padding: 80px 40px;
     text-align: center;
   }
   .more-label {
@@ -192,7 +264,8 @@ const { slug } = Astro.params;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 2px;
-    margin-bottom: 48px;
+    max-width: 800px;
+    margin: 0 auto 48px;
     text-align: left;
   }
   .more-card {
@@ -228,18 +301,29 @@ const { slug } = Astro.params;
   }
   .all-link:hover { opacity: 0.7; }
 
+  @media (max-width: 900px) {
+    .article { padding: 64px 32px 80px; }
+    .article-content h2 { font-size: 30px; }
+  }
   @media (max-width: 768px) {
     .cover { height: 55vh; min-height: 360px; }
     .cover-content { padding: 0 24px 40px; }
-    .article { padding: 48px 24px; }
-    .article-excerpt { font-size: 16px; }
-    .article-content :global(h2) { font-size: 26px; }
+    .article { padding: 48px 24px 72px; }
+    .article-excerpt { font-size: 17px; }
+    .article-content p { font-size: 16px; }
+    .article-content h2 { font-size: 27px; margin: 44px 0 16px; }
     .more { padding: 60px 24px; }
     .more-grid { grid-template-columns: 1fr; }
   }
   @media (max-width: 480px) {
-    .cover { height: 50svh; }
-    .article { padding: 36px 20px; }
+    .cover { height: 50svh; min-height: 300px; }
+    .cover-content { padding: 0 20px 32px; gap: 12px; }
+    .cover-title { font-size: clamp(28px, 8vw, 48px); }
+    .article { padding: 40px 20px 64px; }
+    .article-excerpt { font-size: 16px; line-height: 1.65; }
+    .article-content p { font-size: 15px; line-height: 1.9; margin-bottom: 22px; }
+    .article-content h2 { font-size: 24px; margin: 40px 0 14px; }
+    .article-content ul, .article-content ol { font-size: 15px; }
     .more { padding: 48px 20px; }
     .more-card { padding: 16px; }
     .more-img { width: 64px; height: 64px; }
@@ -247,7 +331,7 @@ const { slug } = Astro.params;
 </style>
 
 <script define:vars={{ slug }}>
-  const API = 'http://localhost:4013';
+  const API = 'https://api.arkangroup.mx';
 
   function formatDate(iso) {
     if (!iso) return '';

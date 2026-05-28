@@ -18,57 +18,56 @@ const currentPath = Astro.url.pathname;
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <slot name="head" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
     body {
       font-family: 'Syne', sans-serif;
       -webkit-font-smoothing: antialiased;
-      background: #F6F6F6;
+      background: #F2F2F0;
     }
 
     .admin-shell {
       display: flex;
       min-height: 100vh;
       opacity: 0;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.25s ease;
     }
     .admin-shell.ready { opacity: 1; }
 
-    /* Loading state */
     .admin-loading {
       position: fixed;
       inset: 0;
-      background: #080808;
+      background: #060606;
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 200;
       font-family: 'Syne', sans-serif;
       font-size: 10px;
-      letter-spacing: 4px;
+      letter-spacing: 5px;
       text-transform: uppercase;
       color: #2A2A2A;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.4s ease;
     }
     .admin-loading.hidden {
       opacity: 0;
       pointer-events: none;
     }
 
-    /* Main content area */
     .admin-main {
-      margin-left: 220px;
+      margin-left: 260px;
       flex: 1;
       min-height: 100vh;
-      background: #F6F6F6;
+      background: #F2F2F0;
       display: flex;
       flex-direction: column;
     }
   </style>
 </head>
 <body>
-  <div class="admin-loading" id="adminLoading">Verificando sesión...</div>
+  <div class="admin-loading" id="adminLoading">Verificando acceso…</div>
 
   <div class="admin-shell" id="adminShell">
     <AdminSidebar currentPath={currentPath} />
@@ -77,15 +76,14 @@ const currentPath = Astro.url.pathname;
     </main>
   </div>
 
-  <!-- Toast styles -->
   <style>
     #toast-container {
       position: fixed;
-      bottom: 28px;
-      right: 28px;
+      bottom: 32px;
+      right: 32px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       z-index: 9999;
       pointer-events: none;
     }
@@ -93,34 +91,42 @@ const currentPath = Astro.url.pathname;
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 13px 18px;
+      padding: 14px 20px;
       background: #111111;
       color: #EEEEEE;
       font-family: 'Syne', sans-serif;
       font-size: 13px;
       font-weight: 500;
       letter-spacing: 0.2px;
-      min-width: 260px;
-      max-width: 380px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-      border-left: 3px solid #555;
-      animation: toastIn 0.2s ease forwards;
+      min-width: 280px;
+      max-width: 400px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      border-left: 3px solid #444;
+      animation: toastIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       pointer-events: auto;
     }
     .toast.success { border-left-color: #22C55E; }
     .toast.error   { border-left-color: #EF4444; }
-    .toast.info    { border-left-color: #3B82F6; }
+    .toast.info    { border-left-color: #60A5FA; }
     .toast.out     { animation: toastOut 0.2s ease forwards; }
-    .toast-icon    { font-size: 15px; flex-shrink: 0; }
-    @keyframes toastIn  { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(8px); } }
+    .toast-icon {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+      background: rgba(255,255,255,0.08);
+    }
+    .toast.success .toast-icon { background: rgba(34,197,94,0.15); color: #4ADE80; }
+    .toast.error   .toast-icon { background: rgba(239,68,68,0.15);  color: #F87171; }
+    .toast.info    .toast-icon { background: rgba(96,165,250,0.15); color: #93C5FD; }
+    @keyframes toastIn  { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(12px); } }
   </style>
   <div id="toast-container"></div>
 
   <script>
-    const API = 'http://localhost:4013';
+    const API = 'https://api.arkangroup.mx';
 
-    // ── Global toast ──────────────────────────────────────────────
     function _showToast(msg: string, type: 'success' | 'error' | 'info' = 'info', duration = 3500) {
       const container = document.getElementById('toast-container')!;
       const el = document.createElement('div');
@@ -139,7 +145,6 @@ const currentPath = Astro.url.pathname;
       info:    (m: string) => _showToast(m, 'info'),
     };
 
-    // ── Admin init ────────────────────────────────────────────────
     async function initAdmin() {
       try {
         const res = await fetch(`${API}/auth/validate`, { credentials: 'include' });
@@ -151,10 +156,12 @@ const currentPath = Astro.url.pathname;
         const nameEl = document.getElementById('sidebarUserName');
         const roleChip = document.getElementById('sidebarRoleChip');
         const roleLabel = document.getElementById('sidebarRoleLabel');
+        const avatarEl = document.getElementById('sidebarAvatar');
 
-        if (nameEl) nameEl.textContent = user.name ?? '';
+        if (nameEl) nameEl.textContent = `${user.name ?? ''} ${user.lastName ?? ''}`.trim();
         if (roleLabel) roleLabel.textContent = user.role ?? '';
         if (roleChip && user.role === 'GERENTE') roleChip.classList.add('gerente');
+        if (avatarEl) avatarEl.textContent = (user.name ?? 'A').charAt(0).toUpperCase();
 
         document.getElementById('sidebarLogout')?.addEventListener('click', async () => {
           await fetch(`${API}/auth/logout`, { method: 'POST', credentials: 'include' }).catch(() => {});

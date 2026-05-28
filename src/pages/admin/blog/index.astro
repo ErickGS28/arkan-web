@@ -7,9 +7,14 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     <header class="page-header">
       <div>
         <h1 class="page-title">Blog</h1>
-        <p class="page-sub" id="postCount">Cargando...</p>
+        <p class="page-sub" id="postCount">Cargando…</p>
       </div>
-      <a href="/admin/blog/new" class="btn-new">+ Nuevo post</a>
+      <a href="/admin/blog/new" class="btn-new">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14">
+          <line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/>
+        </svg>
+        Nuevo post
+      </a>
     </header>
 
     <!-- Filters -->
@@ -24,16 +29,16 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       <table class="posts-table">
         <thead>
           <tr>
-            <th>#</th>
+            <th style="width:44px">#</th>
             <th>Título</th>
-            <th>Estado</th>
-            <th>Tiempo de lectura</th>
-            <th>Fecha</th>
-            <th></th>
+            <th style="width:120px">Estado</th>
+            <th style="width:100px">Lectura</th>
+            <th style="width:130px">Fecha</th>
+            <th style="width:160px"></th>
           </tr>
         </thead>
         <tbody id="postsBody">
-          <tr><td colspan="6" class="loading-row">Cargando posts...</td></tr>
+          <tr><td colspan="6" class="loading-row">Cargando posts…</td></tr>
         </tbody>
       </table>
     </div>
@@ -42,8 +47,16 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   <!-- Delete confirmation modal -->
   <div class="modal-backdrop" id="deleteModal" style="display:none">
     <div class="modal">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22" stroke-linecap="round">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14H6L5 6"/>
+          <path d="M10 11v6M14 11v6"/>
+          <path d="M9 6V4h6v2"/>
+        </svg>
+      </div>
       <p class="modal-title">Eliminar post</p>
-      <p class="modal-body">¿Estás seguro de que deseas eliminar <strong id="modalPostTitle"></strong>? Esta acción no se puede deshacer.</p>
+      <p class="modal-body">¿Eliminar <strong id="modalPostTitle"></strong>? Esta acción no se puede deshacer.</p>
       <div class="modal-actions">
         <button class="modal-btn-cancel" id="modalCancel">Cancelar</button>
         <button class="modal-btn-confirm" id="modalConfirm">Eliminar</button>
@@ -54,7 +67,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 
 <style is:global>
   .page {
-    padding: 40px 48px;
+    padding: 48px 56px;
     max-width: 1100px;
   }
 
@@ -62,67 +75,70 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
   }
 
   .page-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 42px;
+    font-size: 44px;
     letter-spacing: 3px;
     color: #0A0A0A;
+    line-height: 1;
   }
 
   .page-sub {
     font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    color: #888;
-    margin-top: 4px;
+    font-size: 13px;
+    color: #AAA;
+    margin-top: 6px;
     letter-spacing: 0.3px;
   }
 
   .btn-new {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 12px 24px;
+    gap: 8px;
+    padding: 12px 22px;
     background: #0A0A0A;
     color: #FFFFFF;
     font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 1px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     text-decoration: none;
     transition: background 0.2s;
     white-space: nowrap;
+    margin-top: 8px;
   }
   .btn-new:hover { background: #333; }
 
   /* Filters */
   .filters {
     display: flex;
-    gap: 6px;
-    margin-bottom: 20px;
+    gap: 4px;
+    margin-bottom: 24px;
   }
   .filter-btn {
     padding: 8px 18px;
-    background: transparent;
-    border: 1px solid #D8D8D8;
+    background: #FFFFFF;
+    border: 1px solid #E0E0DE;
     font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    color: #777;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #888;
     cursor: pointer;
     transition: all 0.15s;
   }
-  .filter-btn:hover { border-color: #888; color: #222; }
+  .filter-btn:hover { border-color: #BBB; color: #333; }
   .filter-btn.active { background: #0A0A0A; border-color: #0A0A0A; color: #FFF; }
 
   /* Table */
   .table-wrap {
     background: #FFFFFF;
-    border: 1px solid #EBEBEB;
+    border: 1px solid #E4E4E2;
     overflow: hidden;
   }
 
@@ -133,74 +149,72 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 
   .posts-table th {
     font-family: 'Syne', sans-serif;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    color: #777;
-    padding: 16px 18px;
+    color: #AAA;
+    padding: 14px 20px;
     text-align: left;
-    border-bottom: 1px solid #EBEBEB;
-    background: #F8F8F8;
+    border-bottom: 1px solid #F0F0EE;
+    background: #FAFAF8;
   }
 
   .posts-table td {
-    padding: 16px 18px;
+    padding: 18px 20px;
     font-family: 'Syne', sans-serif;
     font-size: 14px;
     color: #222;
-    border-bottom: 1px solid #F0F0F0;
+    border-bottom: 1px solid #F0F0EE;
     vertical-align: middle;
   }
 
   .posts-table tbody tr:last-child td { border-bottom: none; }
-  .posts-table tbody tr:hover td { background: #FAFAFA; }
+  .posts-table tbody tr { transition: background 0.1s; }
+  .posts-table tbody tr:hover td { background: #FAFAF8; }
 
   .loading-row {
     text-align: center;
-    color: #999;
-    padding: 48px 18px !important;
+    color: #BBBBBB;
+    padding: 64px 20px !important;
     font-size: 14px !important;
     letter-spacing: 0.5px;
   }
 
   .post-num {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    color: #CCC;
-    width: 40px;
+    font-size: 18px;
+    color: #CCCCCC;
   }
 
-  .post-title-cell {
-    max-width: 340px;
-  }
   .post-title-text {
     font-weight: 700;
-    font-size: 15px;
+    font-size: 14px;
     color: #0A0A0A;
     display: block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 320px;
+    max-width: 380px;
+    margin-bottom: 3px;
   }
   .post-slug {
-    font-size: 12px;
-    color: #AAA;
+    font-size: 11px;
+    color: #BBBBBB;
     letter-spacing: 0.2px;
-    margin-top: 3px;
     display: block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 320px;
+    max-width: 380px;
+    font-family: 'Syne', sans-serif;
   }
 
   .status-badge {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 4px 12px;
+    padding: 4px 10px;
     font-family: 'Syne', sans-serif;
     font-size: 10px;
     font-weight: 700;
@@ -208,23 +222,33 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     text-transform: uppercase;
     border-radius: 2px;
   }
-  .status-badge.published { background: #EDFAF3; color: #1A7A4A; }
-  .status-badge.draft     { background: #F2F2F2; color: #666; }
+  .status-badge .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .status-badge.published { background: #EDFAF3; color: #16A34A; }
+  .status-badge.published .dot { background: #22C55E; }
+  .status-badge.draft     { background: #F5F5F3; color: #888; }
+  .status-badge.draft     .dot { background: #CCCCCC; }
 
-  .read-time { color: #666; font-size: 14px; }
-  .post-date { color: #999; font-size: 13px; letter-spacing: 0.2px; }
+  .read-time { color: #AAAAAA; font-size: 13px; }
+  .post-date  { color: #AAAAAA; font-size: 12px; letter-spacing: 0.2px; }
 
   .row-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     justify-content: flex-end;
   }
 
-  .btn-view, .btn-edit, .btn-delete {
-    padding: 6px 14px;
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 12px;
     font-family: 'Syne', sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
@@ -232,63 +256,76 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     border: 1px solid transparent;
     transition: all 0.15s;
     text-decoration: none;
-    display: inline-block;
   }
+  .btn-action svg { width: 12px; height: 12px; }
+
   .btn-view {
-    border-color: #E0E0E0;
+    border-color: #E4E4E2;
     background: transparent;
-    color: #888;
+    color: #AAA;
   }
-  .btn-view:hover { border-color: #AAA; color: #333; background: #F8F8F8; }
+  .btn-view:hover { border-color: #AAAAAA; color: #333; background: #F8F8F6; }
+
   .btn-edit {
-    border-color: #CCCCCC;
+    border-color: #E4E4E2;
     background: transparent;
-    color: #444;
+    color: #555;
   }
-  .btn-edit:hover { border-color: #0A0A0A; color: #0A0A0A; background: #F5F5F5; }
+  .btn-edit:hover { border-color: #0A0A0A; color: #0A0A0A; background: #F5F5F3; }
+
   .btn-delete {
     border-color: transparent;
     background: transparent;
-    color: #AAAAAA;
+    color: #CCCCCC;
+    padding: 7px 8px;
   }
-  .btn-delete:hover { color: #CC2222; border-color: #FFCCCC; background: #FFF5F5; }
+  .btn-delete:hover { color: #EF4444; border-color: #FECACA; background: #FEF2F2; }
 
   /* Delete modal */
   .modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0,0,0,0.4);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(3px);
     animation: fadeIn 0.15s ease;
   }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
   .modal {
     background: #FFFFFF;
-    padding: 32px 36px;
-    max-width: 420px;
+    padding: 36px 40px;
+    max-width: 440px;
     width: 90%;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.15);
-    animation: slideUp 0.15s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .modal-icon {
+    width: 44px; height: 44px;
+    background: #FEF2F2;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #EF4444;
+    margin-bottom: 16px;
+  }
 
   .modal-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 24px;
+    font-size: 26px;
     letter-spacing: 2px;
     color: #0A0A0A;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
   .modal-body {
     font-family: 'Syne', sans-serif;
     font-size: 14px;
-    color: #555;
-    line-height: 1.6;
+    color: #666;
+    line-height: 1.65;
     margin-bottom: 28px;
   }
   .modal-body strong { color: #0A0A0A; font-weight: 700; }
@@ -303,7 +340,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     font-family: 'Syne', sans-serif;
     font-size: 12px;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     cursor: pointer;
     border: 1px solid transparent;
@@ -311,39 +348,36 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   }
   .modal-btn-cancel {
     background: transparent;
-    border-color: #DDDDDD;
-    color: #666;
+    border-color: #E0E0DE;
+    color: #777;
   }
-  .modal-btn-cancel:hover { border-color: #AAA; color: #222; background: #F5F5F5; }
+  .modal-btn-cancel:hover { border-color: #AAA; color: #222; }
   .modal-btn-confirm {
-    background: #CC2222;
-    border-color: #CC2222;
+    background: #EF4444;
+    border-color: #EF4444;
     color: #FFFFFF;
   }
-  .modal-btn-confirm:hover { background: #AA1111; border-color: #AA1111; }
+  .modal-btn-confirm:hover { background: #DC2626; border-color: #DC2626; }
   .modal-btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
 
 <script>
-  const API = 'http://localhost:4013';
-
+  const API = 'https://api.arkangroup.mx';
   let allPosts: any[] = [];
   let currentFilter = 'all';
 
-  // ── Modal ──────────────────────────────────────────────────────
   let pendingDeleteId: number | null = null;
 
-  const deleteModal = document.getElementById('deleteModal')!;
+  const deleteModal   = document.getElementById('deleteModal')!;
   const modalPostTitle = document.getElementById('modalPostTitle')!;
-  const modalConfirm = document.getElementById('modalConfirm') as HTMLButtonElement;
-  const modalCancel = document.getElementById('modalCancel')!;
+  const modalConfirm  = document.getElementById('modalConfirm') as HTMLButtonElement;
+  const modalCancel   = document.getElementById('modalCancel')!;
 
   function openDeleteModal(id: number, title: string) {
     pendingDeleteId = id;
     modalPostTitle.textContent = `"${title}"`;
     deleteModal.style.display = 'flex';
   }
-
   function closeDeleteModal() {
     deleteModal.style.display = 'none';
     pendingDeleteId = null;
@@ -363,18 +397,21 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       allPosts = allPosts.filter(p => p.id !== id);
       applyFilter();
       closeDeleteModal();
-      (window as any).toast?.success('Post eliminado correctamente.');
+      (window as any).toast?.success('Post eliminado.');
     } catch {
       closeDeleteModal();
       (window as any).toast?.error('Error al eliminar el post.');
     }
   });
 
-  // ── Table ──────────────────────────────────────────────────────
   function formatDate(iso: string | null): string {
     if (!iso) return '—';
     return new Date(iso).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
   }
+
+  const eyeIcon = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" width="12" height="12"><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg>`;
+  const editIcon = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" width="12" height="12"><path d="M11 2l3 3-8 8H3v-3L11 2z"/></svg>`;
+  const trashIcon = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" width="12" height="12"><polyline points="2 4 3.5 4 14 4"/><path d="M12 4l-.75 9.5H4.75L4 4"/><path d="M6.5 4V3h3v1"/></svg>`;
 
   function renderPosts(posts: any[]) {
     const tbody = document.getElementById('postsBody')!;
@@ -386,22 +423,23 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     tbody.innerHTML = posts.map((post, i) => `
       <tr>
         <td class="post-num">${String(i + 1).padStart(2, '0')}</td>
-        <td class="post-title-cell">
+        <td>
           <span class="post-title-text">${post.title}</span>
           <span class="post-slug">${post.slug}</span>
         </td>
         <td>
           <span class="status-badge ${post.status === 'PUBLISHED' ? 'published' : 'draft'}">
+            <span class="dot"></span>
             ${post.status === 'PUBLISHED' ? 'Publicado' : 'Borrador'}
           </span>
         </td>
-        <td class="read-time">${post.readTime}</td>
+        <td class="read-time">${post.readTime ?? '—'}</td>
         <td class="post-date">${formatDate(post.publishedAt ?? post.createdAt)}</td>
         <td>
           <div class="row-actions">
-            <a href="/blog/${post.slug}" target="_blank" rel="noopener" class="btn-view">Ver</a>
-            <a href="/admin/blog/edit?id=${post.id}" class="btn-edit">Editar</a>
-            <button class="btn-delete" data-id="${post.id}" data-title="${post.title.replace(/"/g, '&quot;')}">Eliminar</button>
+            <a href="/blog/${post.slug}" target="_blank" rel="noopener" class="btn-action btn-view" title="Ver publicado">${eyeIcon} Ver</a>
+            <a href="/admin/blog/edit?id=${post.id}" class="btn-action btn-edit" title="Editar">${editIcon} Editar</a>
+            <button class="btn-action btn-delete" data-id="${post.id}" data-title="${post.title.replace(/"/g, '&quot;')}" title="Eliminar">${trashIcon}</button>
           </div>
         </td>
       </tr>
@@ -409,7 +447,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 
     tbody.querySelectorAll('.btn-delete').forEach(btn => {
       btn.addEventListener('click', () => {
-        const id = Number((btn as HTMLElement).dataset.id);
+        const id    = Number((btn as HTMLElement).dataset.id);
         const title = (btn as HTMLElement).dataset.title ?? '';
         openDeleteModal(id, title);
       });
@@ -438,7 +476,6 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     }
   }
 
-  // Filter buttons
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));

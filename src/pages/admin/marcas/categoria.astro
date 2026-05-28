@@ -256,7 +256,7 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 </style>
 
 <script>
-  const API = 'http://localhost:4013';
+  const API = 'https://api.arkangroup.mx';
   const params = new URLSearchParams(window.location.search);
   const categoryId = params.get('id');
   const brandSlug = params.get('brand') ?? 'aruba';

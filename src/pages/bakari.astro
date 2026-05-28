@@ -3,7 +3,7 @@ import { getBrand } from '../data/brands';
 import BrandPage from '../layouts/BrandPage.astro';
 
 const brand = getBrand('bakari')!;
-const API = import.meta.env.API_URL ?? 'http://localhost:4013';
+const API = import.meta.env.API_URL ?? 'https://api.arkangroup.mx';
 
 let categories = brand.categories;
 try {

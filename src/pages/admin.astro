@@ -4,153 +4,233 @@ import AdminLayout from '../layouts/AdminLayout.astro';
 
 <AdminLayout title="Dashboard">
   <style>
-    .page-header {
-      padding: 28px 40px 24px;
-      border-bottom: 1px solid #E8E8E8;
-      background: #FFFFFF;
-    }
-    .page-header-label {
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: #999999;
-      margin-bottom: 4px;
-    }
-    .page-header-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 30px;
-      letter-spacing: 3px;
-      color: #111111;
-    }
-
-    .page-body {
-      padding: 40px;
+    .dash {
+      padding: 48px 56px;
+      max-width: 1100px;
     }
 
     /* Greeting */
-    .greeting-label {
-      font-size: 12px;
-      letter-spacing: 3px;
+    .dash-eyebrow {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      letter-spacing: 4px;
       text-transform: uppercase;
-      color: #999999;
-      margin-bottom: 8px;
+      color: #999;
+      margin-bottom: 10px;
     }
-    .greeting-name {
+    .dash-name {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(44px, 6vw, 68px);
+      font-size: clamp(48px, 6vw, 72px);
       letter-spacing: 2px;
       line-height: 1;
-      color: #111111;
-      margin-bottom: 16px;
+      color: #0A0A0A;
+      margin-bottom: 20px;
     }
-
-    /* Role chip */
     .role-chip {
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      padding: 6px 16px;
-      border: 1px solid #DDDDDD;
-      font-size: 11px;
-      letter-spacing: 2px;
+      padding: 6px 14px;
+      border: 1px solid #DCDCDC;
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2.5px;
       text-transform: uppercase;
-      color: #777;
+      color: #888;
+      border-radius: 2px;
     }
-    .role-chip.gerente {
-      border-color: #111111;
-      color: #111111;
-    }
+    .role-chip.gerente { border-color: #0A0A0A; color: #0A0A0A; }
     .role-dot {
       width: 5px; height: 5px;
       border-radius: 50%;
-      background: #DDDDDD;
-      flex-shrink: 0;
+      background: #DDD;
     }
-    .role-chip.gerente .role-dot { background: #111111; }
+    .role-chip.gerente .role-dot { background: #0A0A0A; }
 
-    .divider {
-      width: 32px;
-      height: 1px;
-      background: #E8E8E8;
-      margin: 36px 0;
+    /* Stats */
+    .dash-divider {
+      width: 40px; height: 1px;
+      background: #D8D8D8;
+      margin: 40px 0;
     }
 
-    /* Info cards */
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1px;
-      background: #E8E8E8;
-      border: 1px solid #E8E8E8;
-      max-width: 520px;
-    }
-    .info-card {
-      background: #FFFFFF;
-      padding: 20px 24px;
-    }
-    .info-card-label {
+    .stats-label {
+      font-family: 'Syne', sans-serif;
       font-size: 11px;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      color: #999999;
-      margin-bottom: 8px;
+      color: #AAA;
+      margin-bottom: 20px;
     }
-    .info-card-value {
-      font-size: 15px;
-      font-weight: 500;
-      color: #222222;
-      word-break: break-all;
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: #E0E0DE;
+      border: 1px solid #E0E0DE;
+      max-width: 640px;
+      margin-bottom: 48px;
     }
+    .stat-card {
+      background: #FFFFFF;
+      padding: 24px 28px;
+      transition: background 0.15s;
+    }
+    .stat-card:hover { background: #FAFAFA; }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 40px;
+      letter-spacing: 2px;
+      color: #0A0A0A;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-lbl {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #999;
+    }
+
+    /* Quick links */
+    .quick-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #AAA;
+      margin-bottom: 16px;
+    }
+    .quick-grid {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .quick-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: #FFFFFF;
+      border: 1px solid #E0E0DE;
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #333;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .quick-link:hover {
+      background: #0A0A0A;
+      border-color: #0A0A0A;
+      color: #FFF;
+    }
+    .quick-link svg { width: 14px; height: 14px; opacity: 0.7; }
+    .quick-link:hover svg { opacity: 1; }
   </style>
 
-  <div class="page-header">
-    <p class="page-header-label">Panel Administrativo</p>
-    <h1 class="page-header-title">Dashboard</h1>
-  </div>
-
-  <div class="page-body">
-    <p class="greeting-label">Bienvenido de vuelta</p>
-    <h2 class="greeting-name" id="dashGreetingName"></h2>
+  <div class="dash">
+    <p class="dash-eyebrow">Bienvenido de vuelta</p>
+    <h1 class="dash-name" id="dashGreetingName">—</h1>
     <span class="role-chip" id="dashRoleChip">
       <span class="role-dot"></span>
-      <span id="dashRoleLabel"></span>
+      <span id="dashRoleLabel">—</span>
     </span>
 
-    <div class="divider"></div>
+    <div class="dash-divider"></div>
 
-    <div class="info-grid">
-      <div class="info-card">
-        <p class="info-card-label">Email</p>
-        <p class="info-card-value" id="dashEmail"></p>
+    <p class="stats-label">Resumen del contenido</p>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num" id="statPosts">—</div>
+        <div class="stat-lbl">Posts publicados</div>
       </div>
-      <div class="info-card">
-        <p class="info-card-label">Nombre</p>
-        <p class="info-card-value" id="dashName"></p>
+      <div class="stat-card">
+        <div class="stat-num" id="statDrafts">—</div>
+        <div class="stat-lbl">Borradores</div>
       </div>
-      <div class="info-card">
-        <p class="info-card-label">Rol</p>
-        <p class="info-card-value" id="dashRole"></p>
+      <div class="stat-card">
+        <div class="stat-num" id="statSurveys">—</div>
+        <div class="stat-lbl">Encuestas</div>
       </div>
+    </div>
+
+    <p class="quick-label">Acciones rápidas</p>
+    <div class="quick-grid">
+      <a href="/admin/blog/new" class="quick-link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/>
+        </svg>
+        Nuevo post
+      </a>
+      <a href="/admin/blog" class="quick-link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <rect x="2" y="1.5" width="12" height="13" rx="1.5"/>
+          <line x1="4.5" y1="5.5" x2="11.5" y2="5.5"/>
+          <line x1="4.5" y1="8" x2="11.5" y2="8"/>
+          <line x1="4.5" y1="10.5" x2="8.5" y2="10.5"/>
+        </svg>
+        Gestionar blog
+      </a>
+      <a href="/admin/encuestas/new" class="quick-link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/>
+        </svg>
+        Nueva encuesta
+      </a>
+      <a href="/" target="_blank" rel="noopener" class="quick-link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M6.5 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V9.5"/>
+          <path d="M10 2h4v4M14 2L8 8"/>
+        </svg>
+        Ver sitio
+      </a>
     </div>
   </div>
 
   <script>
-    document.addEventListener('arkan:auth-ready', (e: Event) => {
+    const API = 'https://api.arkangroup.mx';
+
+    document.addEventListener('arkan:auth-ready', async (e: Event) => {
       const user = (e as CustomEvent).detail;
 
-      const name = document.getElementById('dashGreetingName');
-      const email = document.getElementById('dashEmail');
-      const nameCard = document.getElementById('dashName');
-      const role = document.getElementById('dashRole');
+      const nameEl   = document.getElementById('dashGreetingName');
       const roleLabel = document.getElementById('dashRoleLabel');
-      const roleChip = document.getElementById('dashRoleChip');
+      const roleChip  = document.getElementById('dashRoleChip');
 
-      if (name) name.textContent = (user.name ?? '').toUpperCase();
-      if (email) email.textContent = user.email ?? '';
-      if (nameCard) nameCard.textContent = `${user.name ?? ''} ${user.lastName ?? ''}`.trim();
-      if (role) role.textContent = user.role ?? '';
+      if (nameEl)    nameEl.textContent = (user.name ?? '').toUpperCase();
       if (roleLabel) roleLabel.textContent = user.role ?? '';
       if (roleChip && user.role === 'GERENTE') roleChip.classList.add('gerente');
+
+      // Load stats
+      try {
+        const [blogRes, surveyRes] = await Promise.all([
+          fetch(`${API}/blog/admin`, { credentials: 'include' }),
+          fetch(`${API}/surveys`,    { credentials: 'include' }),
+        ]);
+
+        if (blogRes.ok) {
+          const bJson = await blogRes.json();
+          const posts = Array.isArray(bJson) ? bJson : (bJson.data ?? []);
+          const published = posts.filter((p: any) => p.status === 'PUBLISHED').length;
+          const drafts    = posts.filter((p: any) => p.status !== 'PUBLISHED').length;
+          const statPosts  = document.getElementById('statPosts');
+          const statDrafts = document.getElementById('statDrafts');
+          if (statPosts)  statPosts.textContent  = String(published);
+          if (statDrafts) statDrafts.textContent = String(drafts);
+        }
+
+        if (surveyRes.ok) {
+          const sJson = await surveyRes.json();
+          const surveys = Array.isArray(sJson) ? sJson : (sJson.data ?? []);
+          const statSurveys = document.getElementById('statSurveys');
+          if (statSurveys) statSurveys.textContent = String(surveys.length);
+        }
+      } catch {}
     });
   </script>
 </AdminLayout>

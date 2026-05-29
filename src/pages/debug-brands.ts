@@ -8,7 +8,7 @@ export const GET: APIRoute = async () => {
   for (const brand of brands) {
     try {
       const controller = new AbortController();
-      const t = setTimeout(() => controller.abort(), 5000);
+      const t = setTimeout(() => controller.abort(), 10000);
       const res = await fetch(`${API}/brands/categories?brand=${brand}`, {
         signal: controller.signal,
       });

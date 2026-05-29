@@ -8,7 +8,7 @@ const API = import.meta.env.API_URL ?? 'https://api.arkangroup.mx';
 let categories = brand.categories;
 try {
   const controller = new AbortController();
-  const t = setTimeout(() => controller.abort(), 3000);
+  const t = setTimeout(() => controller.abort(), 8000);
   const res = await fetch(`${API}/brands/categories?brand=BAKARI`, { signal: controller.signal });
   clearTimeout(t);
   if (res.ok) {

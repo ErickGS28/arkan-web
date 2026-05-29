@@ -3,41 +3,6 @@ import { getBrand } from '../data/brands';
 import BrandPage from '../layouts/BrandPage.astro';
 
 const brand = getBrand('aruba')!;
-const API = import.meta.env.API_URL ?? 'https://api.arkangroup.mx';
-
-let categories = brand.categories;
-let _debug = 'source=static';
-try {
-  const controller = new AbortController();
-  const t = setTimeout(() => controller.abort(), 8000);
-  const res = await fetch(`${API}/brands/categories?brand=ARUBA`, { signal: controller.signal });
-  clearTimeout(t);
-  _debug = `status=${res.status}`;
-  if (res.ok) {
-    const json = await res.json();
-    const apiCats: any[] = Array.isArray(json) ? json : (json?.data ?? []);
-    _debug += ` cats=${apiCats.length}`;
-    if (apiCats.length > 0) {
-      const mapped = apiCats
-        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-        .map(cat => ({
-          name: cat.name as string,
-          description: (cat.description as string) ?? '',
-          images: ((cat.images ?? []) as any[])
-            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-            .map((img: any) => img.url as string),
-        }));
-      const hasImages = mapped.some(cat => cat.images.length > 0);
-      _debug += ` hasImages=${hasImages} totalImages=${mapped.reduce((s, c) => s + c.images.length, 0)}`;
-      if (hasImages) { categories = mapped; _debug += ' source=api'; }
-      else _debug += ' source=static(no-images)';
-    }
-  }
-} catch (e: any) {
-  _debug = `error=${e?.message ?? 'unknown'}`;
-}
-
-const dynamicBrand = { ...brand, categories };
+const API_URL = 'https://api.arkangroup.mx';
 ---
-<!-- aruba-debug: {_debug} -->
-<BrandPage brand={dynamicBrand} />
+<BrandPage brand={brand} apiUrl={API_URL} apiBrand="ARUBA" />

@@ -1,8 +1,8 @@
 ---
 import type { Brand } from '../../data/brands';
 
-interface Props { brand: Brand; }
-const { brand } = Astro.props;
+interface Props { brand: Brand; apiUrl?: string; apiBrand?: string; }
+const { brand, apiUrl, apiBrand } = Astro.props;
 
 const waBase = 'https://wa.me/525564991943';
 const waUrl = (cat: string) =>
@@ -96,6 +96,85 @@ const waUrl = (cat: string) =>
     });
   });
 </script>
+
+{apiUrl && apiBrand && (
+<script define:vars={{ apiUrl, apiBrand }}>
+  async function loadApiCategories() {
+    try {
+      const res = await fetch(`${apiUrl}/brands/categories?brand=${apiBrand}`);
+      if (!res.ok) return;
+      const json = await res.json();
+      const cats = Array.isArray(json) ? json : (json?.data ?? []);
+      if (!cats.length) return;
+
+      const mapped = cats
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+        .map(cat => ({
+          name: cat.name,
+          description: cat.description ?? '',
+          images: (cat.images ?? [])
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+            .map(img => img.url),
+        }));
+
+      const hasImages = mapped.some(c => c.images.length > 0);
+      if (!hasImages) return;
+
+      const GAP = 6;
+      const VISIBLE = 3;
+
+      const sections = document.querySelectorAll('.category');
+      mapped.forEach((cat, i) => {
+        const section = sections[i];
+        if (!section) return;
+
+        const slider = section.querySelector('[data-slider]');
+        if (!slider || !cat.images.length) return;
+
+        slider.innerHTML = cat.images.map((src, j) => `
+          <div class="cat-slide">
+            <img src="${src}" alt="${cat.name} ${j + 1}" loading="${j > 2 ? 'lazy' : 'eager'}" />
+          </div>
+        `).join('');
+
+        const w = Math.floor((slider.offsetWidth - GAP * (VISIBLE - 1)) / VISIBLE);
+        if (w > 0) {
+          slider.querySelectorAll('.cat-slide').forEach(slide => {
+            slide.style.width = w + 'px';
+            slide.style.minWidth = w + 'px';
+          });
+        }
+
+        const navWrap = section.querySelector('.cat-nav');
+        if (navWrap) {
+          navWrap.style.display = cat.images.length > VISIBLE ? 'flex' : 'none';
+        } else if (cat.images.length > VISIBLE) {
+          const nav = document.createElement('div');
+          nav.className = 'cat-nav';
+          nav.innerHTML = `
+            <button class="cat-nav-btn cat-nav-prev" data-dir="-1" aria-label="Anterior">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12L4 7l5-5"/></svg>
+            </button>
+            <button class="cat-nav-btn cat-nav-next" data-dir="1" aria-label="Siguiente">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2l5 5-5 5"/></svg>
+            </button>`;
+          slider.closest('.cat-slider-wrap')?.appendChild(nav);
+          nav.querySelectorAll('.cat-nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const s = btn.closest('.cat-slider-wrap')?.querySelector('[data-slider]');
+              const slide = s?.querySelector('.cat-slide');
+              const slideW = (slide?.offsetWidth ?? 0) + GAP;
+              s?.scrollBy({ left: Number(btn.dataset.dir) * slideW, behavior: 'smooth' });
+            });
+          });
+        }
+      });
+    } catch (_) {}
+  }
+
+  document.addEventListener('DOMContentLoaded', loadApiCategories);
+</script>
+)}
 
 <style is:global>
   .categories { display: flex; flex-direction: column; }

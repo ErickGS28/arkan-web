@@ -9,7 +9,7 @@ const waUrl = (cat: string) =>
   `${waBase}?text=${encodeURIComponent(`Hola, me interesa información sobre ${cat} de ${brand.name}`)}`;
 ---
 
-<section class="categories">
+<section class="categories" id="lookbook">
   {brand.categories.map((cat, i) => (
     <div class:list={['category', { 'category--dark': i % 2 !== 0 }]}>
       <div class="cat-inner">

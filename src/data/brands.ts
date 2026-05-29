@@ -19,6 +19,13 @@ export interface Brand {
     gridCols: string;
   };
   categories: Category[];
+  cta: {
+    heading: string;
+    subheading?: string;
+    detail?: string;
+    body: string;
+    waLink: string;
+  };
   instagramUrl: string;
   footerLinks: { href: string; label: string }[];
 }
@@ -56,6 +63,12 @@ const aruba: Brand = {
       images: ['/img/aruba/05.png', '/img/aruba/06.png'],
     },
   ],
+  cta: {
+    heading: 'DISTRIBUYE<br/>ARUBA JEANS',
+    subheading: 'MAYOREO NACIONAL',
+    body: 'Conviértete en distribuidor autorizado. Precios de mayoreo, soporte de marca y catálogo completo para tu negocio.',
+    waLink: 'https://wa.me/525564991943?text=' + encodeURIComponent('Hola, quiero información para distribuir Aruba Jeans.'),
+  },
   instagramUrl: 'https://www.instagram.com/arubajns/',
   footerLinks: [
     { href: '/', label: 'Arkán Group' },
@@ -102,6 +115,12 @@ const bakari: Brand = {
       images: ['/img/bakari/05.png', '/img/bakari/06.png'],
     },
   ],
+  cta: {
+    heading: 'DISTRIBUYE<br/>BKR BAKARI',
+    subheading: 'MAYOREO NACIONAL',
+    body: 'El jean que vende todos los días. Únete a nuestra red de distribuidores y lleva Bakari a tu punto de venta.',
+    waLink: 'https://wa.me/525564991943?text=' + encodeURIComponent('Hola, quiero información para distribuir BKR Bakari.'),
+  },
   instagramUrl: 'https://www.instagram.com/bakarijeans/',
   footerLinks: [
     { href: '/', label: 'Arkán Group' },
@@ -144,6 +163,12 @@ const blackBash: Brand = {
       images: ['/img/black-bash/05.png', '/img/black-bash/06.png'],
     },
   ],
+  cta: {
+    heading: 'DISTRIBUYE<br/>BLACK BASH MX',
+    subheading: 'NEVER GIVE UP',
+    body: 'Una marca que genera lealtad real. Sé parte de la red de distribución y lleva Black Bash a tu mercado.',
+    waLink: 'https://wa.me/525564991943?text=' + encodeURIComponent('Hola, quiero información para distribuir Black Bash MX.'),
+  },
   instagramUrl: 'https://www.instagram.com/blackbashmx/',
   footerLinks: [
     { href: '/', label: 'Arkán Group' },

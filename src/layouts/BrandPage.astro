@@ -5,6 +5,7 @@ import BrandNav from '../components/brand/BrandNav.astro';
 import BrandHero from '../components/brand/BrandHero.astro';
 import BrandStatement from '../components/brand/BrandStatement.astro';
 import BrandCategories from '../components/brand/BrandCategories.astro';
+import BrandCta from '../components/brand/BrandCta.astro';
 import BrandFooter from '../components/brand/BrandFooter.astro';
 
 interface Props { brand: Brand; }
@@ -19,5 +20,6 @@ const { brand } = Astro.props;
   <BrandHero {brand} />
   <BrandStatement {brand} />
   <BrandCategories {brand} />
+  <BrandCta {brand} />
   <BrandFooter {brand} />
 </Layout>

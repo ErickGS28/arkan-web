@@ -5,7 +5,7 @@
 **Stack:** Astro 5 + Tailwind v4 + TypeScript
 
 ---
-
+dasdasdasd
 ## Objetivo
 
 Refactorizar el sitio (actualmente en `/proposal-2/`) como proyecto formal:

@@ -53,6 +53,20 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
 
         <!-- Side column -->
         <div class="form-side">
+          <div class="side-card ai-card">
+            <p class="side-card-title">Generar con IA</p>
+            <textarea class="ai-topic" id="aiTopic" rows="3" placeholder="Tema o instrucción. Ej: por qué el denim colombiano es mejor inversión para un distribuidor"></textarea>
+            <button type="button" class="btn-ai" id="btnGenerateAi">
+              <svg class="ai-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+                <path d="M12 2l1.8 4.6L18.5 8l-4.7 1.4L12 14l-1.8-4.6L5.5 8l4.7-1.4z"/>
+                <path d="M19 14l.9 2.3 2.3.9-2.3.9L19 20l-.9-2.3L15.8 17l2.3-.9z"/>
+              </svg>
+              <span class="ai-spinner" aria-hidden="true"></span>
+              <span class="btn-ai-label">Generar contenido</span>
+            </button>
+            <p class="ai-hint">Redacta título, resumen y contenido alineados con la filosofía de Arkán.</p>
+          </div>
+
           <div class="side-card">
             <p class="side-card-title">Estado</p>
             <div id="statusDisplay" class="status-display"></div>
@@ -357,6 +371,69 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     border: 1px solid #F0F0EE;
     min-height: 40px;
   }
+
+  /* AI generation card */
+  .ai-card { background: #0A0A0A; border-color: #0A0A0A; }
+  .ai-card .side-card-title { color: #888888; }
+
+  .ai-topic {
+    width: 100%;
+    padding: 11px 12px;
+    background: #161616;
+    border: 1px solid #2A2A2A;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #F0F0F0;
+    outline: none;
+    resize: vertical;
+    min-height: 76px;
+    transition: border-color 0.15s;
+  }
+  .ai-topic:focus { border-color: #555; }
+  .ai-topic::placeholder { color: #666; }
+
+  .btn-ai {
+    margin-top: 12px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: #FFFFFF;
+    border: 1px solid #FFFFFF;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #0A0A0A;
+    cursor: pointer;
+    transition: opacity 0.15s, background 0.15s;
+  }
+  .btn-ai:hover { background: #E8E8E8; }
+  .btn-ai:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .ai-spinner {
+    display: none;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(10,10,10,0.25);
+    border-top-color: #0A0A0A;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  .btn-ai.loading .ai-icon { display: none; }
+  .btn-ai.loading .ai-spinner { display: inline-block; }
+
+  .ai-hint {
+    margin-top: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 10.5px;
+    line-height: 1.5;
+    color: #777;
+    letter-spacing: 0.2px;
+  }
 </style>
 
 <style is:global>
@@ -500,6 +577,63 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     btnRemoveCover.style.display = 'none';
     coverFile.value = '';
   });
+
+  // AI content generation
+  const btnGenerateAi = document.getElementById('btnGenerateAi') as HTMLButtonElement | null;
+  const aiTopic = document.getElementById('aiTopic') as HTMLTextAreaElement | null;
+
+  async function generateAiContent() {
+    if (!btnGenerateAi || !aiTopic) return;
+    const topic = aiTopic.value.trim();
+    if (!topic) {
+      (window as any).toast?.error('Escribe un tema o instrucción para la IA.');
+      aiTopic.focus();
+      return;
+    }
+
+    const titleEl   = document.getElementById('title') as HTMLInputElement;
+    const excerptEl = document.getElementById('excerpt') as HTMLTextAreaElement;
+    const hasContent =
+      !!titleEl.value.trim() ||
+      !!excerptEl.value.trim() ||
+      (quillInstance && quillInstance.getText().trim().length > 0);
+
+    if (hasContent && !confirm('Esto reemplazará el título, resumen y contenido actuales. ¿Continuar?')) {
+      return;
+    }
+
+    btnGenerateAi.disabled = true;
+    btnGenerateAi.classList.add('loading');
+    const label = btnGenerateAi.querySelector('.btn-ai-label')!;
+    const prevLabel = label.textContent;
+    label.textContent = 'Generando…';
+
+    try {
+      const res = await fetch(`${API}/blog/generate`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic, title: titleEl.value.trim() || undefined }),
+      });
+      if (!res.ok) throw new Error();
+      const json = await res.json();
+      const data = json?.data ?? json;
+      if (!data?.content) throw new Error();
+
+      titleEl.value = data.title || titleEl.value;
+      excerptEl.value = data.excerpt || excerptEl.value;
+      if (quillInstance) quillInstance.root.innerHTML = data.content;
+      (window as any).toast?.success('Contenido generado con IA.');
+    } catch {
+      (window as any).toast?.error('No se pudo generar el contenido. Intenta de nuevo.');
+    } finally {
+      btnGenerateAi.disabled = false;
+      btnGenerateAi.classList.remove('loading');
+      label.textContent = prevLabel;
+    }
+  }
+
+  btnGenerateAi?.addEventListener('click', generateAiContent);
 
   // Load post
   async function loadPost() {

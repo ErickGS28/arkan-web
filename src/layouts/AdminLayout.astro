@@ -1,5 +1,6 @@
 ---
 import AdminSidebar from '../components/admin/AdminSidebar.astro';
+import Toaster from '../components/ui/Toaster.astro';
 
 interface Props {
   title?: string;
@@ -76,74 +77,10 @@ const currentPath = Astro.url.pathname;
     </main>
   </div>
 
-  <style>
-    #toast-container {
-      position: fixed;
-      bottom: 32px;
-      right: 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      z-index: 9999;
-      pointer-events: none;
-    }
-    .toast {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 20px;
-      background: #111111;
-      color: #EEEEEE;
-      font-family: 'Syne', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.2px;
-      min-width: 280px;
-      max-width: 400px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-      border-left: 3px solid #444;
-      animation: toastIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      pointer-events: auto;
-    }
-    .toast.success { border-left-color: #22C55E; }
-    .toast.error   { border-left-color: #EF4444; }
-    .toast.info    { border-left-color: #60A5FA; }
-    .toast.out     { animation: toastOut 0.2s ease forwards; }
-    .toast-icon {
-      width: 20px; height: 20px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700; flex-shrink: 0;
-      background: rgba(255,255,255,0.08);
-    }
-    .toast.success .toast-icon { background: rgba(34,197,94,0.15); color: #4ADE80; }
-    .toast.error   .toast-icon { background: rgba(239,68,68,0.15);  color: #F87171; }
-    .toast.info    .toast-icon { background: rgba(96,165,250,0.15); color: #93C5FD; }
-    @keyframes toastIn  { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
-    @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(12px); } }
-  </style>
-  <div id="toast-container"></div>
+  <Toaster />
 
   <script>
     const API = 'https://api.arkangroup.mx';
-
-    function _showToast(msg: string, type: 'success' | 'error' | 'info' = 'info', duration = 3500) {
-      const container = document.getElementById('toast-container')!;
-      const el = document.createElement('div');
-      el.className = `toast ${type}`;
-      const icons = { success: '✓', error: '✕', info: 'i' };
-      el.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${msg}</span>`;
-      container.appendChild(el);
-      setTimeout(() => {
-        el.classList.add('out');
-        el.addEventListener('animationend', () => el.remove());
-      }, duration);
-    }
-    (window as any).toast = {
-      success: (m: string) => _showToast(m, 'success'),
-      error:   (m: string) => _showToast(m, 'error'),
-      info:    (m: string) => _showToast(m, 'info'),
-    };
 
     async function initAdmin() {
       try {

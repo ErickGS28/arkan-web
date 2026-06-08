@@ -338,18 +338,18 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
       fill.style.width = '100%';
 
       if (!res.ok) {
-        text.textContent = 'Error al subir la imagen.';
-        setTimeout(() => { progress.style.display = 'none'; fill.style.width = '0%'; }, 2500);
+        (window as any).toast?.error('No se pudo subir la imagen. Intenta de nuevo.');
+        setTimeout(() => { progress.style.display = 'none'; fill.style.width = '0%'; }, 600);
         return;
       }
 
-      text.textContent = 'Imagen subida correctamente.';
       input.value = '';
       await loadCategory();
-      setTimeout(() => { progress.style.display = 'none'; fill.style.width = '0%'; }, 1500);
+      (window as any).toast?.success('Imagen subida correctamente.');
+      setTimeout(() => { progress.style.display = 'none'; fill.style.width = '0%'; }, 500);
     } catch {
-      text.textContent = 'Error de conexión.';
-      setTimeout(() => { progress.style.display = 'none'; fill.style.width = '0%'; }, 2500);
+      (window as any).toast?.error('Error de conexión al subir la imagen.');
+      setTimeout(() => { progress.style.display = 'none'; fill.style.width = '0%'; }, 600);
     }
   });
 
@@ -369,10 +369,14 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
     btn.disabled = true;
     btn.textContent = 'Eliminando...';
     try {
-      await fetch(`${API}/brands/images/${deleteTargetId}`, { method: 'DELETE', credentials: 'include' });
+      const res = await fetch(`${API}/brands/images/${deleteTargetId}`, { method: 'DELETE', credentials: 'include' });
+      if (!res.ok) throw new Error();
       (document.getElementById('deleteModal') as HTMLElement).classList.remove('open');
       deleteTargetId = null;
       await loadCategory();
+      (window as any).toast?.success('Imagen eliminada.');
+    } catch {
+      (window as any).toast?.error('No se pudo eliminar la imagen.');
     } finally {
       btn.disabled = false;
       btn.textContent = 'Eliminar';

@@ -1,5 +1,6 @@
 ---
 // src/pages/login.astro
+import Toaster from '../components/ui/Toaster.astro';
 ---
 <!DOCTYPE html>
 <html lang="es">
@@ -96,14 +97,6 @@
     }
     .btn:hover { background: #E0E0E0; }
     .btn:disabled { background: #1A1A1A; color: #444; cursor: not-allowed; }
-    .error {
-      margin-top: 16px;
-      font-size: 11px;
-      letter-spacing: 1px;
-      color: #E1306C;
-      text-align: center;
-      min-height: 16px;
-    }
   </style>
 </head>
 <body>
@@ -124,8 +117,9 @@
       </div>
       <button class="btn" id="submitBtn" type="submit">Entrar</button>
     </form>
-    <p class="error" id="errorMsg"></p>
   </div>
+
+  <Toaster />
 
   <script>
     const API = 'https://api.arkangroup.mx';
@@ -140,13 +134,11 @@
     document.getElementById('loginForm')!.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn') as HTMLButtonElement;
-      const errorMsg = document.getElementById('errorMsg')!;
       const email = (document.getElementById('email') as HTMLInputElement).value;
       const password = (document.getElementById('password') as HTMLInputElement).value;
 
       btn.disabled = true;
       btn.textContent = 'Verificando...';
-      errorMsg.textContent = '';
 
       try {
         const res = await fetch(`${API}/auth/login`, {
@@ -157,14 +149,15 @@
         });
 
         if (res.ok) {
+          (window as any).toast?.success('Bienvenido. Entrando…');
           window.location.href = '/admin';
         } else {
-          errorMsg.textContent = 'Credenciales inválidas';
+          (window as any).toast?.error('Credenciales inválidas. Verifica tu correo y contraseña.');
           btn.disabled = false;
           btn.textContent = 'Entrar';
         }
       } catch {
-        errorMsg.textContent = 'Error de conexión con el servidor';
+        (window as any).toast?.error('Error de conexión con el servidor. Intenta de nuevo.');
         btn.disabled = false;
         btn.textContent = 'Entrar';
       }

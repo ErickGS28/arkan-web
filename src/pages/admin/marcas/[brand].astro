@@ -479,12 +479,13 @@ if (!info) return Astro.redirect('/admin');
         body: JSON.stringify(body),
       });
 
-      if (!res.ok) { errEl.textContent = 'Error al guardar. Intenta de nuevo.'; return; }
+      if (!res.ok) { window.toast?.error('No se pudo guardar la categoría. Intenta de nuevo.'); return; }
 
       closeModal();
       await load();
+      window.toast?.success(isEdit ? 'Categoría actualizada.' : 'Categoría creada.');
     } catch {
-      errEl.textContent = 'Error de conexión.';
+      window.toast?.error('Error de conexión. Revisa tu internet e intenta de nuevo.');
     } finally {
       btn.disabled = false;
       btn.textContent = 'Guardar';
@@ -508,13 +509,17 @@ if (!info) return Astro.redirect('/admin');
     btn.disabled = true;
     btn.textContent = 'Eliminando...';
     try {
-      await fetch(`${API}/brands/categories/${deleteTargetId}`, {
+      const res = await fetch(`${API}/brands/categories/${deleteTargetId}`, {
         method: 'DELETE',
         credentials: 'include',
       });
+      if (!res.ok) throw new Error();
       document.getElementById('deleteModal').classList.remove('open');
       deleteTargetId = null;
       await load();
+      window.toast?.success('Categoría eliminada.');
+    } catch {
+      window.toast?.error('No se pudo eliminar la categoría.');
     } finally {
       btn.disabled = false;
       btn.textContent = 'Eliminar';

@@ -1,0 +1,174 @@
+---
+// Toaster global — estética react-hot-toast en vanilla JS.
+// Expone window.toast.{success,error,info,loading,dismiss} para todos los flujos.
+// Los estilos van en is:global porque los toasts se crean dinámicamente por JS
+// (los estilos scoped de Astro no aplican a nodos creados en runtime).
+---
+
+<div id="rht-container" aria-live="polite" aria-atomic="false"></div>
+
+<style is:global>
+  #rht-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 99999;
+    pointer-events: none;
+    width: max-content;
+    max-width: calc(100vw - 32px);
+  }
+
+  .rht {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #FFFFFF;
+    color: #2B2B2B;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.10), 0 3px 3px rgba(0, 0, 0, 0.05);
+    min-width: 240px;
+    max-width: 420px;
+    pointer-events: auto;
+    cursor: pointer;
+    transform: translateY(-14px);
+    opacity: 0;
+    transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease, box-shadow 0.18s ease;
+  }
+  .rht.rht-show { transform: translateY(0); opacity: 1; }
+  .rht.rht-hide { transform: translateY(-10px) scale(0.97); opacity: 0; }
+  .rht:hover { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14), 0 4px 6px rgba(0, 0, 0, 0.06); }
+
+  .rht-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .rht-icon svg { width: 12px; height: 12px; display: block; }
+  .rht-success .rht-icon { background: #22C55E; color: #FFFFFF; }
+  .rht-error   .rht-icon { background: #EF4444; color: #FFFFFF; }
+  .rht-info    .rht-icon { background: #3B82F6; color: #FFFFFF; }
+  .rht-loading .rht-icon {
+    background: transparent;
+    border: 2px solid #E4E4E4;
+    border-top-color: #2B2B2B;
+    animation: rht-spin 0.7s linear infinite;
+  }
+  @keyframes rht-spin { to { transform: rotate(360deg); } }
+
+  .rht-msg { flex: 1; word-break: break-word; }
+
+  .rht-close {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-left: 2px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #B0B0B0;
+    transition: background 0.15s, color 0.15s;
+  }
+  .rht-close:hover { background: #F0F0F0; color: #555; }
+  .rht-close svg { width: 10px; height: 10px; display: block; }
+
+  @media (max-width: 520px) {
+    #rht-container { top: 12px; }
+    .rht { min-width: 0; width: calc(100vw - 32px); }
+  }
+</style>
+
+<script>
+  type ToastType = 'success' | 'error' | 'info' | 'loading';
+
+  const ICONS: Record<ToastType, string> = {
+    success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    error:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    info:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.5" r="0.5" fill="currentColor"/></svg>',
+    loading: '',
+  };
+  const CLOSE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+  const DEFAULT_DURATION: Record<ToastType, number> = {
+    success: 3000,
+    info: 3500,
+    error: 5000,
+    loading: 0, // no auto-dismiss
+  };
+
+  function getContainer(): HTMLElement {
+    let c = document.getElementById('rht-container');
+    if (!c) {
+      c = document.createElement('div');
+      c.id = 'rht-container';
+      c.setAttribute('aria-live', 'polite');
+      document.body.appendChild(c);
+    }
+    return c;
+  }
+
+  let seq = 0;
+
+  function dismiss(el: HTMLElement) {
+    if (!el || el.dataset.closing === '1') return;
+    el.dataset.closing = '1';
+    el.classList.remove('rht-show');
+    el.classList.add('rht-hide');
+    el.addEventListener('transitionend', () => el.remove(), { once: true });
+    setTimeout(() => el.remove(), 400); // fallback
+  }
+
+  function show(msg: string, type: ToastType = 'info', duration?: number): string {
+    const container = getContainer();
+    const id = `rht-${++seq}`;
+    const el = document.createElement('div');
+    el.className = `rht rht-${type}`;
+    el.id = id;
+    el.setAttribute('role', type === 'error' ? 'alert' : 'status');
+    el.innerHTML =
+      `<span class="rht-icon">${ICONS[type]}</span>` +
+      `<span class="rht-msg"></span>` +
+      `<span class="rht-close" aria-label="Cerrar">${CLOSE_ICON}</span>`;
+    (el.querySelector('.rht-msg') as HTMLElement).textContent = msg;
+
+    container.appendChild(el);
+    requestAnimationFrame(() => el.classList.add('rht-show'));
+
+    const dur = duration ?? DEFAULT_DURATION[type];
+    let timer: number | undefined;
+    const startTimer = () => {
+      if (dur > 0) timer = window.setTimeout(() => dismiss(el), dur);
+    };
+    const stopTimer = () => { if (timer) { clearTimeout(timer); timer = undefined; } };
+
+    // Cierre al clic en cualquier parte del toast, y pausa al pasar el mouse.
+    el.addEventListener('click', () => dismiss(el));
+    el.addEventListener('mouseenter', stopTimer);
+    el.addEventListener('mouseleave', startTimer);
+
+    startTimer();
+    return id;
+  }
+
+  (window as any).toast = {
+    success: (m: string, d?: number) => show(m, 'success', d),
+    error:   (m: string, d?: number) => show(m, 'error', d),
+    info:    (m: string, d?: number) => show(m, 'info', d),
+    loading: (m: string) => show(m, 'loading', 0),
+    dismiss: (id: string) => { const el = document.getElementById(id); if (el) dismiss(el); },
+  };
+</script>

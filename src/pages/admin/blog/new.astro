@@ -142,8 +142,11 @@ import AdminLayout from '../../../layouts/AdminLayout.astro';
   .form-layout {
     display: grid;
     grid-template-columns: 1fr 290px;
-    gap: 32px;
+    gap: 48px;
     align-items: start;
+  }
+  @media (max-width: 980px) {
+    .form-layout { grid-template-columns: 1fr; gap: 28px; }
   }
 
   .field { margin-bottom: 28px; }

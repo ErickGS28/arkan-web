@@ -1,0 +1,217 @@
+---
+---
+
+<section class="video-arkan" id="conoce">
+  <div class="video-arkan-inner">
+    <div class="video-arkan-media">
+      <div class="video-frame">
+        <video
+          id="arkan-promo-video"
+          src="/videoPage.mp4"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+        ></video>
+        <button
+          id="arkan-video-play-toggle"
+          class="play-toggle"
+          type="button"
+          aria-label="Pausar video"
+          aria-pressed="false"
+        >
+          <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+            <rect x="6" y="4" width="4" height="16"></rect>
+            <rect x="14" y="4" width="4" height="16"></rect>
+          </svg>
+          <svg class="icon-play" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+            <polygon points="6 3 20 12 6 21 6 3"></polygon>
+          </svg>
+        </button>
+        <button
+          id="arkan-video-mute-toggle"
+          class="mute-toggle"
+          type="button"
+          aria-label="Activar sonido"
+          aria-pressed="false"
+        >
+          <svg class="icon-muted" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+          <svg class="icon-unmuted" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M18.36 5.64a9 9 0 0 1 0 12.73"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="video-arkan-copy">
+      <p class="video-arkan-eyebrow">Conoce Arkán Group</p>
+      <h2 class="video-arkan-heading">TRES MARCAS.<br/>UN SOLO GRUPO.</h2>
+      <p class="video-arkan-body">
+        Aruba, Bakari y Black Bash conviven bajo una misma filosofía de calidad y
+        distribución mayorista. En menos de 20 segundos te mostramos qué distingue
+        a cada marca y por qué juntas forman un catálogo completo para tu negocio.
+      </p>
+      <a href="#marcas" class="video-arkan-link">Ver las marcas <span>→</span></a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .video-arkan {
+    background: #0A0A0A;
+    padding: 120px 80px;
+    border-top: 1px solid #1A1A1A;
+    scroll-margin-top: 64px;
+  }
+
+  .video-arkan-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 380px minmax(0, 480px);
+    gap: 64px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .video-arkan-media {
+    display: flex;
+    justify-content: center;
+  }
+
+  .video-frame {
+    position: relative;
+    width: 100%;
+    max-width: 340px;
+    aspect-ratio: 9 / 16;
+    background: #000000;
+    border: 1px solid #1A1A1A;
+    border-top: 3px solid #F0F0F0;
+    overflow: hidden;
+  }
+
+  .video-frame video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .play-toggle,
+  .mute-toggle {
+    position: absolute;
+    bottom: 14px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 10, 10, 0.55);
+    border: 1px solid rgba(240, 240, 240, 0.35);
+    color: #F0F0F0;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .play-toggle:hover,
+  .mute-toggle:hover {
+    background: rgba(10, 10, 10, 0.8);
+    border-color: rgba(240, 240, 240, 0.7);
+  }
+
+  .play-toggle { right: 60px; }
+  .play-toggle .icon-play { display: none; }
+  .play-toggle[aria-pressed="true"] .icon-pause { display: none; }
+  .play-toggle[aria-pressed="true"] .icon-play { display: block; }
+
+  .mute-toggle { right: 14px; }
+  .mute-toggle .icon-unmuted { display: none; }
+  .mute-toggle[aria-pressed="true"] .icon-muted { display: none; }
+  .mute-toggle[aria-pressed="true"] .icon-unmuted { display: block; }
+
+  .video-arkan-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .video-arkan-eyebrow {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; letter-spacing: 5px; color: #555;
+    text-transform: uppercase;
+  }
+  .video-arkan-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 5vw, 64px);
+    letter-spacing: 3px; color: #F0F0F0; line-height: 1.02;
+  }
+  .video-arkan-body {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; line-height: 1.85; color: #666;
+    max-width: 460px;
+  }
+  .video-arkan-link {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px;
+    color: #F0F0F0; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 8px;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(240, 240, 240, 0.3);
+    padding-bottom: 4px;
+    transition: gap 0.2s ease, border-color 0.2s ease;
+  }
+  .video-arkan-link:hover {
+    gap: 14px;
+    border-color: rgba(240, 240, 240, 0.9);
+  }
+
+  @media (max-width: 900px) {
+    .video-arkan { padding: 80px 24px; }
+    .video-arkan-inner {
+      grid-template-columns: 1fr;
+      gap: 48px;
+      text-align: center;
+    }
+    .video-arkan-copy { align-items: center; }
+    .video-arkan-body { max-width: 100%; }
+    .video-frame { max-width: 280px; }
+  }
+</style>
+
+<script>
+  const video = document.getElementById('arkan-promo-video');
+  const muteToggle = document.getElementById('arkan-video-mute-toggle');
+  const playToggle = document.getElementById('arkan-video-play-toggle');
+
+  muteToggle?.addEventListener('click', () => {
+    if (!video) return;
+    video.muted = !video.muted;
+    const isUnmuted = !video.muted;
+    muteToggle.setAttribute('aria-pressed', String(isUnmuted));
+    muteToggle.setAttribute('aria-label', isUnmuted ? 'Silenciar video' : 'Activar sonido');
+  });
+
+  playToggle?.addEventListener('click', () => {
+    if (!video) return;
+    if (video.paused) {
+      video.play();
+    } else {
+      video.pause();
+    }
+  });
+
+  video?.addEventListener('play', () => {
+    playToggle?.setAttribute('aria-pressed', 'false');
+    playToggle?.setAttribute('aria-label', 'Pausar video');
+  });
+
+  video?.addEventListener('pause', () => {
+    playToggle?.setAttribute('aria-pressed', 'true');
+    playToggle?.setAttribute('aria-label', 'Reproducir video');
+  });
+</script>
